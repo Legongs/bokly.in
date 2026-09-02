@@ -1,0 +1,160 @@
+"use server";
+
+import { z } from "zod";
+import { revalidatePath } from "next/cache";
+import { createClient } from "@/lib/supabase/server";
+import type { Tenant, Service } from "@/types/database.types";
+
+// ── Shared response type ──────────────────────────────────────────────────────
+export type ActionResponse<T> = {
+  success: boolean;
+  data?: T;
+  error?: string;
+};
+
+// ── Schemas ───────────────────────────────────────────────────────────────────
+const slugSchema = z
+  .string()
+  .min(3, "Slug minimal 3 huruf ya.")
+  .max(50, "Slug maksimal 50 huruf ya.")
+  .regex(/^[a-z0-9-]+$/, "Slug cuma boleh pakai huruf kecil, angka, sama tanda strip (-).");
+
+const uuidSchema = z.string().uuid("ID Tenant tidak valid");
+
+// ── getTenantBySlug ───────────────────────────────────────────────────────────
+/**
+ * Ambil satu tenant aktif berdasarkan slug-nya.
+ * Hanya mengembalikan tenant dengan is_active = true (sesuai RLS policy).
+ */
+export async function getTenantBySlug(
+  slug: string
+): Promise<ActionResponse<Tenant>> {
+  const parsed = slugSchema.safeParse(slug);
+  if (!parsed.success) {
+    return { success: false, error: "Slug tenant tidak valid" };
+  }
+
+  try {
+    const supabase = await createClient();
+
+    const { data, error } = await supabase
+      .from("tenants")
+      .select("*")
+      .eq("slug", parsed.data)
+      .eq("is_active", true)
+      .single();
+
+    if (error || !data) {
+      return { success: false, error: "Wah, outlet-nya nggak ketemu atau lagi tutup nih." };
+    }
+
+    return { success: true, data: data as Tenant };
+  } catch {
+    return { success: false, error: "Duh, server kita lagi agak ngambek. Coba muat ulang halamannya ya." };
+  }
+}
+
+// ── getServicesByTenant ───────────────────────────────────────────────────────
+/**
+ * Ambil semua layanan milik satu tenant, diurutkan dari harga terendah.
+ */
+export async function getServicesByTenant(
+  tenantId: string
+): Promise<ActionResponse<Service[]>> {
+  const parsed = uuidSchema.safeParse(tenantId);
+  if (!parsed.success) {
+    return { success: false, error: "ID Tenant tidak valid" };
+  }
+
+  try {
+    const supabase = await createClient();
+
+    const { data, error } = await supabase
+      .from("services")
+      .select("*")
+      .eq("tenant_id", parsed.data)
+      .order("price", { ascending: true });
+
+    if (error) {
+      return { success: false, error: "Yah, gagal muat daftar layanan nih." };
+    }
+
+    return { success: true, data: (data ?? []) as Service[] };
+  } catch {
+    return { success: false, error: "Duh, server kita lagi agak ngambek. Coba muat ulang halamannya ya." };
+  }
+}
+
+// ── updateTenantSettings ───────────────────────────────────────────────────────
+// Menangani pembaruan data pengaturan profil toko (bisnis, WA, Telegram, QRIS)
+
+const updateTenantSettingsSchema = z.object({
+  id: z.string().uuid("ID Tenant-nya kurang pas nih."),
+  business_name: z.string().min(2, "Nama toko minimal 2 huruf dong.").max(100, "Nama toko kepanjangan nih.").trim(),
+  business_type: z.enum([
+    "salon",
+    "klinik",
+    "konsultasi",
+    "studio_foto",
+    "cuci_kendaraan",
+    "olahraga",
+    "servis",
+    "lainnya",
+  ]),
+  whatsapp_number: z
+    .string()
+    .min(10, "Nomor WA kependekan, minimal 10 angka ya.")
+    .max(16, "Nomor WA kepanjangan, maksimal 16 angka ya.")
+    .regex(/^(\+62|62|0)8[1-9][0-9]{6,11}$/, "Format WA kurang pas. Pakai awalan 08 atau 628 ya."),
+  telegram_chat_id: z.string().nullable().optional(),
+  qris_image_url: z.string().url("Wah, link QRIS-nya nggak valid nih.").nullable().optional().or(z.literal("")),
+  theme_color: z.enum(["teal", "rose", "orange", "violet", "blue"]).default("teal"),
+  open_time: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Format jam buka harus HH:MM (contoh: 09:00)").default("09:00"),
+  close_time: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Format jam tutup harus HH:MM (contoh: 21:00)").default("21:00"),
+});
+
+type UpdateTenantSettingsInput = z.infer<typeof updateTenantSettingsSchema>;
+
+export async function updateTenantSettings(
+  input: UpdateTenantSettingsInput
+): Promise<ActionResponse<Tenant>> {
+  const parsed = updateTenantSettingsSchema.safeParse(input);
+  if (!parsed.success) {
+    return { success: false, error: parsed.error.issues[0]?.message ?? "Ada data yang kurang pas nih." };
+  }
+
+  try {
+    const supabase = await createClient();
+
+    // Jika qris_image_url berupa string kosong, ubah jadi null
+    const finalQris = parsed.data.qris_image_url === "" ? null : parsed.data.qris_image_url;
+
+    const { data, error } = await supabase
+      .from("tenants")
+      .update({
+        business_name: parsed.data.business_name,
+        business_type: parsed.data.business_type,
+        whatsapp_number: parsed.data.whatsapp_number,
+        telegram_chat_id: parsed.data.telegram_chat_id || null,
+        qris_image_url: finalQris,
+        theme_color: parsed.data.theme_color,
+        open_time: parsed.data.open_time,
+        close_time: parsed.data.close_time,
+      })
+      .eq("id", parsed.data.id)
+      .select()
+      .single();
+
+    if (error) {
+      return { success: false, error: "Yah, gagal nyimpen pengaturan toko. Coba lagi ya." };
+    }
+
+    const tenant = data as Tenant;
+    revalidatePath(`/${tenant.slug}`, "page");
+    revalidatePath("/dashboard", "layout"); // Invalidasi seluruh dashboard
+
+    return { success: true, data: tenant };
+  } catch {
+    return { success: false, error: "Duh, server kita lagi agak ngambek. Coba muat ulang halamannya ya." };
+  }
+}
