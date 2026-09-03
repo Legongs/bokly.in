@@ -12,7 +12,7 @@ import {
   Activity
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import type { TenantAnalytics } from "@/lib/actions/analytics.actions";
+import type { DashboardMetrics } from "@/lib/actions/analytics.actions";
 import type { BusinessDictionary } from "@/lib/business-dictionary";
 
 function formatCurrency(amount: number) {
@@ -24,12 +24,15 @@ function formatCurrency(amount: number) {
 }
 
 interface AnalyticsViewProps {
-  analytics: TenantAnalytics;
+  analytics: DashboardMetrics;
   dictionary: BusinessDictionary;
 }
 
 export function AnalyticsView({ analytics, dictionary }: AnalyticsViewProps) {
-  const { totalRevenue, totalBookings, topServices, peakHours, smartSuggestion } = analytics;
+  const { totalRevenue, totalBookings, topServices, recentTrend, completedBookings, cancelledBookings } = analytics;
+
+  // Cari max value untuk scaling chart
+  const maxTrendValue = Math.max(...recentTrend.map(t => t.value), 1);
 
   return (
     <div className="space-y-6 max-w-3xl mx-auto px-2">
@@ -43,26 +46,6 @@ export function AnalyticsView({ analytics, dictionary }: AnalyticsViewProps) {
           Pantau performa bisnis dan cari tahu apa yang paling disukai pelangganmu.
         </p>
       </div>
-
-      {/* ── Smart Suggestion Card ── */}
-      {smartSuggestion && (
-        <div className="bg-gradient-to-br from-orange-50 to-orange-100/50 rounded-3xl p-5 border border-orange-200/60 shadow-sm relative overflow-hidden">
-          {/* Decorative element */}
-          <div className="absolute -top-6 -right-6 w-24 h-24 bg-orange-200/40 rounded-full blur-2xl" aria-hidden="true" />
-          
-          <div className="flex items-start gap-3 relative">
-            <div className="w-10 h-10 bg-orange-500 text-white rounded-2xl flex items-center justify-center flex-shrink-0 shadow-md shadow-orange-500/20 rotate-3">
-              <Lightbulb className="w-5 h-5" />
-            </div>
-            <div>
-              <h3 className="font-bold text-orange-900 mb-1">Saran Pintar Buat Kamu</h3>
-              <p className="text-sm text-orange-800 leading-relaxed">
-                {smartSuggestion}
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* ── Top Metrics ── */}
       <div className="grid grid-cols-2 gap-4">
@@ -97,7 +80,34 @@ export function AnalyticsView({ analytics, dictionary }: AnalyticsViewProps) {
         </Card>
       </div>
 
-      {/* ── Detail Metrics ── */}
+      {/* ── Trend Chart ── */}
+      <Card className="rounded-[2rem] border-none shadow-md shadow-stone-200/50 bg-white overflow-hidden p-0 sm:p-0">
+        <CardContent className="p-6">
+          <h3 className="font-bold text-stone-900 flex items-center gap-2 mb-6">
+            <Activity className="w-4 h-4 text-violet-500" />
+            Tren Pendapatan 30 Hari Terakhir
+          </h3>
+          <div className="h-48 flex items-end gap-1.5 w-full overflow-x-auto hide-scrollbar pb-2">
+            {recentTrend.map((t, idx) => {
+              const heightPercent = (t.value / maxTrendValue) * 100;
+              return (
+                <div key={idx} className="relative flex flex-col justify-end items-center flex-1 group" style={{ minWidth: "12px" }}>
+                  <div 
+                    className="w-full bg-teal-500 rounded-sm transition-all duration-300 hover:bg-teal-400"
+                    style={{ height: `${heightPercent}%`, minHeight: "2px" }}
+                  >
+                  </div>
+                  {/* Tooltip pada hover */}
+                  <div className="absolute bottom-full mb-2 hidden group-hover:block z-10 bg-stone-900 text-white text-[10px] py-1 px-2 rounded-lg whitespace-nowrap shadow-xl">
+                    <p className="font-bold">{new Date(t.date).toLocaleDateString("id-ID", { day: 'numeric', month: 'short' })}</p>
+                    <p>{formatCurrency(t.value)}</p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2">
         
         {/* Top Services */}
@@ -123,7 +133,7 @@ export function AnalyticsView({ analytics, dictionary }: AnalyticsViewProps) {
                     </div>
                     <div className="flex items-center gap-1.5 bg-teal-50 text-teal-700 px-2 py-1 rounded-lg text-xs font-bold">
                       <TrendingUp className="w-3 h-3" />
-                      {service.count}x
+                      {service.bookings}x
                     </div>
                   </li>
                 ))}
@@ -132,35 +142,26 @@ export function AnalyticsView({ analytics, dictionary }: AnalyticsViewProps) {
           </div>
         </div>
 
-        {/* Peak Hours */}
-        <div>
-          <h3 className="font-bold text-stone-900 flex items-center gap-2 mb-4">
-            <Activity className="w-4 h-4 text-rose-500" />
-            Jam Paling Ramai
+        {/* Status Metrics */}
+        <div className="space-y-4">
+          <h3 className="font-bold text-stone-900 flex items-center gap-2 mb-2">
+            <Lightbulb className="w-4 h-4 text-orange-500" />
+            Status Reservasi
           </h3>
-          <div className="bg-white rounded-[2rem] border-none shadow-md shadow-stone-200/50 overflow-hidden">
-            {peakHours.length === 0 ? (
-              <div className="p-6 text-center text-sm text-stone-500">
-                Belum ada data jam sibuk nih.
-              </div>
-            ) : (
-              <ul className="divide-y divide-stone-100">
-                {peakHours.map((peak, idx) => (
-                  <li key={peak.hour} className="flex items-center justify-between p-4 hover:bg-stone-50 transition-colors">
-                    <div className="flex items-center gap-3">
-                      <span className="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
-                        <Clock className="w-4 h-4" />
-                      </span>
-                      <span className="font-bold text-stone-800">{peak.hour} WIB</span>
-                    </div>
-                    <div className="text-sm font-semibold text-stone-500">
-                      {peak.count} Booking
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
+          <Card className="rounded-[1.5rem] border-none shadow-sm bg-orange-50/50 p-5">
+            <div className="flex justify-between items-center mb-1">
+              <span className="text-sm font-semibold text-stone-600">Diselesaikan</span>
+              <span className="text-lg font-extrabold text-stone-900">{completedBookings}</span>
+            </div>
+            <p className="text-xs text-stone-500">Reservasi sukses dikerjakan</p>
+          </Card>
+          <Card className="rounded-[1.5rem] border-none shadow-sm bg-rose-50/50 p-5">
+            <div className="flex justify-between items-center mb-1">
+              <span className="text-sm font-semibold text-stone-600">Dibatalkan</span>
+              <span className="text-lg font-extrabold text-stone-900">{cancelledBookings}</span>
+            </div>
+            <p className="text-xs text-stone-500">Reservasi tidak jadi/batal</p>
+          </Card>
         </div>
       </div>
     </div>

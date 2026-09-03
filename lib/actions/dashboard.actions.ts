@@ -26,6 +26,12 @@ export async function getTodayBookings(
   try {
     const supabase = await createClient();
 
+    // Verifikasi keamanan ganda (Mencegah Data Bleeding / Bypassing RLS)
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user || user.id !== parsed.data) {
+      return { success: false, error: "Akses ditolak: Anda tidak memiliki akses ke tenant ini." };
+    }
+
     // Dapatkan tanggal hari ini dalam format YYYY-MM-DD
     const today = new Date().toLocaleString("en-CA", {
       timeZone: "Asia/Jakarta",
@@ -78,15 +84,22 @@ export async function updateBookingStatus(
   try {
     const supabase = await createClient();
 
+    // Verifikasi keamanan ganda (Mencegah Data Bleeding / Bypassing RLS)
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      return { success: false, error: "Akses ditolak: Anda tidak memiliki akses untuk tindakan ini." };
+    }
+
     const { data, error } = await supabase
       .from("bookings")
       .update({ payment_status: parsed.data.status })
       .eq("id", parsed.data.booking_id)
+      .eq("tenant_id", user.id) // WAJIB: Validasi bahwa booking milik user (asumsi user.id == tenant_id)
       .select()
       .single();
 
     if (error) {
-      return { success: false, error: "Gagal memperbarui status booking" };
+      return { success: false, error: "Gagal memperbarui status booking (Data tidak ditemukan atau akses ditolak)" };
     }
 
     // Wajib invalidasi cache agar dashboard & halaman publik tersinkronisasi
@@ -98,3 +111,42 @@ export async function updateBookingStatus(
     return { success: false, error: "Terjadi kesalahan internal pada server" };
   }
 }
+
+// ── markReminderSent ──────────────────────────────────────────────────────────
+export async function markReminderSent(
+  bookingId: string
+): Promise<ActionResponse<Booking>> {
+  const parsed = z.string().uuid().safeParse(bookingId);
+  
+  if (!parsed.success) {
+    return { success: false, error: "ID Booking tidak valid" };
+  }
+
+  try {
+    const supabase = await createClient();
+
+    // Verifikasi keamanan ganda (Mencegah Data Bleeding / Bypassing RLS)
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      return { success: false, error: "Akses ditolak" };
+    }
+
+    const { data, error } = await supabase
+      .from("bookings")
+      .update({ is_reminder_sent: true })
+      .eq("id", parsed.data)
+      .eq("tenant_id", user.id) // WAJIB: Validasi bahwa booking milik user
+      .select()
+      .single();
+
+    if (error) {
+      return { success: false, error: "Gagal mencatat status pengingat" };
+    }
+
+    revalidatePath("/dashboard");
+    return { success: true, data: data as Booking };
+  } catch {
+    return { success: false, error: "Terjadi kesalahan internal pada server" };
+  }
+}
+

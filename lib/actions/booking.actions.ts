@@ -2,7 +2,7 @@
 
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { sendTelegramNotification } from "@/lib/telegram";
 import type { Booking, PaymentStatus } from "@/types/database.types";
 import type { ActionResponse } from "./tenant.actions";
@@ -82,7 +82,7 @@ export async function getBookedSlotsForDate(
   tenantId: string,
   date: string,
   staffId?: string | null
-): Promise<ActionResponse<string[]>> {
+): Promise<ActionResponse<{ start_time: string; end_time: string; buffer_minutes: number; staff_id: string | null }[]>> {
   const parsed = getBookedSlotsSchema.safeParse({
     tenant_id: tenantId,
     booking_date: date,
@@ -104,10 +104,10 @@ export async function getBookedSlotsForDate(
 
     const maxCapacity = Math.max(1, staffCount || 1);
 
-    // 2. Ambil semua booking di hari itu
+    // 2. Ambil semua booking di hari itu beserta buffer layanannya
     const { data: bookingsData, error } = await supabase
       .from("bookings")
-      .select("start_time, staff_id")
+      .select("start_time, end_time, staff_id, services(buffer_minutes)")
       .eq("tenant_id", parsed.data.tenant_id)
       .eq("booking_date", parsed.data.booking_date)
       .in("payment_status", ["pending", "approved"]);
@@ -117,36 +117,20 @@ export async function getBookedSlotsForDate(
     }
 
     const bookings = bookingsData || [];
-    const bookedSlots: string[] = [];
+    const formattedBookings = bookings.map((b: any) => ({
+      start_time: b.start_time,
+      end_time: b.end_time,
+      buffer_minutes: b.services?.buffer_minutes || 0,
+      staff_id: b.staff_id,
+    }));
 
-    if (parsed.data.staff_id) {
-      // Kasus A: Pelanggan memilih staff spesifik. 
-      // Slot tidak tersedia jika staff tersebut sudah ada jadwal, atau jika jadwal tsb tidak ada staff (legacy).
-      for (const b of bookings) {
-        if (b.staff_id === parsed.data.staff_id || !b.staff_id) {
-          bookedSlots.push(b.start_time.slice(0, 5));
-        }
-      }
-    } else {
-      // Kasus B: Pelanggan memilih "Bebas" (Siapapun)
-      // Hitung frekuensi booking tiap start_time. Jika >= maxCapacity, slot tersebut penuh.
-      const timeCounts: Record<string, number> = {};
-      for (const b of bookings) {
-        const t = b.start_time.slice(0, 5);
-        timeCounts[t] = (timeCounts[t] || 0) + 1;
-      }
-      for (const [time, count] of Object.entries(timeCounts)) {
-        if (count >= maxCapacity) {
-          bookedSlots.push(time);
-        }
-      }
-    }
-
-    return { success: true, data: Array.from(new Set(bookedSlots)) };
+    return { success: true, data: formattedBookings };
   } catch {
     return { success: false, error: "Server kita lagi agak ngambek nih. Coba muat ulang ya.", data: [] };
   }
 }
+
+import { checkRateLimit } from "@/lib/rate-limit";
 
 // ── submitBooking ─────────────────────────────────────────────────────────────
 /**
@@ -168,10 +152,44 @@ export async function submitBooking(
     return { success: false, error: firstError };
   }
 
+  // --- 0. Rate Limiting ---
+  // Batasi 3 booking per nomor WA per tenant dalam 5 menit (300.000 ms)
+  const rateLimitKey = `booking_${parsed.data.tenant_id}_${parsed.data.customer_wa}`;
+  if (!checkRateLimit(rateLimitKey, 3, 300_000)) {
+    return { success: false, error: "Wow, bookingnya kenceng banget! Tunggu beberapa menit lagi ya sebelum bikin booking baru." };
+  }
+  // -------------------------
+
   try {
     const supabase = await createClient();
 
     let finalStaffId = parsed.data.staff_id || null;
+
+    // --- 1. Verifikasi Keamanan Lintas-Tenant (Cross-Tenant Forgery) ---
+    const { data: serviceData, error: serviceError } = await supabase
+      .from("services")
+      .select("id")
+      .eq("id", parsed.data.service_id)
+      .eq("tenant_id", parsed.data.tenant_id)
+      .single();
+
+    if (serviceError || !serviceData) {
+      return { success: false, error: "Akses ditolak: Layanan tidak valid atau bukan milik toko ini." };
+    }
+
+    if (finalStaffId) {
+      const { data: staffData, error: staffError } = await supabase
+        .from("staff")
+        .select("id")
+        .eq("id", finalStaffId)
+        .eq("tenant_id", parsed.data.tenant_id)
+        .single();
+      
+      if (staffError || !staffData) {
+        return { success: false, error: "Akses ditolak: Pegawai tidak valid atau bukan milik toko ini." };
+      }
+    }
+    // -------------------------------------------------------------------
 
     // Auto-assign staff jika tidak dipilih spesifik
     if (!finalStaffId) {
@@ -202,12 +220,56 @@ export async function submitBooking(
       }
     }
 
+    // ── Mulai Logika CRM Pelanggan (Menggunakan Service Role untuk bypass RLS) ──
+    let finalCustomerId: string | null = null;
+    try {
+      const adminSupabase = createAdminClient();
+
+      const { data: existingCustomer } = await adminSupabase
+        .from("customers")
+        .select("id, total_bookings")
+        .eq("tenant_id", parsed.data.tenant_id)
+        .eq("whatsapp_number", parsed.data.customer_wa)
+        .single();
+
+      if (existingCustomer) {
+        const { data: updatedCustomer } = await adminSupabase
+          .from("customers")
+          .update({ 
+            name: parsed.data.customer_name,
+            total_bookings: existingCustomer.total_bookings + 1,
+            updated_at: new Date().toISOString()
+          })
+          .eq("id", existingCustomer.id)
+          .select("id")
+          .single();
+        finalCustomerId = updatedCustomer?.id || existingCustomer.id;
+      } else {
+        const { data: newCustomer } = await adminSupabase
+          .from("customers")
+          .insert({
+            tenant_id: parsed.data.tenant_id,
+            name: parsed.data.customer_name,
+            whatsapp_number: parsed.data.customer_wa,
+            total_bookings: 1
+          })
+          .select("id")
+          .single();
+        finalCustomerId = newCustomer?.id || null;
+      }
+    } catch (e) {
+      console.warn("Gagal update data pelanggan (CRM):", e);
+      // Lanjutkan tanpa memblokir booking
+    }
+    // ── Selesai Logika CRM Pelanggan ──
+
     const { data, error } = await supabase
       .from("bookings")
       .insert({
         tenant_id: parsed.data.tenant_id,
         service_id: parsed.data.service_id,
         staff_id: finalStaffId,
+        customer_id: finalCustomerId,
         customer_name: parsed.data.customer_name,
         customer_wa: parsed.data.customer_wa,
         booking_date: parsed.data.booking_date,
@@ -280,15 +342,22 @@ export async function updateBookingPaymentStatus(
   try {
     const supabase = await createClient();
 
+    // Verifikasi keamanan ganda (Mencegah Data Bleeding / Bypassing RLS)
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      return { success: false, error: "Akses ditolak: Anda tidak memiliki akses untuk tindakan ini." };
+    }
+
     const { data, error } = await supabase
       .from("bookings")
       .update({ payment_status: parsed.data.payment_status })
       .eq("id", parsed.data.booking_id)
+      .eq("tenant_id", user.id) // WAJIB: Validasi bahwa booking milik user yang sedang login
       .select()
       .single();
 
     if (error) {
-      return { success: false, error: "Gagal memperbarui status pembayaran" };
+      return { success: false, error: "Gagal memperbarui status pembayaran (Data tidak ditemukan atau akses ditolak)" };
     }
 
     revalidatePath("/dashboard");

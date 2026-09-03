@@ -3,22 +3,23 @@
 import React, { useState } from "react";
 import { z } from "zod";
 import {
- CheckCircle2,
- AlertCircle,
- ShieldCheck,
- Store,
- Phone,
- User,
- ChevronRight,
- ArrowLeft,
+  CheckCircle2,
+  AlertCircle,
+  WifiOff,
+  Store,
+  Phone,
+  User,
+  ChevronRight,
+  ArrowLeft,
+  CalendarPlus,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
- Card,
- CardHeader,
- CardTitle,
- CardDescription,
- CardContent,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
 } from "@/components/ui/card";
 import { DateSlotPicker } from "./date-slot-picker";
 import { submitBooking } from "@/lib/actions/booking.actions";
@@ -41,12 +42,32 @@ const bookingFormSchema = z.object({
 
 type BookingFormFields = z.infer<typeof bookingFormSchema>;
 type FieldErrors = Partial<Record<keyof BookingFormFields, string>>;
+type SubmitStatus = "idle" | "loading" | "offline" | "success";
+
+const LS_KEY = "maubookingin_pending_booking";
 
 interface BookingFlowProps {
- tenant: Tenant;
- services: Service[];
- staffList?: Staff[];
- dictionary?: BusinessDictionary;
+  tenant: Tenant;
+  services: Service[];
+  staffList?: Staff[];
+  dictionary?: BusinessDictionary;
+}
+
+// ── Utility: Google Calendar link ────────────────────────────────────────────
+function generateGCalLink(details: {
+  serviceName: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+  businessName: string;
+}): string {
+  const toGCalDate = (date: string, time: string) =>
+    `${date.replace(/-/g, "")}T${time.replace(/:/g, "")}00`;
+  const start = toGCalDate(details.date, details.startTime);
+  const end = toGCalDate(details.date, details.endTime);
+  const text = encodeURIComponent(`${details.serviceName} @ ${details.businessName}`);
+  const loc = encodeURIComponent(details.businessName);
+  return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${text}&dates=${start}/${end}&details=${loc}`;
 }
 
 // ── Utility: format IDR ──────────────────────────────────────────────────────
@@ -160,21 +181,24 @@ export function BookingFlow({ tenant, services, staffList = [], dictionary }: Bo
  const [selectedService, setSelectedService] = useState<Service | null>(
  services.length > 0 ? services[0] : null
  );
- const [selectedStaff, setSelectedStaff] = useState<Staff | null>(null);
+  const [selectedStaff, setSelectedStaff] = useState<Staff | null>(
+    staffList.length === 1 ? staffList[0] : null
+  );
  const [selectedDate, setSelectedDate] = useState<string>("");
  const [selectedTime, setSelectedTime] = useState<string>("");
  const [customerName, setCustomerName] = useState("");
  const [customerWa, setCustomerWa] = useState("");
- const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
- const [serverError, setServerError] = useState<string | null>(null);
- const [isSubmitting, setIsSubmitting] = useState(false);
- const [successData, setSuccessData] = useState<{
- bookingId: string;
- service: Service;
- date: string;
- time: string;
- name: string;
- } | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
+  const [serverError, setServerError] = useState<string | null>(null);
+  const [submitStatus, setSubmitStatus] = useState<SubmitStatus>("idle");
+  const [bookingResult, setBookingResult] = useState<{
+    bookingId: string;
+    service: Service;
+    date: string;
+    startTime: string;
+    endTime: string;
+    name: string;
+  } | null>(null);
 
   // ── Theme Mapping ──
   const themeColor = dictionary?.themeColor || (tenant as any).theme_color || "teal";
@@ -203,127 +227,203 @@ export function BookingFlow({ tenant, services, staffList = [], dictionary }: Bo
  setServerError(null);
  };
 
- // ── Submit ───────────────────────────────────────────────────────────────
- const handleSubmit = async (e: React.FormEvent) => {
- e.preventDefault();
- setServerError(null);
+  // ── Submit ───────────────────────────────────────────────────────────────
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setServerError(null);
 
- // Guard: service
- if (!selectedService) {
- setServerError("Pilih layanan yang kamu mau dulu ya.");
- return;
- }
+    // Guard: service
+    if (!selectedService) {
+      setServerError("Pilih layanan yang kamu mau dulu ya.");
+      return;
+    }
+    // Guard: staff (if required)
+    if (staffList.length > 1 && !selectedStaff) {
+      setServerError(`Pilih ${dictionary?.staffLabel?.toLowerCase() || "pegawai"} dulu ya.`);
+      return;
+    }
+    // Guard: slot
+    if (!selectedDate || !selectedTime) {
+      setServerError("Tentukan tanggal dan jam kunjungannya dulu yuk.");
+      return;
+    }
+    // Client-side Zod validation
+    const parsed = bookingFormSchema.safeParse({ customer_name: customerName, customer_wa: customerWa });
+    if (!parsed.success) {
+      const errs: FieldErrors = {};
+      for (const issue of parsed.error.issues) {
+        const field = issue.path[0] as keyof BookingFormFields;
+        errs[field] = issue.message;
+      }
+      setFieldErrors(errs);
+      return;
+    }
 
- // Guard: staff (if required)
- if (staffList.length > 1 && !selectedStaff) {
- setServerError(`Pilih ${dictionary?.staffLabel?.toLowerCase() || "pegawai"} dulu ya.`);
- return;
- }
+    const endTime = calcEndTime(selectedTime, selectedService.duration_minutes);
+    const payload = {
+      tenant_id: tenant.id,
+      service_id: selectedService.id,
+      staff_id: selectedStaff?.id,
+      customer_name: parsed.data.customer_name,
+      customer_wa: parsed.data.customer_wa,
+      booking_date: selectedDate,
+      start_time: selectedTime,
+      end_time: endTime,
+    };
 
- // Guard: slot
- if (!selectedDate || !selectedTime) {
- setServerError("Tentukan tanggal dan jam kunjungannya dulu yuk.");
- return;
- }
+    // ── Offline-first: persist to localStorage before any network call ──
+    try {
+      localStorage.setItem(LS_KEY, JSON.stringify(payload));
+    } catch {
+      // localStorage unavailable — proceed anyway
+    }
 
- // Client-side Zod validation
- const parsed = bookingFormSchema.safeParse({ customer_name: customerName, customer_wa: customerWa });
- if (!parsed.success) {
- const errs: FieldErrors = {};
- for (const issue of parsed.error.issues) {
- const field = issue.path[0] as keyof BookingFormFields;
- errs[field] = issue.message;
- }
- setFieldErrors(errs);
- return;
- }
+    setSubmitStatus("loading");
 
- setIsSubmitting(true);
+    try {
+      const res = await submitBooking(payload);
 
- const endTime = calcEndTime(selectedTime, selectedService.duration_minutes);
- const res = await submitBooking({
- tenant_id: tenant.id,
- service_id: selectedService.id,
- staff_id: selectedStaff?.id,
- customer_name: parsed.data.customer_name,
- customer_wa: parsed.data.customer_wa,
- booking_date: selectedDate,
- start_time: selectedTime,
- end_time: endTime,
- });
+      if (res.success && res.data) {
+        // Clear pending booking from localStorage on success
+        try { localStorage.removeItem(LS_KEY); } catch { /* noop */ }
+        setBookingResult({
+          bookingId: res.data.id,
+          service: selectedService,
+          date: selectedDate,
+          startTime: selectedTime,
+          endTime,
+          name: parsed.data.customer_name,
+        });
+        setSubmitStatus("success");
+      } else {
+        const isDuplicate =
+          res.error?.toLowerCase().includes("unique") ||
+          res.error?.toLowerCase().includes("slot");
+        setServerError(
+          isDuplicate
+            ? "Waduh, slot ini baru aja diambil orang lain. Pilih jam yang lain yuk!"
+            : res.error ?? "Gagal bikin jadwal nih. Coba klik sekali lagi ya."
+        );
+        setSubmitStatus("idle");
+      }
+    } catch (err: unknown) {
+      // Network / connection failure — keep localStorage data intact
+      const isNetworkErr =
+        err instanceof TypeError &&
+        (err.message.includes("fetch") || err.message.includes("network") || err.message.includes("Failed"));
+      if (isNetworkErr) {
+        setSubmitStatus("offline");
+      } else {
+        setServerError("Ups, ada sesuatu yang error. Coba lagi ya.");
+        setSubmitStatus("idle");
+      }
+    }
+  };
 
- setIsSubmitting(false);
+  // ── Success State ────────────────────────────────────────────────────────
+  if (submitStatus === "success" && bookingResult) {
+    const { service, date, startTime, endTime, name } = bookingResult;
+    const gcalUrl = generateGCalLink({
+      serviceName: service.name,
+      date,
+      startTime,
+      endTime,
+      businessName: tenant.business_name,
+    });
+    return (
+      <div className="space-y-4">
+        {/* Header sukses */}
+        <div className={`px-6 pt-10 pb-6 rounded-3xl bg-gradient-to-b ${t.gradient} to-white shadow-sm shadow-stone-200/60`}>
+          <div className="flex items-start gap-4">
+            {/* Ikon besar – asimetri: kiri */}
+            <div className="flex-shrink-0 mt-1">
+              <div className="w-14 h-14 rounded-2xl bg-emerald-50 flex items-center justify-center">
+                <CheckCircle2 className="w-8 h-8 text-emerald-600" strokeWidth={1.75} />
+              </div>
+            </div>
+            {/* Teks – rata kiri */}
+            <div>
+              <p className="text-xs font-semibold text-emerald-600 uppercase tracking-widest mb-1">Booking Berhasil</p>
+              <h2 className="text-xl font-bold text-stone-900 leading-snug">
+                Jadwal kamu udah<br />aman dikunci!
+              </h2>
+              <p className="text-sm text-stone-500 mt-1.5">
+                Admin bakal chat kamu di WhatsApp buat konfirmasi.
+              </p>
+            </div>
+          </div>
+        </div>
 
- if (res.success && res.data) {
- setSuccessData({
- bookingId: res.data.id,
- service: selectedService,
- date: selectedDate,
- time: selectedTime,
- name: parsed.data.customer_name,
- });
- } else {
- // Handle unique constraint violation (double-booking race)
- const isDuplicate =
- res.error?.toLowerCase().includes("unique") ||
- res.error?.toLowerCase().includes("slot");
- setServerError(
- isDuplicate
- ? "Slot ini baru saja dipesan oleh pelanggan lain. Silakan pilih jam lain."
- : res.error ?? "Gagal bikin jadwal nih. Coba klik sekali lagi ya."
- );
- }
- };
+        {/* Ringkasan booking */}
+        <Card className="border-none shadow-sm shadow-stone-200/60 rounded-3xl bg-white overflow-hidden">
+          <CardContent className="pt-4 divide-y divide-stone-50">
+            {[
+              { label: dictionary?.serviceLabel || "Layanan", value: service.name },
+              {
+                label: "Tanggal",
+                value: new Date(date).toLocaleDateString("id-ID", {
+                  weekday: "long",
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric",
+                }),
+              },
+              { label: "Jam", value: `${startTime} – ${endTime} WIB` },
+              { label: "Nama Pemesan", value: name },
+            ].map(({ label, value }) => (
+              <div key={label} className="flex justify-between items-baseline py-3 gap-3">
+                <span className="text-sm text-stone-400 flex-shrink-0">{label}</span>
+                <span className="text-sm font-semibold text-stone-800 text-right">{value}</span>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
 
- // ── Success State ────────────────────────────────────────────────────────
- if (successData) {
- const { service, date, time, name } = successData;
- return (
- <Card className={`text-center py-10 px-6 border-stone-100 bg-gradient-to-b ${t.gradient} to-white `}>
- <div className={`w-16 h-16 ${t.bgStep} rounded-full flex items-center justify-center mx-auto mb-4`}>
- <CheckCircle2 className={`w-9 h-9 ${t.textPrimary}`} />
- </div>
- <CardTitle className="text-xl font-bold text-stone-900 ">
- Yay! Jadwal Kamu Udah Dikunci 🔒
- </CardTitle>
- <p className="text-stone-500 mb-8 max-w-sm mx-auto">
- Tunggu sebentar ya, admin outlet bakal chat kamu di WhatsApp buat konfirmasi.
- </p>
+        {/* Tombol kalender */}
+        <a
+          href={gcalUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-2xl bg-stone-100 hover:bg-stone-200 text-stone-600 hover:text-stone-800 font-semibold text-sm transition-colors"
+          aria-label="Simpan ke Google Calendar"
+        >
+          <CalendarPlus className="w-4 h-4 flex-shrink-0" />
+          Simpan ke Kalender HP (Pengingat)
+        </a>
 
- <div className="mt-5 p-4 rounded-2xl bg-white border border-stone-200 max-w-sm mx-auto text-left text-sm divide-y divide-stone-100 ">
- {[
- { label: dictionary?.serviceLabel || "Layanan", value: service.name },
- { label: "Tanggal", value: new Date(date).toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" }) },
- { label: "Jam Mulai", value: `${time} WIB` },
- { label: "Durasi", value: `${service.duration_minutes} menit` },
- { label: "Nama Pemesan", value: name },
- ].map(({ label, value }) => (
- <div key={label} className="flex justify-between items-center py-2.5 gap-2">
- <span className="text-stone-400 flex-shrink-0">{label}</span>
- <span className="font-semibold text-right text-stone-800 ">{value}</span>
- </div>
- ))}
- </div>
 
- <Button
- className="mt-6 gap-1"
- variant="outline"
- onClick={() => {
- setSuccessData(null);
- setSelectedDate("");
- setSelectedTime("");
- setSelectedStaff(null);
- setCustomerName("");
- setCustomerWa("");
- setFieldErrors({});
- }}
- >
- <ArrowLeft className="w-3.5 h-3.5" />
- Bikin Jadwal Lagi
- </Button>
- </Card>
- );
- }
+
+        {/* Cek Status / Portal Pelanggan */}
+        <a
+          href={`/booking/manage/${bookingResult.bookingId}`}
+          className={`flex justify-center items-center gap-2 w-full px-4 py-3.5 rounded-2xl ${t.bgPrimary} ${t.bgPrimaryHover} text-white font-bold text-sm shadow-xl ${t.shadowBtn} transition-colors mt-3`}
+        >
+          Lihat Status & Riwayat Kunjungan
+          <ChevronRight className="w-4 h-4" />
+        </a>
+
+        {/* Reset */}
+        <Button
+          variant="outline"
+          className="w-full gap-1.5 text-stone-500 border-stone-200 hover:bg-stone-50 mt-3"
+          onClick={() => {
+            setBookingResult(null);
+            setSubmitStatus("idle");
+            setSelectedDate("");
+            setSelectedTime("");
+            setSelectedStaff(null);
+            setCustomerName("");
+            setCustomerWa("");
+            setFieldErrors({});
+            setServerError(null);
+          }}
+        >
+          <ArrowLeft className="w-3.5 h-3.5" />
+          Bikin Jadwal Lagi
+        </Button>
+      </div>
+    );
+  }
 
   if (services.length === 0) {
     return (
@@ -443,6 +543,7 @@ export function BookingFlow({ tenant, services, staffList = [], dictionary }: Bo
  openTime={(tenant as any).open_time || "09:00"}
  closeTime={(tenant as any).close_time || "21:00"}
  staffId={selectedStaff?.id} // pass staffId down
+ maxCapacity={Math.max(1, staffList.length)}
  onSelectSlot={handleSlotSelection}
  selectedDate={selectedDate}
  selectedTime={selectedTime}
@@ -566,24 +667,53 @@ export function BookingFlow({ tenant, services, staffList = [], dictionary }: Bo
  </div>
  )}
 
- {/* Submit */}
- <div className="sticky bottom-3 z-10 pt-1">
- <Button
- type="submit"
- form="booking-form"
- size="lg"
- className={`w-full ${t.bgPrimary} ${t.bgPrimaryHover} text-white font-bold shadow-xl ${t.shadowBtn} gap-2`}
- isLoading={isSubmitting}
- disabled={!selectedService || (staffList.length > 1 && !selectedStaff) || !selectedDate || !selectedTime}
- >
- {!isSubmitting && <ChevronRight className="w-4 h-4" />}
- Kunci Slot Sekarang
- </Button>
- <div className="flex items-center justify-center gap-1.5 mt-3 text-xs text-stone-400 font-medium pb-4">
- <CheckCircle2 className="w-3.5 h-3.5" />
- <span>Anti double-booking • Langsung dikunci otomatis</span>
- </div>
- </div>
+  {/* Submit */}
+  <div className="sticky bottom-3 z-10 pt-1">
+    {/* Offline warning */}
+    {submitStatus === "offline" && (
+      <div
+        role="alert"
+        className="mb-3 p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-sm flex items-start gap-2"
+      >
+        <WifiOff className="w-4 h-4 shrink-0 mt-0.5" />
+        <span>Koneksi kamu lagi putus nih. Data booking sudah disimpan, tinggal klik lagi setelah online ya.</span>
+      </div>
+    )}
+    <Button
+      type="submit"
+      form="booking-form"
+      size="lg"
+      className={`w-full ${
+        submitStatus === "offline"
+          ? "bg-amber-500 hover:bg-amber-600 shadow-amber-500/30"
+          : `${t.bgPrimary} ${t.bgPrimaryHover} ${t.shadowBtn}`
+      } text-white font-bold shadow-xl gap-2 transition-colors`}
+      isLoading={submitStatus === "loading"}
+      disabled={
+        !selectedService ||
+        (staffList.length > 1 && !selectedStaff) ||
+        !selectedDate ||
+        !selectedTime ||
+        submitStatus === "loading"
+      }
+    >
+      {submitStatus === "offline" ? (
+        <>
+          <WifiOff className="w-4 h-4" />
+          Koneksi Terputus — Ketuk untuk Coba Lagi
+        </>
+      ) : (
+        <>
+          {submitStatus !== "loading" && <ChevronRight className="w-4 h-4" />}
+          Kunci Slot Sekarang
+        </>
+      )}
+    </Button>
+    <div className="flex items-center justify-center gap-1.5 mt-3 text-xs text-stone-400 font-medium pb-4">
+      <CheckCircle2 className="w-3.5 h-3.5" />
+      <span>Anti double-booking • Langsung dikunci otomatis</span>
+    </div>
+  </div>
  </form>
  );
 }

@@ -24,6 +24,10 @@ export interface Database {
           theme_color: string;
           open_time: string;
           close_time: string;
+          payment_method_type: string;
+          payment_gateway_provider: string | null;
+          payment_gateway_server_key: string | null;
+          payment_gateway_client_key: string | null;
           created_at: string;
         };
         Insert: {
@@ -38,6 +42,10 @@ export interface Database {
           theme_color?: string;
           open_time?: string;
           close_time?: string;
+          payment_method_type?: string;
+          payment_gateway_provider?: string | null;
+          payment_gateway_server_key?: string | null;
+          payment_gateway_client_key?: string | null;
           created_at?: string;
         };
         Update: {
@@ -52,6 +60,10 @@ export interface Database {
           theme_color?: string;
           open_time?: string;
           close_time?: string;
+          payment_method_type?: string;
+          payment_gateway_provider?: string | null;
+          payment_gateway_server_key?: string | null;
+          payment_gateway_client_key?: string | null;
           created_at?: string;
         };
         Relationships: [];
@@ -62,6 +74,7 @@ export interface Database {
           tenant_id: string;
           name: string;
           duration_minutes: number;
+          buffer_minutes: number;
           price: number;
           dp_amount: number;
         };
@@ -70,6 +83,7 @@ export interface Database {
           tenant_id: string;
           name: string;
           duration_minutes: number;
+          buffer_minutes?: number;
           price: number;
           dp_amount?: number;
         };
@@ -78,6 +92,7 @@ export interface Database {
           tenant_id?: string;
           name?: string;
           duration_minutes?: number;
+          buffer_minutes?: number;
           price?: number;
           dp_amount?: number;
         };
@@ -120,12 +135,51 @@ export interface Database {
           }
         ];
       };
+      customers: {
+        Row: {
+          id: string;
+          tenant_id: string;
+          name: string;
+          whatsapp_number: string;
+          total_bookings: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          tenant_id: string;
+          name: string;
+          whatsapp_number: string;
+          total_bookings?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          tenant_id?: string;
+          name?: string;
+          whatsapp_number?: string;
+          total_bookings?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "customers_tenant_id_fkey";
+            columns: ["tenant_id"];
+            isOneToOne: false;
+            referencedRelation: "tenants";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
       bookings: {
         Row: {
           id: string;
           tenant_id: string;
           service_id: string;
           staff_id: string | null;
+          customer_id: string | null;
           customer_name: string;
           customer_wa: string;
           booking_date: string;
@@ -133,6 +187,7 @@ export interface Database {
           end_time: string;
           payment_status: PaymentStatus;
           proof_url: string | null;
+          is_reminder_sent: boolean;
           created_at: string;
         };
         Insert: {
@@ -140,6 +195,7 @@ export interface Database {
           tenant_id: string;
           service_id: string;
           staff_id?: string | null;
+          customer_id?: string | null;
           customer_name: string;
           customer_wa: string;
           booking_date: string;
@@ -147,6 +203,7 @@ export interface Database {
           end_time: string;
           payment_status?: PaymentStatus;
           proof_url?: string | null;
+          is_reminder_sent?: boolean;
           created_at?: string;
         };
         Update: {
@@ -154,6 +211,7 @@ export interface Database {
           tenant_id?: string;
           service_id?: string;
           staff_id?: string | null;
+          customer_id?: string | null;
           customer_name?: string;
           customer_wa?: string;
           booking_date?: string;
@@ -161,6 +219,7 @@ export interface Database {
           end_time?: string;
           payment_status?: PaymentStatus;
           proof_url?: string | null;
+          is_reminder_sent?: boolean;
           created_at?: string;
         };
         Relationships: [
@@ -183,6 +242,13 @@ export interface Database {
             columns: ["staff_id"];
             isOneToOne: false;
             referencedRelation: "staff";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "bookings_customer_id_fkey";
+            columns: ["customer_id"];
+            isOneToOne: false;
+            referencedRelation: "customers";
             referencedColumns: ["id"];
           }
         ];
@@ -207,7 +273,9 @@ export type Tenant = Database["public"]["Tables"]["tenants"]["Row"];
 export type Service = Database["public"]["Tables"]["services"]["Row"];
 export type Staff = Database["public"]["Tables"]["staff"]["Row"];
 export type Booking = Database["public"]["Tables"]["bookings"]["Row"];
+export type Customer = Database["public"]["Tables"]["customers"]["Row"];
 export type TenantInsert = Database["public"]["Tables"]["tenants"]["Insert"];
 export type ServiceInsert = Database["public"]["Tables"]["services"]["Insert"];
 export type StaffInsert = Database["public"]["Tables"]["staff"]["Insert"];
 export type BookingInsert = Database["public"]["Tables"]["bookings"]["Insert"];
+export type CustomerInsert = Database["public"]["Tables"]["customers"]["Insert"];

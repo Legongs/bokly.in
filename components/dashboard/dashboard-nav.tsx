@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { CalendarDays, Scissors, Settings, BarChart3, Users } from "lucide-react";
+import { CalendarDays, Scissors, Settings, BarChart3, Users, Contact } from "lucide-react";
 
 interface DashboardNavProps {
   children: React.ReactNode;
@@ -34,6 +34,11 @@ export function DashboardNav({ children, serviceLabel, staffLabel }: DashboardNa
       label: staffLabel,
       href: "/dashboard/staff",
       icon: Users,
+    },
+    {
+      label: "Pelanggan",
+      href: "/dashboard/customers",
+      icon: Contact,
     },
     {
       label: "Pengaturan",

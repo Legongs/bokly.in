@@ -15,6 +15,7 @@ const serviceSchema = z.object({
   duration_minutes: z.coerce.number().min(5, "Pengerjaan paling bentar 5 menit ya.").max(1440, "Maksimal 24 jam dong."),
   price: z.coerce.number().min(0, "Harganya nggak boleh minus ya."),
   dp_amount: z.coerce.number().min(0, "DP-nya nggak boleh minus juga.").default(0),
+  buffer_minutes: z.coerce.number().min(0, "Waktu jeda nggak boleh minus.").default(0),
 });
 
 type ServiceFormFields = z.infer<typeof serviceSchema>;
@@ -36,6 +37,7 @@ export function ServiceForm({ initialData, onSuccess, onCancel, dictionary }: Se
  duration_minutes: initialData?.duration_minutes ?? 30,
  price: initialData?.price ?? 0,
  dp_amount: initialData?.dp_amount ?? 0,
+ buffer_minutes: initialData?.buffer_minutes ?? 0,
  });
 
  const [fieldErrors, setFieldErrors] = useState<Partial<Record<keyof ServiceFormFields, string>>>({});
@@ -144,6 +146,30 @@ export function ServiceForm({ initialData, onSuccess, onCancel, dictionary }: Se
 
  <div className="space-y-1.5">
  <label className="text-sm font-semibold text-stone-700 ">
+ Waktu Jeda (Buffer)
+ </label>
+ <div className="relative">
+ <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400 pointer-events-none" />
+ <input
+ type="number"
+ min="0"
+ value={form.buffer_minutes === 0 ? "" : form.buffer_minutes}
+ onChange={(e) => updateForm("buffer_minutes", Number(e.target.value))}
+ onBlur={(e) => validateField("buffer_minutes", Number(e.target.value))}
+ placeholder="0 (opsional)"
+ className={`w-full pl-10 pr-12 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 caret-teal-600 focus:outline-none focus:ring-4 focus:ring-teal-500/20 transition-all shadow-inner ${
+ fieldErrors.buffer_minutes ? "ring-2 ring-rose-400 bg-rose-50" : ""
+ }`}
+ disabled={isPending}
+ />
+ <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-stone-500 pointer-events-none">Menit</span>
+ </div>
+ {fieldErrors.buffer_minutes && <p className="text-xs text-rose-500 font-medium">{fieldErrors.buffer_minutes}</p>}
+ </div>
+ </div>
+
+ <div className="space-y-1.5">
+ <label className="text-sm font-semibold text-stone-700 ">
  Harga Total (Rp)
  </label>
  <div className="relative">
@@ -168,7 +194,6 @@ export function ServiceForm({ initialData, onSuccess, onCancel, dictionary }: Se
  />
  </div>
  {fieldErrors.price && <p className="text-xs text-rose-500 font-medium">{fieldErrors.price}</p>}
- </div>
  </div>
 
  <div className="space-y-1.5">

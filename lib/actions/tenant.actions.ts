@@ -111,6 +111,10 @@ const updateTenantSettingsSchema = z.object({
   theme_color: z.enum(["teal", "rose", "orange", "violet", "blue"]).default("teal"),
   open_time: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Format jam buka harus HH:MM (contoh: 09:00)").default("09:00"),
   close_time: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Format jam tutup harus HH:MM (contoh: 21:00)").default("21:00"),
+  payment_method_type: z.enum(["manual", "gateway"]).default("manual"),
+  payment_gateway_provider: z.enum(["midtrans", "xendit"]).nullable().optional(),
+  payment_gateway_server_key: z.string().nullable().optional(),
+  payment_gateway_client_key: z.string().nullable().optional(),
 });
 
 type UpdateTenantSettingsInput = z.infer<typeof updateTenantSettingsSchema>;
@@ -126,6 +130,12 @@ export async function updateTenantSettings(
   try {
     const supabase = await createClient();
 
+    // Verifikasi keamanan ganda (Mencegah Data Bleeding / Bypassing RLS)
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user || user.id !== parsed.data.id) {
+      return { success: false, error: "Akses ditolak: Anda tidak memiliki akses untuk memperbarui pengaturan tenant ini." };
+    }
+
     // Jika qris_image_url berupa string kosong, ubah jadi null
     const finalQris = parsed.data.qris_image_url === "" ? null : parsed.data.qris_image_url;
 
@@ -140,8 +150,12 @@ export async function updateTenantSettings(
         theme_color: parsed.data.theme_color,
         open_time: parsed.data.open_time,
         close_time: parsed.data.close_time,
+        payment_method_type: parsed.data.payment_method_type,
+        payment_gateway_provider: parsed.data.payment_gateway_provider || null,
+        payment_gateway_server_key: parsed.data.payment_gateway_server_key || null,
+        payment_gateway_client_key: parsed.data.payment_gateway_client_key || null,
       })
-      .eq("id", parsed.data.id)
+      .eq("id", parsed.data.id) // Aman karena user.id sudah divalidasi sama dengan parsed.data.id
       .select()
       .single();
 

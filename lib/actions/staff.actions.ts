@@ -92,17 +92,24 @@ export async function updateStaff(payload: StaffPayload): Promise<ActionResponse
 
   try {
     const supabase = await createClient();
+    
+    const { data: authData, error: authError } = await supabase.auth.getUser();
+    if (authError || !authData.user) {
+      return { success: false, error: "Tidak memiliki akses (Unauthenticated)" };
+    }
+
     const { data, error } = await supabase
       .from("staff")
       .update({
         name: parsed.data.name,
       })
       .eq("id", parsed.data.id)
+      .eq("tenant_id", authData.user.id) // WAJIB: Validasi kepemilikan data
       .select()
       .single();
 
     if (error) {
-      return { success: false, error: "Gagal memperbarui pegawai" };
+      return { success: false, error: "Gagal memperbarui pegawai (Data tidak ditemukan atau akses ditolak)" };
     }
 
     revalidatePath("/dashboard/staff");
@@ -117,13 +124,20 @@ export async function updateStaff(payload: StaffPayload): Promise<ActionResponse
 export async function deleteStaff(id: string): Promise<ActionResponse<boolean>> {
   try {
     const supabase = await createClient();
+    
+    const { data: authData, error: authError } = await supabase.auth.getUser();
+    if (authError || !authData.user) {
+      return { success: false, error: "Tidak memiliki akses (Unauthenticated)" };
+    }
+
     const { error } = await supabase
       .from("staff")
       .delete()
-      .eq("id", id);
+      .eq("id", id)
+      .eq("tenant_id", authData.user.id); // WAJIB: Validasi kepemilikan data
 
     if (error) {
-      return { success: false, error: "Gagal menghapus pegawai" };
+      return { success: false, error: "Gagal menghapus pegawai (Akses ditolak)" };
     }
 
     revalidatePath("/dashboard/staff");

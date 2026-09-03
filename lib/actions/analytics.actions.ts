@@ -1,36 +1,38 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { z } from "zod";
+import { format, subDays, startOfDay, endOfDay, isSameDay } from "date-fns";
+import { ActionResponse } from "./tenant.actions";
 
-export type TopService = {
-  id: string;
-  name: string;
-  count: number;
-};
-
-export type PeakHour = {
-  hour: string;
-  count: number;
-};
-
-export type TenantAnalytics = {
+export interface DashboardMetrics {
   totalRevenue: number;
   totalBookings: number;
-  topServices: TopService[];
-  peakHours: PeakHour[];
-  smartSuggestion: string | null;
-};
+  completedBookings: number;
+  cancelledBookings: number;
+  recentTrend: { date: string; value: number }[]; // 30 days
+  topServices: { id: string; name: string; bookings: number; revenue: number }[];
+}
 
-export async function getTenantAnalytics(tenantId: string): Promise<{ success: boolean; data?: TenantAnalytics; error?: string }> {
+export async function getTenantAnalytics(tenantId: string): Promise<ActionResponse<DashboardMetrics>> {
   try {
     const supabase = await createClient();
 
-    // Ambil semua booking dengan status approved beserta relasi services-nya
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user || user.id !== tenantId) {
+      return { success: false, error: "Akses ditolak." };
+    }
+
+    // We fetch bookings for the last 30 days
+    const endDate = endOfDay(new Date());
+    const startDate = startOfDay(subDays(endDate, 29));
+
     const { data: bookings, error } = await supabase
       .from("bookings")
       .select(`
         id,
-        start_time,
+        booking_date,
+        status,
         services (
           id,
           name,
@@ -38,90 +40,73 @@ export async function getTenantAnalytics(tenantId: string): Promise<{ success: b
         )
       `)
       .eq("tenant_id", tenantId)
-      .eq("payment_status", "approved");
+      .gte("booking_date", format(startDate, "yyyy-MM-dd"))
+      .lte("booking_date", format(endDate, "yyyy-MM-dd"));
 
     if (error) {
-      console.error("Error fetching analytics:", error);
-      return { success: false, error: "Gagal mengambil data analitik dari database." };
-    }
-
-    if (!bookings || bookings.length === 0) {
-      return {
-        success: true,
-        data: {
-          totalRevenue: 0,
-          totalBookings: 0,
-          topServices: [],
-          peakHours: [],
-          smartSuggestion: "Belum ada jadwal yang disetujui nih. Yuk, promosiin link booking kamu biar mulai dapet pelanggan!",
-        },
-      };
+      return { success: false, error: "Gagal mengambil data analitik." };
     }
 
     let totalRevenue = 0;
-    const totalBookings = bookings.length;
+    let completedBookings = 0;
+    let cancelledBookings = 0;
 
-    const serviceCounts: Record<string, { name: string; count: number }> = {};
-    const hourCounts: Record<string, number> = {};
+    const trendMap = new Map<string, number>();
+    for (let i = 29; i >= 0; i--) {
+      trendMap.set(format(subDays(endDate, i), "yyyy-MM-dd"), 0);
+    }
 
-    bookings.forEach((booking: any) => {
-      // Hitung Revenue (Asumsi services terhubung)
-      const service = booking.services;
-      if (service) {
-        totalRevenue += Number(service.price) || 0;
-        
-        // Hitung Layanan Terlaris
-        if (!serviceCounts[service.id]) {
-          serviceCounts[service.id] = { name: service.name, count: 0 };
-        }
-        serviceCounts[service.id].count += 1;
+    const serviceStats = new Map<string, { name: string; bookings: number; revenue: number }>();
+
+    (bookings || []).forEach((b: any) => {
+      const dateKey = b.booking_date;
+      const price = Number(b.services?.price || 0);
+      const isCompleted = b.status === "completed" || b.status === "confirmed";
+
+      if (b.status === "cancelled") {
+        cancelledBookings++;
       }
 
-      // Hitung Jam Ramai
-      if (booking.start_time) {
-        const hour = booking.start_time.slice(0, 5); // "HH:MM"
-        hourCounts[hour] = (hourCounts[hour] || 0) + 1;
+      if (isCompleted) {
+        totalRevenue += price;
+        completedBookings++;
+        
+        // Update trend
+        if (trendMap.has(dateKey)) {
+          trendMap.set(dateKey, (trendMap.get(dateKey) || 0) + price);
+        }
+
+        // Update services
+        if (b.services) {
+          const svcId = b.services.id;
+          if (!serviceStats.has(svcId)) {
+            serviceStats.set(svcId, { name: b.services.name, bookings: 0, revenue: 0 });
+          }
+          const stat = serviceStats.get(svcId)!;
+          stat.bookings += 1;
+          stat.revenue += price;
+        }
       }
     });
 
-    // Urutkan Layanan
-    const topServices: TopService[] = Object.keys(serviceCounts)
-      .map((id) => ({
-        id,
-        name: serviceCounts[id].name,
-        count: serviceCounts[id].count,
-      }))
-      .sort((a, b) => b.count - a.count)
-      .slice(0, 5); // Ambil Top 5
-
-    // Urutkan Jam Ramai
-    const peakHours: PeakHour[] = Object.keys(hourCounts)
-      .map((hour) => ({
-        hour,
-        count: hourCounts[hour],
-      }))
-      .sort((a, b) => b.count - a.count)
-      .slice(0, 5); // Ambil Top 5
-
-    // Buat Smart Suggestion
-    let smartSuggestion = null;
-    if (peakHours.length > 0) {
-      const topHour = peakHours[0].hour;
-      smartSuggestion = `Jam ${topHour} paling sering dibooking nih. Pertimbangkan buat nambah staf ekstra di jam sibuk ini, atau bikin promosi khusus di jam sepi biar pendapatan makin merata!`;
-    }
+    const recentTrend = Array.from(trendMap.entries()).map(([date, value]) => ({ date, value }));
+    const topServices = Array.from(serviceStats.entries())
+      .map(([id, stat]) => ({ id, ...stat }))
+      .sort((a, b) => b.revenue - a.revenue)
+      .slice(0, 5); // top 5
 
     return {
       success: true,
       data: {
         totalRevenue,
-        totalBookings,
+        totalBookings: (bookings || []).length,
+        completedBookings,
+        cancelledBookings,
+        recentTrend,
         topServices,
-        peakHours,
-        smartSuggestion,
-      },
+      }
     };
   } catch (err) {
-    console.error("Exception in getTenantAnalytics:", err);
-    return { success: false, error: "Terjadi kesalahan internal saat menghitung analitik." };
+    return { success: false, error: "Gagal memproses data analitik." };
   }
 }

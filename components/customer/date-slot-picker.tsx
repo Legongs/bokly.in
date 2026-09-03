@@ -15,7 +15,10 @@ interface DateSlotPickerProps {
  selectedDate?: string;
  selectedTime?: string;
  staffId?: string;
+ maxCapacity?: number;
 }
+
+type BookedSlot = { start_time: string; end_time: string; buffer_minutes: number; staff_id: string | null };
 
 export function DateSlotPicker({
  tenantId,
@@ -26,6 +29,7 @@ export function DateSlotPicker({
  selectedDate: externalDate,
  selectedTime: externalTime,
  staffId,
+ maxCapacity = 1,
 }: DateSlotPickerProps) {
  // Generate time slots dynamically based on openTime and closeTime
  const TIME_SLOTS = React.useMemo(() => {
@@ -64,7 +68,7 @@ export function DateSlotPicker({
  externalDate || availableDays[0].dateString
  );
  const [activeTime, setActiveTime] = useState<string>(externalTime || "");
- const [bookedSlots, setBookedSlots] = useState<string[]>([]);
+ const [bookedSlots, setBookedSlots] = useState<BookedSlot[]>([]);
  const [isPending, startTransition] = useTransition();
 
  // Fetch booked slots whenever date or tenantId changes
@@ -90,16 +94,40 @@ export function DateSlotPicker({
 
  /**
  * A slot is unavailable if:
- * 1. Already booked by another customer
+ * 1. Already booked by another customer (overlapping)
  * 2. Service duration would cause end_time to exceed closeTime
  */
  const isSlotUnavailable = (time: string): boolean => {
- if (bookedSlots.includes(time)) return true;
- const [h, m] = time.split(":").map(Number);
- const endMinutes = h * 60 + m + serviceDurationMinutes;
- const [closeH, closeM] = closeTime.split(":").map(Number);
- const closeTotalMinutes = closeH * 60 + closeM;
- return endMinutes > closeTotalMinutes;
+   const [h, m] = time.split(":").map(Number);
+   const tStart = h * 60 + m;
+   const tEnd = tStart + serviceDurationMinutes;
+
+   const [closeH, closeM] = closeTime.split(":").map(Number);
+   const closeTotalMinutes = closeH * 60 + closeM;
+   if (tEnd > closeTotalMinutes) return true;
+
+   // Check overlaps
+   let overlappingCount = 0;
+   for (const b of bookedSlots) {
+     const [bStartH, bStartM] = b.start_time.split(":").map(Number);
+     const [bEndH, bEndM] = b.end_time.split(":").map(Number);
+     const bStart = bStartH * 60 + bStartM;
+     const bEnd = bEndH * 60 + bEndM + b.buffer_minutes;
+
+     if (tStart < bEnd && tEnd > bStart) {
+       if (staffId) {
+         if (b.staff_id === staffId || !b.staff_id) return true;
+       } else {
+         overlappingCount++;
+       }
+     }
+   }
+
+   if (!staffId && overlappingCount >= maxCapacity) {
+     return true;
+   }
+
+   return false;
  };
 
  return (
@@ -186,7 +214,6 @@ export function DateSlotPicker({
  <div className={cn("grid grid-cols-3 sm:grid-cols-4 gap-2 transition-opacity", isPending && "opacity-50 pointer-events-none")}>
  {TIME_SLOTS.map((time) => {
  const unavailable = isSlotUnavailable(time);
- const isBooked = bookedSlots.includes(time);
  const isSelected = activeTime === time;
 
  return (
@@ -195,7 +222,7 @@ export function DateSlotPicker({
  type="button"
  disabled={unavailable}
  onClick={() => handleTimeSelect(time)}
- title={isBooked ? "Slot ini sudah dipesan" : undefined}
+ title={unavailable ? "Slot ini tidak tersedia" : undefined}
  className={cn(
  "py-2.5 px-2 rounded-xl text-sm font-medium border text-center transition-all duration-150 relative",
  unavailable
@@ -205,12 +232,12 @@ export function DateSlotPicker({
  : "border-stone-200 bg-white hover:border-teal-500 hover:bg-teal-50/40 :bg-teal-950/20 text-stone-800 active:scale-95"
  )}
  >
- {isBooked && (
- <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
+ {unavailable && (
+ <span className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-40">
  <span className="w-full h-[1.5px] bg-stone-300 absolute rotate-[-15deg]" />
  </span>
  )}
- <span className={cn(isBooked && "opacity-40")}>{time}</span>
+ <span className={cn(unavailable && "opacity-40")}>{time}</span>
  </button>
  );
  })}

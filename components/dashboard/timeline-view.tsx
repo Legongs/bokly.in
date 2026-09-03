@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useTransition } from "react";
-import { CheckCircle2, XCircle, Clock, Phone, Loader2, User } from "lucide-react";
-import { updateBookingStatus } from "@/lib/actions/dashboard.actions";
+import { CheckCircle2, XCircle, Clock, Phone, Loader2, User, Send, Check } from "lucide-react";
+import { updateBookingStatus, markReminderSent } from "@/lib/actions/dashboard.actions";
 import type { Booking } from "@/types/database.types";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -118,7 +118,45 @@ function BookingCard({ booking }: { booking: BookingWithService }) {
  </Button>
  </div>
  )}
- </div>
+  {booking.payment_status === "approved" && (
+    <div className="flex justify-end mt-2">
+      {booking.is_reminder_sent ? (
+        <Badge variant="outline" className="text-stone-500 border-stone-200 bg-stone-50 flex items-center gap-1">
+          <Check className="w-3 h-3" />
+          Pengingat Terkirim
+        </Badge>
+      ) : (
+        <Button
+          size="sm"
+          variant="outline"
+          className="border-green-200 bg-green-50 text-green-700 hover:bg-green-100 hover:text-green-800 rounded-xl transition-all"
+          onClick={() => {
+            // Teks Template
+            const waNumber = booking.customer_wa.replace(/^0/, "62");
+            const text = `Halo ${booking.customer_name},\n\nMengingatkan jadwal booking Anda untuk layanan *${booking.service_name}* pada tanggal *${booking.booking_date}* jam *${booking.start_time.slice(0, 5)}*.\n\nMohon hadir tepat waktu ya! Terima kasih.`;
+            const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(text)}`;
+            
+            // Buka tab WA
+            window.open(waUrl, "_blank", "noopener,noreferrer");
+            
+            // Tandai sudah dikirim
+            startTransition(async () => {
+              await markReminderSent(booking.id);
+            });
+          }}
+          disabled={isPending}
+        >
+          {isPending ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : (
+            <Send className="w-3.5 h-3.5 mr-1.5" />
+          )}
+          Kirim Pengingat WA
+        </Button>
+      )}
+    </div>
+  )}
+  </div>
  </div>
  </CardContent>
  </Card>

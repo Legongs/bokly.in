@@ -4,6 +4,7 @@ import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createClient as createAdminClient } from "@supabase/supabase-js";
+import { checkRateLimit } from "@/lib/rate-limit";
 import type { ActionResponse } from "./tenant.actions";
 
 // ── Schemas (Tone of Voice: Kasual & Ramah) ───────────────────────────────────
@@ -58,6 +59,12 @@ export async function login(payload: unknown): Promise<ActionResponse<any>> {
     return { success: false, error: parsed.error.issues[0]?.message ?? "Data kurang pas nih." };
   }
 
+  // Rate Limiting: Max 5 attempts per 5 minutes per email
+  const rateLimitKey = `login_${parsed.data.email}`;
+  if (!checkRateLimit(rateLimitKey, 5, 300_000)) {
+    return { success: false, error: "Terlalu banyak percobaan login. Tunggu 5 menit lagi ya." };
+  }
+
   try {
     const supabase = await createClient();
     const { data, error } = await supabase.auth.signInWithPassword({
@@ -88,6 +95,12 @@ export async function register(payload: unknown): Promise<ActionResponse<any>> {
   }
 
   const { email, password, business_name, business_type, whatsapp_number, slug } = parsed.data;
+
+  // Rate Limiting: Max 3 attempts per 10 minutes per email
+  const rateLimitKey = `register_${email}`;
+  if (!checkRateLimit(rateLimitKey, 3, 600_000)) {
+    return { success: false, error: "Tunggu sebentar ya sebelum mencoba daftar lagi." };
+  }
 
   try {
     const supabase = await createClient();
