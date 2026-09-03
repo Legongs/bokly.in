@@ -16,6 +16,8 @@ interface DateSlotPickerProps {
  selectedTime?: string;
  staffId?: string;
  maxCapacity?: number;
+ weeklySchedule?: any;
+ minimumNoticeHours?: number;
 }
 
 type BookedSlot = { start_time: string; end_time: string; buffer_minutes: number; staff_id: string | null };
@@ -30,25 +32,9 @@ export function DateSlotPicker({
  selectedTime: externalTime,
  staffId,
  maxCapacity = 1,
+ weeklySchedule,
+ minimumNoticeHours = 1,
 }: DateSlotPickerProps) {
- // Generate time slots dynamically based on openTime and closeTime
- const TIME_SLOTS = React.useMemo(() => {
-   const slots = [];
-   const [startH, startM] = openTime.split(":").map(Number);
-   const [endH, endM] = closeTime.split(":").map(Number);
-   
-   let currentMinutes = startH * 60 + startM;
-   const closingMinutes = endH * 60 + endM;
-
-   while (currentMinutes <= closingMinutes) {
-     const h = Math.floor(currentMinutes / 60);
-     const m = currentMinutes % 60;
-     slots.push(`${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`);
-     currentMinutes += 60; // Step 1 jam
-   }
-   return slots;
- }, [openTime, closeTime]);
-
  // Generate 14 days from today
  const availableDays = React.useMemo(() => {
  const today = new Date();
@@ -60,9 +46,16 @@ export function DateSlotPicker({
  const dayNumber = d.getDate();
  const monthName = d.toLocaleDateString("id-ID", { month: "short" });
  const isToday = i === 0;
- return { dateString, dayName, dayNumber, monthName, isToday };
+ const dayNameEn = d.toLocaleDateString("en-US", { weekday: "long" }).toLowerCase();
+ // Check if closed based on weekly_schedule
+ let isClosed = false;
+ if (weeklySchedule && weeklySchedule[dayNameEn]) {
+   isClosed = !weeklySchedule[dayNameEn].isOpen;
+ }
+
+ return { dateString, dayName, dayNumber, monthName, isToday, dayNameEn, isClosed };
  });
- }, []);
+ }, [weeklySchedule]);
 
  const [activeDate, setActiveDate] = useState<string>(
  externalDate || availableDays[0].dateString
@@ -70,6 +63,37 @@ export function DateSlotPicker({
  const [activeTime, setActiveTime] = useState<string>(externalTime || "");
  const [bookedSlots, setBookedSlots] = useState<BookedSlot[]>([]);
  const [isPending, startTransition] = useTransition();
+
+ // Generate time slots dynamically based on weeklySchedule or default openTime/closeTime
+ const TIME_SLOTS = React.useMemo(() => {
+   // Temukan nama hari dari activeDate
+   const activeDateObj = new Date(activeDate);
+   const dayNameEn = activeDateObj.toLocaleDateString("en-US", { weekday: "long" }).toLowerCase();
+   
+   let dayOpenTime = openTime;
+   let dayCloseTime = closeTime;
+
+   if (weeklySchedule && weeklySchedule[dayNameEn]) {
+     if (!weeklySchedule[dayNameEn].isOpen) return [];
+     dayOpenTime = weeklySchedule[dayNameEn].openTime || openTime;
+     dayCloseTime = weeklySchedule[dayNameEn].closeTime || closeTime;
+   }
+
+   const slots = [];
+   const [startH, startM] = dayOpenTime.split(":").map(Number);
+   const [closeH, closeM] = dayCloseTime.split(":").map(Number);
+   
+   let currentMinutes = startH * 60 + startM;
+   const closingMinutes = closeH * 60 + closeM;
+
+   while (currentMinutes <= closingMinutes) {
+     const h = Math.floor(currentMinutes / 60);
+     const m = currentMinutes % 60;
+     slots.push(`${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`);
+     currentMinutes += 60; // Step 1 jam
+   }
+   return slots;
+ }, [openTime, closeTime, activeDate, weeklySchedule]);
 
  // Fetch booked slots whenever date or tenantId changes
  useEffect(() => {
@@ -102,9 +126,27 @@ export function DateSlotPicker({
    const tStart = h * 60 + m;
    const tEnd = tStart + serviceDurationMinutes;
 
-   const [closeH, closeM] = closeTime.split(":").map(Number);
+   const activeDateObj = new Date(activeDate);
+   const dayNameEn = activeDateObj.toLocaleDateString("en-US", { weekday: "long" }).toLowerCase();
+   
+   let dayCloseTime = closeTime;
+   if (weeklySchedule && weeklySchedule[dayNameEn] && weeklySchedule[dayNameEn].closeTime) {
+     dayCloseTime = weeklySchedule[dayNameEn].closeTime;
+   }
+
+   const [closeH, closeM] = dayCloseTime.split(":").map(Number);
    const closeTotalMinutes = closeH * 60 + closeM;
    if (tEnd > closeTotalMinutes) return true;
+
+   // Check minimum notice if it's today
+   const selectedDayObj = availableDays.find(d => d.dateString === activeDate);
+   if (selectedDayObj?.isToday) {
+     const now = new Date();
+     const currentMinutes = now.getHours() * 60 + now.getMinutes();
+     if (tStart < currentMinutes + (minimumNoticeHours * 60)) {
+       return true;
+     }
+   }
 
    // Check overlaps
    let overlappingCount = 0;
@@ -148,19 +190,22 @@ export function DateSlotPicker({
         <div className="flex gap-3 overflow-x-auto pb-4 pt-2 no-scrollbar touch-pan-x -mx-1 px-1">
           {availableDays.map((day) => {
             const isSelected = activeDate === day.dateString;
+            const isClosed = day.isClosed;
             return (
               <button
                 key={day.dateString}
                 type="button"
+                disabled={isClosed}
                 onClick={() => handleDateSelect(day.dateString)}
                 className={cn(
                   "flex flex-col items-center justify-center min-w-[72px] h-[96px] rounded-[2.5rem] border transition-all duration-300 cursor-pointer select-none flex-shrink-0 relative group",
+                  isClosed ? "opacity-50 cursor-not-allowed bg-stone-100 border-stone-200" :
                   isSelected
                     ? "border-teal-500 bg-teal-500 text-white shadow-xl shadow-teal-500/30 scale-105 z-10"
                     : "border-stone-100 bg-white hover:border-teal-200 hover:bg-teal-50/50 text-stone-600 shadow-sm"
                 )}
               >
-                {day.isToday && (
+                {day.isToday && !isClosed && (
                   <span
                     className={cn(
                       "absolute -top-2 -right-1 text-[9px] font-bold px-2 py-0.5 rounded-full shadow-sm z-20 transition-colors",
@@ -191,6 +236,11 @@ export function DateSlotPicker({
                 >
                   {day.monthName}
                 </span>
+                {isClosed && (
+                  <span className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-40">
+                    <span className="w-full h-[2px] bg-stone-400 absolute rotate-[-30deg]" />
+                  </span>
+                )}
               </button>
             );
           })}

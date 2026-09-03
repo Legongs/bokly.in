@@ -6,6 +6,8 @@ import { SettingsForm } from "@/components/dashboard/settings-form";
 import { SiteSettings } from "@/components/dashboard/site-settings";
 import { WaSettings } from "@/components/dashboard/wa-settings";
 import { PaymentSettings } from "@/components/dashboard/payment-settings";
+import { CalendarSettings } from "@/components/dashboard/calendar-settings";
+import { CalendarDays } from "lucide-react";
 import type { Tenant } from "@/types/database.types";
 import { cn } from "@/lib/utils";
 
@@ -14,7 +16,7 @@ interface SettingsTabsProps {
 }
 
 export function SettingsTabs({ tenant }: SettingsTabsProps) {
-  const [activeTab, setActiveTab] = useState<"store" | "wa" | "site" | "payment">("store");
+  const [activeTab, setActiveTab] = useState<"store" | "calendar" | "wa" | "payment" | "site">("store");
 
   return (
     <div className="space-y-6">
@@ -32,6 +34,19 @@ export function SettingsTabs({ tenant }: SettingsTabsProps) {
           <Store className="w-4 h-4" />
           <span className="hidden sm:inline">Pengaturan Toko</span>
           <span className="sm:hidden">Toko</span>
+        </button>
+        <button
+          onClick={() => setActiveTab("calendar")}
+          className={cn(
+            "flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300",
+            activeTab === "calendar"
+              ? "bg-white text-teal-700 shadow-sm border border-stone-200/50 scale-[1.02]"
+              : "text-stone-500 hover:text-stone-700 hover:bg-stone-100 border border-transparent"
+          )}
+        >
+          <CalendarDays className="w-4 h-4" />
+          <span className="hidden sm:inline">Jadwal</span>
+          <span className="sm:hidden">Jadwal</span>
         </button>
         <button
           onClick={() => setActiveTab("wa")}
@@ -76,6 +91,7 @@ export function SettingsTabs({ tenant }: SettingsTabsProps) {
       {/* Tab Content */}
       <div className="animate-in fade-in zoom-in-95 duration-200">
         {activeTab === "store" && <SettingsForm tenant={tenant} />}
+        {activeTab === "calendar" && <CalendarSettings tenant={tenant} />}
         {activeTab === "wa" && <WaSettings tenant={tenant} />}
         {activeTab === "payment" && <PaymentSettings tenant={tenant} />}
         {activeTab === "site" && <SiteSettings tenant={tenant} />}

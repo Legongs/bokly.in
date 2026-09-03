@@ -4,6 +4,7 @@ import React, { useState, useTransition } from "react";
 import { Loader2, Link as LinkIcon, CheckCircle2, AlertCircle } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { ImageUploader } from "@/components/ui/image-uploader";
 import { updatePaymentSettings } from "@/lib/actions/tenant.actions";
 import type { Tenant } from "@/types/database.types";
 import { z } from "zod";
@@ -106,25 +107,14 @@ export function PaymentSettings({ tenant }: PaymentSettingsProps) {
 
           <div className="space-y-1.5">
             <label className="text-sm font-semibold text-stone-700 ">
-              URL Gambar QRIS (Opsional buat DP)
+              Gambar QRIS (Opsional buat DP)
             </label>
-            <div className="relative">
-              <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400 pointer-events-none" />
-              <input
-                type="url"
-                value={form.qris_image_url || ""}
-                onChange={(e) => updateForm("qris_image_url", e.target.value)}
-                onBlur={(e) => validateField("qris_image_url", e.target.value)}
-                placeholder="https://contoh.com/qrisku.jpg"
-                className={`w-full pl-10 pr-4 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 caret-teal-600 focus:outline-none focus:ring-4 focus:ring-teal-500/20 transition-all shadow-inner ${
-                  fieldErrors.qris_image_url ? "ring-2 ring-rose-400 bg-rose-50" : ""
-                }`}
-                disabled={isPending}
-              />
-            </div>
-            {fieldErrors.qris_image_url && (
-              <p className="text-xs text-rose-500 font-medium">{fieldErrors.qris_image_url}</p>
-            )}
+            <ImageUploader 
+              value={form.qris_image_url || ""}
+              onChange={(url) => updateForm("qris_image_url", url)}
+              disabled={isPending}
+              label="Upload QRIS Kamu"
+            />
           </div>
 
           <div className="space-y-1.5">

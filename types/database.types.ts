@@ -37,6 +37,9 @@ export interface Database {
           cancellation_policy: string | null;
           bank_account_details: string | null;
           timezone: string | null;
+          weekly_schedule: Json | null;
+          minimum_notice_hours: number;
+          google_refresh_token: string | null;
           created_at: string;
         };
         Insert: {
@@ -64,6 +67,10 @@ export interface Database {
           cancellation_policy?: string | null;
           bank_account_details?: string | null;
           timezone?: string | null;
+          weekly_schedule?: Json | null;
+          minimum_notice_hours?: number;
+          google_refresh_token?: string | null;
+
           created_at?: string;
         };
         Update: {
@@ -91,6 +98,9 @@ export interface Database {
           cancellation_policy?: string | null;
           bank_account_details?: string | null;
           timezone?: string;
+          weekly_schedule?: Json | null;
+          minimum_notice_hours?: number;
+          google_refresh_token?: string | null;
           created_at?: string;
         };
         Relationships: [];
@@ -104,6 +114,8 @@ export interface Database {
           buffer_minutes: number;
           price: number;
           dp_amount: number;
+          max_capacity: number;
+          category?: string | null;
         };
         Insert: {
           id?: string;
@@ -113,6 +125,8 @@ export interface Database {
           buffer_minutes?: number;
           price: number;
           dp_amount?: number;
+          max_capacity?: number;
+          category?: string | null;
         };
         Update: {
           id?: string;
@@ -122,6 +136,8 @@ export interface Database {
           buffer_minutes?: number;
           price?: number;
           dp_amount?: number;
+          max_capacity?: number;
+          category?: string | null;
         };
         Relationships: [
           {
@@ -140,6 +156,7 @@ export interface Database {
           name: string;
           description: string | null;
           image_url: string | null;
+          google_refresh_token: string | null;
           created_at: string;
         };
         Insert: {
@@ -148,6 +165,7 @@ export interface Database {
           name: string;
           description?: string | null;
           image_url?: string | null;
+          google_refresh_token?: string | null;
           created_at?: string;
         };
         Update: {
@@ -156,6 +174,7 @@ export interface Database {
           name?: string;
           description?: string | null;
           image_url?: string | null;
+          google_refresh_token?: string | null;
           created_at?: string;
         };
         Relationships: [

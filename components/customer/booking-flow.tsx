@@ -12,6 +12,7 @@ import {
   ChevronRight,
   ArrowLeft,
   CalendarPlus,
+  MessageCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -200,6 +201,10 @@ export function BookingFlow({ tenant, services, staffList = [], dictionary }: Bo
     name: string;
   } | null>(null);
 
+  // UX Additions
+  const [activeStep, setActiveStep] = useState<number>(1);
+  const [selectedCategory, setSelectedCategory] = useState<string>("Semua");
+
   // ── Theme Mapping ──
   const themeColor = dictionary?.themeColor || (tenant as any).theme_color || "teal";
   const themeStyles: Record<string, any> = {
@@ -212,8 +217,16 @@ export function BookingFlow({ tenant, services, staffList = [], dictionary }: Bo
   const t = themeStyles[themeColor] || themeStyles.teal;
 
  // ── Live validation on blur ──────────────────────────────────────────────
+ const formatWaNumber = (val: string) => {
+   const digits = val.replace(/\D/g, "");
+   if (digits.length <= 4) return digits;
+   if (digits.length <= 8) return `${digits.slice(0, 4)} - ${digits.slice(4)}`;
+   return `${digits.slice(0, 4)} - ${digits.slice(4, 8)} - ${digits.slice(8, 16)}`;
+ };
+
  const validateField = (field: keyof BookingFormFields, value: string) => {
- const result = bookingFormSchema.shape[field].safeParse(value);
+ const valToValidate = field === "customer_wa" ? value.replace(/\D/g, "") : value;
+ const result = bookingFormSchema.shape[field].safeParse(valToValidate);
  setFieldErrors((prev) => ({
  ...prev,
  [field]: result.success ? undefined : result.error.issues[0]?.message,
@@ -222,9 +235,10 @@ export function BookingFlow({ tenant, services, staffList = [], dictionary }: Bo
 
  // ── Slot selection ───────────────────────────────────────────────────────
  const handleSlotSelection = (date: string, time: string) => {
- setSelectedDate(date);
- setSelectedTime(time);
- setServerError(null);
+  setSelectedDate(date);
+  setSelectedTime(time);
+  setServerError(null);
+  setActiveStep(staffList.length > 1 ? 4 : 3);
  };
 
   // ── Submit ───────────────────────────────────────────────────────────────
@@ -248,7 +262,8 @@ export function BookingFlow({ tenant, services, staffList = [], dictionary }: Bo
       return;
     }
     // Client-side Zod validation
-    const parsed = bookingFormSchema.safeParse({ customer_name: customerName, customer_wa: customerWa });
+    const customerWaClean = customerWa.replace(/\D/g, "");
+    const parsed = bookingFormSchema.safeParse({ customer_name: customerName, customer_wa: customerWaClean });
     if (!parsed.success) {
       const errs: FieldErrors = {};
       for (const issue of parsed.error.issues) {
@@ -379,12 +394,37 @@ export function BookingFlow({ tenant, services, staffList = [], dictionary }: Bo
           </CardContent>
         </Card>
 
+        {/* Pembayaran DP (Jika ada) */}
+        {Number(service.dp_amount) > 0 && (tenant as any).qris_image_url && (tenant as any).payment_method_type === "manual" && (
+          <div className="bg-stone-50 rounded-3xl p-5 border border-stone-100 text-center space-y-3 mt-3">
+            <p className="text-sm font-semibold text-stone-800">Scan QRIS untuk DP</p>
+            <p className="text-xs text-stone-500">Silakan scan QR di bawah ini untuk membayar DP sebesar {formatIDR(Number(service.dp_amount))}</p>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={(tenant as any).qris_image_url} alt="QRIS DP" className="w-full max-w-[200px] mx-auto rounded-xl border border-stone-200 shadow-sm" />
+          </div>
+        )}
+
+        {/* Tombol Konfirmasi WA (Jika manual) */}
+        {(!(tenant as any).wa_method || (tenant as any).wa_method === "manual") && tenant.whatsapp_number && (
+          <a
+            href={`https://wa.me/${tenant.whatsapp_number.replace(/\D/g, "")}?text=${encodeURIComponent(
+              `Halo admin ${tenant.business_name}, saya ${name} mau konfirmasi reservasi ${service.name} untuk tanggal ${new Date(date).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })} jam ${startTime}.`
+            )}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-2xl bg-[#25D366] hover:bg-[#128C7E] text-white font-bold text-sm transition-colors shadow-md shadow-[#25D366]/20 mt-3"
+          >
+            <MessageCircle className="w-4 h-4 flex-shrink-0" />
+            Konfirmasi via WhatsApp
+          </a>
+        )}
+
         {/* Tombol kalender */}
         <a
           href={gcalUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-2xl bg-stone-100 hover:bg-stone-200 text-stone-600 hover:text-stone-800 font-semibold text-sm transition-colors"
+          className="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-2xl bg-stone-100 hover:bg-stone-200 text-stone-600 hover:text-stone-800 font-semibold text-sm transition-colors mt-3"
           aria-label="Simpan ke Google Calendar"
         >
           <CalendarPlus className="w-4 h-4 flex-shrink-0" />
@@ -440,51 +480,101 @@ export function BookingFlow({ tenant, services, staffList = [], dictionary }: Bo
   }
 
  // ── Main Form ────────────────────────────────────────────────────────────
+ const categories = ["Semua", ...Array.from(new Set(services.map(s => s.category).filter(Boolean) as string[]))];
+ const filteredServices = services.filter(s => selectedCategory === "Semua" || s.category === selectedCategory);
+
  return (
- <form id="booking-form" onSubmit={handleSubmit} noValidate className="space-y-5">
+ <form id="booking-form" onSubmit={handleSubmit} noValidate className="space-y-5 pb-32">
   {/* Step 1: Pilih Layanan */}
-  <Card className="border-none shadow-md shadow-stone-200/50 rounded-3xl overflow-hidden bg-white">
-  <CardHeader className="pb-3 border-b border-stone-50 bg-stone-50/30">
-  <CardTitle className="text-base flex items-center gap-2 text-stone-800">
-  <span className={`w-6 h-6 rounded-full ${t.bgStep} ${t.textPrimary} text-xs font-extrabold flex items-center justify-center flex-shrink-0`}>
-  1
-  </span>
-  {dictionary?.selectServicePrompt || "Mau Perawatan Apa?"}
-  </CardTitle>
-  <CardDescription className="text-stone-500">Pilih aja {dictionary?.serviceLabel?.toLowerCase() || "layanan"} yang paling pas buat kamu hari ini</CardDescription>
+  <Card className={`border-none shadow-md shadow-stone-200/50 rounded-3xl overflow-hidden bg-white transition-all ${activeStep !== 1 ? 'opacity-70 grayscale-[0.3]' : ''}`}>
+  <CardHeader className="pb-3 border-b border-stone-50 bg-stone-50/30 flex flex-row items-start justify-between">
+    <div>
+      <CardTitle className="text-base flex items-center gap-2 text-stone-800">
+      <span className={`w-6 h-6 rounded-full ${activeStep === 1 ? t.bgStep : 'bg-stone-200'} ${activeStep === 1 ? t.textPrimary : 'text-stone-500'} text-xs font-extrabold flex items-center justify-center flex-shrink-0`}>
+      1
+      </span>
+      {dictionary?.selectServicePrompt || "Mau Perawatan Apa?"}
+      </CardTitle>
+      {activeStep === 1 && (
+        <CardDescription className="text-stone-500 mt-1">Pilih aja {dictionary?.serviceLabel?.toLowerCase() || "layanan"} yang paling pas buat kamu hari ini</CardDescription>
+      )}
+    </div>
+    {activeStep > 1 && (
+      <Button variant="ghost" size="sm" onClick={() => setActiveStep(1)} className="text-stone-500 hover:text-stone-800 shrink-0 h-8">Ubah</Button>
+    )}
   </CardHeader>
-  <CardContent className="space-y-2.5 pt-4" role="radiogroup" aria-label={`Pilih ${dictionary?.serviceLabel?.toLowerCase() || "layanan"}`}>
- {services.map((svc) => (
- <ServiceCard
- key={svc.id}
- service={svc}
- t={t}
- isSelected={selectedService?.id === svc.id}
- onSelect={() => {
- setSelectedService(svc);
- setSelectedDate("");
- setSelectedTime("");
- }}
- />
- ))}
- </CardContent>
- </Card>
+  
+  <CardContent className={`pt-4 ${activeStep === 1 ? 'block' : 'hidden'}`} role="radiogroup" aria-label={`Pilih ${dictionary?.serviceLabel?.toLowerCase() || "layanan"}`}>
+    {categories.length > 1 && (
+      <div className="flex overflow-x-auto gap-2 pb-3 mb-2 no-scrollbar">
+        {categories.map(cat => (
+          <button
+            key={cat}
+            type="button"
+            onClick={() => setSelectedCategory(cat)}
+            className={`whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-bold transition-all ${selectedCategory === cat ? `${t.bgPrimary} text-white shadow-md ${t.shadowBtn}` : 'bg-stone-100 text-stone-600 hover:bg-stone-200'}`}
+          >
+            {cat}
+          </button>
+        ))}
+      </div>
+    )}
+    <div className="space-y-2.5">
+      {filteredServices.map((svc) => (
+      <ServiceCard
+      key={svc.id}
+      service={svc}
+      t={t}
+      isSelected={selectedService?.id === svc.id}
+      onSelect={() => {
+      setSelectedService(svc);
+      setSelectedDate("");
+      setSelectedTime("");
+      setActiveStep(staffList.length > 1 ? 2 : 3);
+      }}
+      />
+      ))}
+      {filteredServices.length === 0 && (
+        <p className="text-center text-sm text-stone-400 py-4">Tidak ada layanan di kategori ini.</p>
+      )}
+    </div>
+  </CardContent>
+  {activeStep > 1 && selectedService && (
+    <CardContent className="pt-4 pb-4">
+      <div className="flex justify-between items-center bg-stone-50 p-3 rounded-2xl border border-stone-100">
+        <div>
+          <p className="text-sm font-bold text-stone-800">{selectedService.name}</p>
+          <p className="text-xs text-stone-500">{selectedService.duration_minutes} menit</p>
+        </div>
+        <p className={`font-bold text-sm ${t.textPrimary}`}>{formatIDR(Number(selectedService.price))}</p>
+      </div>
+    </CardContent>
+  )}
+  </Card>
 
   {/* Step Optional: Pilih Staff */}
   {staffList.length > 1 && (
-    <Card className="border-none shadow-md shadow-stone-200/50 rounded-3xl overflow-hidden bg-white mt-5">
-      <CardHeader className="pb-3 border-b border-stone-50 bg-stone-50/30">
-        <CardTitle className="text-base flex items-center gap-2 text-stone-800">
-          <span className={`w-6 h-6 rounded-full ${t.bgStep} ${t.textPrimary} text-xs font-extrabold flex items-center justify-center flex-shrink-0`}>
-            2
-          </span>
-          Pilih {dictionary?.staffLabel || "Pegawai"}
-        </CardTitle>
-        <CardDescription className="text-stone-500">
-          Kamu mau dilayani oleh siapa?
-        </CardDescription>
+    <Card className={`border-none shadow-md shadow-stone-200/50 rounded-3xl overflow-hidden bg-white transition-all ${activeStep !== 2 ? 'opacity-70 grayscale-[0.3]' : ''}`}>
+      <CardHeader className="pb-3 border-b border-stone-50 bg-stone-50/30 flex flex-row items-start justify-between">
+        <div>
+          <CardTitle className="text-base flex items-center gap-2 text-stone-800">
+            <span className={`w-6 h-6 rounded-full ${activeStep === 2 ? t.bgStep : 'bg-stone-200'} ${activeStep === 2 ? t.textPrimary : 'text-stone-500'} text-xs font-extrabold flex items-center justify-center flex-shrink-0`}>
+              2
+            </span>
+            Pilih {dictionary?.staffLabel || "Pegawai"}
+          </CardTitle>
+          {activeStep === 2 && (
+            <CardDescription className="text-stone-500 mt-1">
+              Kamu mau dilayani oleh siapa?
+            </CardDescription>
+          )}
+        </div>
+        {activeStep > 2 && (
+          <Button variant="ghost" size="sm" onClick={() => setActiveStep(2)} className="text-stone-500 hover:text-stone-800 shrink-0 h-8">Ubah</Button>
+        )}
       </CardHeader>
-      <CardContent className="pt-4 grid grid-cols-2 gap-3">
+      
+      <CardContent className={`pt-4 grid grid-cols-2 gap-3 ${activeStep === 2 ? 'block' : 'hidden'}`}>
         {staffList.map((staff) => {
           const isSelected = selectedStaff?.id === staff.id;
           return (
@@ -496,6 +586,7 @@ export function BookingFlow({ tenant, services, staffList = [], dictionary }: Bo
                 setSelectedStaff(staff);
                 setSelectedDate(""); // Reset slot
                 setSelectedTime("");
+                setActiveStep(3);
               }}
               className={`p-3 rounded-2xl border-2 cursor-pointer transition-all text-center select-none ${
                 isSelected
@@ -518,29 +609,49 @@ export function BookingFlow({ tenant, services, staffList = [], dictionary }: Bo
           );
         })}
       </CardContent>
+      {activeStep > 2 && selectedStaff && (
+        <CardContent className="pt-4 pb-4">
+          <div className="flex items-center gap-3 bg-stone-50 p-3 rounded-2xl border border-stone-100">
+            <div className={`w-10 h-10 rounded-full flex items-center justify-center overflow-hidden bg-stone-200`}>
+              {selectedStaff.image_url ? (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img src={selectedStaff.image_url} alt={selectedStaff.name} className="w-full h-full object-cover" />
+              ) : (
+                <User className={`w-5 h-5 text-stone-500`} />
+              )}
+            </div>
+            <p className="text-sm font-bold text-stone-800">{selectedStaff.name}</p>
+          </div>
+        </CardContent>
+      )}
     </Card>
   )}
 
   {/* Step 3/2: Pilih Jadwal */}
-  <Card className="border-none shadow-md shadow-stone-200/50 rounded-3xl overflow-hidden bg-white mt-5">
-  <CardHeader className="pb-3 border-b border-stone-50 bg-stone-50/30">
-  <CardTitle className="text-base flex items-center gap-2 text-stone-800">
-  <span className={`w-6 h-6 rounded-full ${t.bgStep} ${t.textPrimary} text-xs font-extrabold flex items-center justify-center flex-shrink-0`}>
-  {staffList.length > 1 ? "3" : "2"}
-  </span>
-  Kapan Mau Datang?
-  </CardTitle>
-  {selectedService && (
-  <CardDescription className="text-stone-500">
-  Durasi {dictionary?.serviceLabel?.toLowerCase() || "layanan"}:{" "}
-  <strong className="text-stone-700">
-  {selectedService.duration_minutes} menit
-  </strong>
-  . Slot tidak tersedia jika sudah dipesan atau durasi melebihi jam operasional.
-  </CardDescription>
-  )}
+  <Card className={`border-none shadow-md shadow-stone-200/50 rounded-3xl overflow-hidden bg-white mt-5 transition-all ${activeStep !== (staffList.length > 1 ? 3 : 2) ? 'opacity-70 grayscale-[0.3]' : ''}`}>
+  <CardHeader className="pb-3 border-b border-stone-50 bg-stone-50/30 flex flex-row items-start justify-between">
+    <div>
+      <CardTitle className="text-base flex items-center gap-2 text-stone-800">
+      <span className={`w-6 h-6 rounded-full ${activeStep === (staffList.length > 1 ? 3 : 2) ? t.bgStep : 'bg-stone-200'} ${activeStep === (staffList.length > 1 ? 3 : 2) ? t.textPrimary : 'text-stone-500'} text-xs font-extrabold flex items-center justify-center flex-shrink-0`}>
+      {staffList.length > 1 ? "3" : "2"}
+      </span>
+      Kapan Mau Datang?
+      </CardTitle>
+      {selectedService && activeStep === (staffList.length > 1 ? 3 : 2) && (
+      <CardDescription className="text-stone-500 mt-1">
+      Durasi {dictionary?.serviceLabel?.toLowerCase() || "layanan"}:{" "}
+      <strong className="text-stone-700">
+      {selectedService.duration_minutes} menit
+      </strong>
+      . Slot tidak tersedia jika sudah dipesan atau durasi melebihi jam operasional.
+      </CardDescription>
+      )}
+    </div>
+    {activeStep > (staffList.length > 1 ? 3 : 2) && (
+      <Button variant="ghost" size="sm" onClick={() => setActiveStep(staffList.length > 1 ? 3 : 2)} className="text-stone-500 hover:text-stone-800 shrink-0 h-8">Ubah</Button>
+    )}
   </CardHeader>
-  <CardContent className="pt-4">
+  <CardContent className={`pt-4 ${activeStep === (staffList.length > 1 ? 3 : 2) ? 'block' : 'hidden'}`}>
  {selectedService && (staffList.length <= 1 || selectedStaff) ? (
  <DateSlotPicker
  tenantId={tenant.id}
@@ -548,7 +659,9 @@ export function BookingFlow({ tenant, services, staffList = [], dictionary }: Bo
  openTime={(tenant as any).open_time || "09:00"}
  closeTime={(tenant as any).close_time || "21:00"}
  staffId={selectedStaff?.id} // pass staffId down
- maxCapacity={Math.max(1, staffList.length)}
+ maxCapacity={selectedService.max_capacity || 1}
+ weeklySchedule={(tenant as any).weekly_schedule}
+ minimumNoticeHours={(tenant as any).minimum_notice_hours}
  onSelectSlot={handleSlotSelection}
  selectedDate={selectedDate}
  selectedTime={selectedTime}
@@ -561,22 +674,40 @@ export function BookingFlow({ tenant, services, staffList = [], dictionary }: Bo
  </p>
  )}
  </CardContent>
+  {activeStep > (staffList.length > 1 ? 3 : 2) && selectedDate && selectedTime && (
+    <CardContent className="pt-4 pb-4">
+      <div className="flex justify-between items-center bg-stone-50 p-3 rounded-2xl border border-stone-100">
+        <div>
+          <p className="text-sm font-bold text-stone-800">
+            {new Date(selectedDate).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}
+          </p>
+          <p className="text-xs text-stone-500">
+            {selectedTime} – {calcEndTime(selectedTime, selectedService?.duration_minutes || 0)} WIB
+          </p>
+        </div>
+      </div>
+    </CardContent>
+  )}
  </Card>
 
   {/* Step 4/3: Data Pemesan */}
-  <Card className="border-none shadow-md shadow-stone-200/50 rounded-3xl overflow-hidden bg-white mt-5">
-  <CardHeader className="pb-3 border-b border-stone-50 bg-stone-50/30">
-  <CardTitle className="text-base flex items-center gap-2 text-stone-800">
-  <span className={`w-6 h-6 rounded-full ${t.bgStep} ${t.textPrimary} text-xs font-extrabold flex items-center justify-center flex-shrink-0`}>
-  {staffList.length > 1 ? "4" : "3"}
-  </span>
-  Isi Data Kamu Yuk
-  </CardTitle>
-  <p className="text-sm text-stone-500 mt-1">
-  Kita bakal kirim detail jadwalnya langsung ke WA kamu
-  </p>
+  <Card className={`border-none shadow-md shadow-stone-200/50 rounded-3xl overflow-hidden bg-white mt-5 transition-all ${activeStep !== (staffList.length > 1 ? 4 : 3) ? 'opacity-70 grayscale-[0.3]' : ''}`}>
+  <CardHeader className="pb-3 border-b border-stone-50 bg-stone-50/30 flex flex-row items-start justify-between">
+    <div>
+      <CardTitle className="text-base flex items-center gap-2 text-stone-800">
+      <span className={`w-6 h-6 rounded-full ${activeStep === (staffList.length > 1 ? 4 : 3) ? t.bgStep : 'bg-stone-200'} ${activeStep === (staffList.length > 1 ? 4 : 3) ? t.textPrimary : 'text-stone-500'} text-xs font-extrabold flex items-center justify-center flex-shrink-0`}>
+      {staffList.length > 1 ? "4" : "3"}
+      </span>
+      Isi Data Kamu Yuk
+      </CardTitle>
+      {activeStep === (staffList.length > 1 ? 4 : 3) && (
+      <p className="text-sm text-stone-500 mt-1">
+      Kita bakal kirim detail jadwalnya langsung ke WA kamu
+      </p>
+      )}
+    </div>
   </CardHeader>
-  <CardContent className="space-y-4 pt-4">
+  <CardContent className={`space-y-4 pt-4 ${activeStep === (staffList.length > 1 ? 4 : 3) ? 'block' : 'hidden'}`}>
  <FormField id="customer-name" label="Nama Panggilan / Lengkap" error={fieldErrors.customer_name}>
  <div className="relative">
  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400 pointer-events-none" />
@@ -606,9 +737,9 @@ export function BookingFlow({ tenant, services, staffList = [], dictionary }: Bo
  autoComplete="tel"
  inputMode="numeric"
  value={customerWa}
- onChange={(e) => setCustomerWa(e.target.value)}
+ onChange={(e) => setCustomerWa(formatWaNumber(e.target.value))}
  onBlur={(e) => validateField("customer_wa", e.target.value)}
- placeholder="Contoh: 081234567890"
+ placeholder="Contoh: 0812 - 3456 - 7890"
  className={`w-full pl-9 pr-4 py-2.5 rounded-xl border text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 ${t.ringPrimary} transition-colors ${
  fieldErrors.customer_wa
  ? "border-rose-400 focus:ring-rose-400"
@@ -672,35 +803,52 @@ export function BookingFlow({ tenant, services, staffList = [], dictionary }: Bo
  </div>
  )}
 
-  {/* Submit */}
-  <div className="sticky bottom-3 z-10 pt-1">
-    {/* Offline warning */}
-    {submitStatus === "offline" && (
-      <div
-        role="alert"
-        className="mb-3 p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-sm flex items-start gap-2"
-      >
-        <WifiOff className="w-4 h-4 shrink-0 mt-0.5" />
-        <span>Koneksi kamu lagi putus nih. Data booking sudah disimpan, tinggal klik lagi setelah online ya.</span>
+  {/* FAB (Floating Action Bar) */}
+  <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-stone-200 shadow-[0_-4px_20px_-10px_rgba(0,0,0,0.1)] z-50 rounded-t-3xl sm:static sm:bg-transparent sm:border-none sm:shadow-none sm:p-0 sm:mt-6">
+    <div className="max-w-md mx-auto">
+      {/* Offline warning */}
+      {submitStatus === "offline" && (
+        <div
+          role="alert"
+          className="mb-3 p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-sm flex items-start gap-2"
+        >
+          <WifiOff className="w-4 h-4 shrink-0 mt-0.5" />
+          <span>Koneksi kamu lagi putus nih. Data booking sudah disimpan, tinggal klik lagi setelah online ya.</span>
+        </div>
+      )}
+      
+      <div className="flex items-center justify-between mb-3 sm:hidden">
+        <div>
+          <p className="text-xs text-stone-500 font-medium">Total Harga</p>
+          <p className={`font-bold text-lg ${t.textPrimary}`}>
+            {selectedService ? formatIDR(Number(selectedService.price)) : "Rp 0"}
+          </p>
+        </div>
+        <div className="text-right">
+          <p className="text-xs text-stone-500 font-medium">Durasi</p>
+          <p className="font-bold text-stone-800">
+            {selectedService ? `${selectedService.duration_minutes} mnt` : "-"}
+          </p>
+        </div>
       </div>
-    )}
-    <Button
-      type="submit"
-      form="booking-form"
-      size="lg"
-      className={`w-full ${
-        submitStatus === "offline"
-          ? "bg-amber-500 hover:bg-amber-600 shadow-amber-500/30"
-          : `${t.bgPrimary} ${t.bgPrimaryHover} ${t.shadowBtn}`
-      } text-white font-bold shadow-xl gap-2 transition-colors`}
-      isLoading={submitStatus === "loading"}
-      disabled={
-        !selectedService ||
-        (staffList.length > 1 && !selectedStaff) ||
-        !selectedDate ||
-        !selectedTime ||
-        submitStatus === "loading"
-      }
+
+      <Button
+        type="submit"
+        form="booking-form"
+        size="lg"
+        className={`w-full h-12 rounded-2xl ${
+          submitStatus === "offline"
+            ? "bg-amber-500 hover:bg-amber-600 shadow-amber-500/30"
+            : `${t.bgPrimary} ${t.bgPrimaryHover} ${t.shadowBtn}`
+        } text-white font-bold shadow-xl gap-2 transition-colors`}
+        isLoading={submitStatus === "loading"}
+        disabled={
+          !selectedService ||
+          (staffList.length > 1 && !selectedStaff) ||
+          !selectedDate ||
+          !selectedTime ||
+          submitStatus === "loading"
+        }
     >
       {submitStatus === "offline" ? (
         <>
@@ -719,6 +867,7 @@ export function BookingFlow({ tenant, services, staffList = [], dictionary }: Bo
       <span>Anti double-booking • Langsung dikunci otomatis</span>
     </div>
   </div>
- </form>
+</div>
+</form>
  );
 }

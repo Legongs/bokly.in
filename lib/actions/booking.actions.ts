@@ -2,6 +2,7 @@
 
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
+import { getBusySlotsFromGoogle } from "@/lib/google-calendar";
 import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { sendTelegramNotification } from "@/lib/telegram";
 import type { Booking, PaymentStatus } from "@/types/database.types";
@@ -104,7 +105,7 @@ export async function getBookedSlotsForDate(
 
     const maxCapacity = Math.max(1, staffCount || 1);
 
-    // 2. Ambil semua booking di hari itu beserta buffer layanannya
+    // Fetch bookings from database
     const { data: bookingsData, error } = await supabase
       .from("bookings")
       .select("start_time, end_time, staff_id, services(buffer_minutes)")
@@ -123,6 +124,22 @@ export async function getBookedSlotsForDate(
       buffer_minutes: b.services?.buffer_minutes || 0,
       staff_id: b.staff_id,
     }));
+
+    // Fetch Google Calendar busy slots
+    try {
+      const { data: tenantData } = await supabase
+        .from("tenants")
+        .select("google_refresh_token")
+        .eq("id", parsed.data.tenant_id)
+        .single();
+        
+      if (tenantData?.google_refresh_token) {
+        const googleSlots = await getBusySlotsFromGoogle(tenantData.google_refresh_token, parsed.data.booking_date);
+        formattedBookings.push(...googleSlots);
+      }
+    } catch (gcalError) {
+      console.error("Failed to append Google Calendar slots", gcalError);
+    }
 
     return { success: true, data: formattedBookings };
   } catch {

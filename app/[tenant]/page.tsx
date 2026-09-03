@@ -114,7 +114,7 @@ export default async function TenantPage({ params }: TenantPageProps) {
    },
  };
 
- const themeColor = dict.themeColor;
+ const themeColor = (tenant as any).theme_color || dict.themeColor || "teal";
  const currentTheme = themeStyles[themeColor] || themeStyles["teal"];
 
  // ── Main page ───────────────────────────────────────────────────────────────

@@ -13,6 +13,8 @@ const serviceSchema = z.object({
   price: z.coerce.number().min(0, "Harganya nggak boleh minus ya."),
   dp_amount: z.coerce.number().min(0, "DP-nya nggak boleh minus juga.").default(0),
   buffer_minutes: z.coerce.number().min(0, "Waktu jeda nggak boleh minus.").default(0),
+  max_capacity: z.coerce.number().min(1, "Kapasitas minimal 1 orang.").default(1),
+  category: z.string().max(50, "Maksimal 50 huruf aja.").optional().nullable(),
 });
 
 export type ServicePayload = z.infer<typeof serviceSchema>;
@@ -48,6 +50,8 @@ export async function createService(payload: unknown): Promise<ActionResponse<Se
         price: parsed.data.price,
         dp_amount: parsed.data.dp_amount,
         buffer_minutes: parsed.data.buffer_minutes,
+        max_capacity: parsed.data.max_capacity,
+        category: parsed.data.category,
       })
       .select()
       .single();
@@ -91,6 +95,8 @@ export async function updateService(payload: unknown): Promise<ActionResponse<Se
         price: parsed.data.price,
         dp_amount: parsed.data.dp_amount,
         buffer_minutes: parsed.data.buffer_minutes,
+        max_capacity: parsed.data.max_capacity,
+        category: parsed.data.category,
       })
       .eq("id", parsed.data.id)
       .eq("tenant_id", tenantId) // strict ownership verification

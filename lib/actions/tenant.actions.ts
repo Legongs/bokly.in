@@ -263,6 +263,51 @@ export async function updateWaSettings(
     return { success: false, error: "Duh, server kita lagi agak ngambek. Coba muat ulang halamannya ya." };
   }
 }
+// ── updateCalendarSettings ────────────────────────────────────────────────────
+const updateCalendarSettingsSchema = z.object({
+  id: z.string().uuid("ID Tenant tidak valid"),
+  minimum_notice_hours: z.coerce.number().min(0, "Waktu minimum nggak boleh negatif."),
+  weekly_schedule: z.any(), // JSONB
+});
+
+export async function updateCalendarSettings(
+  input: unknown
+): Promise<ActionResponse<Tenant>> {
+  const parsed = updateCalendarSettingsSchema.safeParse(input);
+  if (!parsed.success) {
+    return { success: false, error: parsed.error.issues[0]?.message ?? "Data pengaturan kalender tidak valid." };
+  }
+
+  try {
+    const supabase = await createClient();
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user || user.id !== parsed.data.id) {
+      return { success: false, error: "Akses ditolak." };
+    }
+
+    const { data, error } = await supabase
+      .from("tenants")
+      .update({
+        minimum_notice_hours: parsed.data.minimum_notice_hours,
+        weekly_schedule: parsed.data.weekly_schedule,
+      })
+      .eq("id", parsed.data.id)
+      .select()
+      .single();
+
+    if (error) {
+      return { success: false, error: "Gagal menyimpan pengaturan kalender." };
+    }
+
+    revalidatePath("/dashboard");
+    revalidatePath("/[tenant]", "page");
+    return { success: true, data: data as Tenant };
+  } catch {
+    return { success: false, error: "Server error. Coba lagi ya." };
+  }
+}
+
 // ── updateSiteSettings ─────────────────────────────────────────────────────────
 const updateSiteSettingsSchema = z.object({
   id: z.string().uuid("ID Tenant-nya kurang pas nih."),

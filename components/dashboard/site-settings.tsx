@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { Save, Image as ImageIcon, MapPin, AtSign, Info, Check, Palette, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ImageUploader } from "@/components/ui/image-uploader";
 import { updateSiteSettings } from "@/lib/actions/tenant.actions";
 import type { Tenant } from "@/types/database.types";
 
@@ -113,24 +114,16 @@ export function SiteSettings({ tenant }: SiteSettingsProps) {
 
         {/* Hero Image */}
         <div>
-          <label htmlFor="hero_image_url" className="flex items-center gap-2 text-sm font-semibold text-stone-900 mb-2">
+          <label className="flex items-center gap-2 text-sm font-semibold text-stone-900 mb-2">
             <ImageIcon className="w-4 h-4 text-stone-500" />
-            Link Gambar Latar (Banner / Hero Image)
+            Gambar Latar (Banner / Hero Image)
           </label>
-          <input
-            type="url"
-            id="hero_image_url"
-            name="hero_image_url"
-            value={siteData.hero_image_url}
-            onChange={handleSiteChange}
-            className="w-full px-4 py-3 rounded-2xl border-none text-sm font-medium bg-stone-50 text-stone-900 placeholder:text-stone-400 caret-teal-600 focus:outline-none focus:ring-4 focus:ring-teal-500/20 transition-all shadow-inner"
-            placeholder="https://contoh.com/gambar-banner.jpg"
+          <ImageUploader 
+            value={siteData.hero_image_url || ""}
+            onChange={(url) => setSiteData((prev) => ({ ...prev, hero_image_url: url }))}
+            disabled={isPendingSite}
+            label="Upload Banner Utama"
           />
-          <div className="mt-2 text-xs text-stone-500 leading-relaxed bg-stone-50 p-3 rounded-xl border border-stone-100">
-            <strong className="text-stone-700">Tips Google Drive:</strong> Pastikan gambar Anda di-set "Anyone with the link can view". 
-            Ubah format link <code className="bg-stone-200 px-1 py-0.5 rounded">https://drive.google.com/file/d/[ID]/view</code> menjadi: <br/>
-            <code className="bg-teal-50 text-teal-700 font-semibold px-1 py-0.5 rounded block mt-1">https://drive.google.com/uc?export=view&id=[ID]</code>
-          </div>
         </div>
 
         {/* Welcome Message */}

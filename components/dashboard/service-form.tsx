@@ -16,6 +16,8 @@ const serviceSchema = z.object({
   price: z.coerce.number().min(0, "Harganya nggak boleh minus ya."),
   dp_amount: z.coerce.number().min(0, "DP-nya nggak boleh minus juga.").default(0),
   buffer_minutes: z.coerce.number().min(0, "Waktu jeda nggak boleh minus.").default(0),
+  max_capacity: z.coerce.number().min(1, "Minimal kapasitas 1 orang.").default(1),
+  category: z.string().max(50, "Maksimal 50 huruf.").optional().nullable(),
 });
 
 type ServiceFormFields = z.infer<typeof serviceSchema>;
@@ -38,6 +40,8 @@ export function ServiceForm({ initialData, onSuccess, onCancel, dictionary }: Se
  price: initialData?.price ?? 0,
  dp_amount: initialData?.dp_amount ?? 0,
  buffer_minutes: initialData?.buffer_minutes ?? 0,
+ max_capacity: initialData?.max_capacity ?? 1,
+ category: initialData?.category ?? "",
  });
 
  const [fieldErrors, setFieldErrors] = useState<Partial<Record<keyof ServiceFormFields, string>>>({});
@@ -120,6 +124,21 @@ export function ServiceForm({ initialData, onSuccess, onCancel, dictionary }: Se
  {fieldErrors.name && <p className="text-xs text-rose-500 font-medium">{fieldErrors.name}</p>}
  </div>
 
+          {/* Baris 5: Kategori */}
+          <div className="space-y-1.5">
+            <label className="text-sm font-semibold text-stone-700">Kategori Layanan (Opsional)</label>
+            <input
+              type="text"
+              value={form.category || ""}
+              onChange={(e) => updateForm("category", e.target.value)}
+              onBlur={(e) => validateField("category", e.target.value)}
+              placeholder="Misal: Perawatan Wajah"
+              className={`w-full px-4 py-3 rounded-2xl border border-stone-200 text-sm font-medium bg-stone-50 text-stone-900 caret-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-500/20 ${fieldErrors.category ? "border-rose-300 bg-rose-50 ring-2 ring-rose-500/20" : ""}`}
+              disabled={isPending}
+            />
+            {fieldErrors.category && <p className="text-xs text-rose-500 font-medium">{fieldErrors.category}</p>}
+          </div>
+
  <div className="grid grid-cols-2 gap-4">
  <div className="space-y-1.5">
  <label className="text-sm font-semibold text-stone-700 ">
@@ -165,6 +184,29 @@ export function ServiceForm({ initialData, onSuccess, onCancel, dictionary }: Se
  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-stone-500 pointer-events-none">Menit</span>
  </div>
  {fieldErrors.buffer_minutes && <p className="text-xs text-rose-500 font-medium">{fieldErrors.buffer_minutes}</p>}
+ </div>
+
+ <div className="space-y-1.5">
+ <label className="text-sm font-semibold text-stone-700 ">
+ Kapasitas Maksimal
+ </label>
+ <div className="relative">
+ <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400 pointer-events-none" />
+ <input
+ type="number"
+ min="1"
+ value={form.max_capacity === 1 ? "" : form.max_capacity}
+ onChange={(e) => updateForm("max_capacity", Number(e.target.value) || 1)}
+ onBlur={(e) => validateField("max_capacity", Number(e.target.value) || 1)}
+ placeholder="1 (Satu sesi = 1 orang)"
+ className={`w-full pl-10 pr-12 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 caret-teal-600 focus:outline-none focus:ring-4 focus:ring-teal-500/20 transition-all shadow-inner ${
+ fieldErrors.max_capacity ? "ring-2 ring-rose-400 bg-rose-50" : ""
+ }`}
+ disabled={isPending}
+ />
+ <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-stone-500 pointer-events-none">Orang</span>
+ </div>
+ {fieldErrors.max_capacity && <p className="text-xs text-rose-500 font-medium">{fieldErrors.max_capacity}</p>}
  </div>
  </div>
 
