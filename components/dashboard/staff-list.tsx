@@ -9,26 +9,40 @@ import type { Staff } from "@/types/database.types";
 
 interface StaffListProps {
   initialStaff: Staff[];
+  businessType: string;
 }
 
-export function StaffList({ initialStaff }: StaffListProps) {
+export function StaffList({ initialStaff, businessType }: StaffListProps) {
+  const getStaffTerm = (type: string) => {
+    switch (type) {
+      case "salon": return "Terapis / Kapster";
+      case "klinik": return "Dokter / Perawat";
+      case "konsultasi": return "Konsultan / Pakar";
+      case "studio_foto": return "Fotografer";
+      case "cuci_kendaraan": return "Pekerja / Mekanik";
+      case "olahraga": return "Instruktur / Pegawai";
+      case "servis": return "Mekanik / Teknisi";
+      default: return "Terapis / Pegawai";
+    }
+  };
+  const staffTerm = getStaffTerm(businessType);
   const [isPending, startTransition] = useTransition();
   const [staff, setStaff] = useState<Staff[]>(initialStaff);
   
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [formData, setFormData] = useState({ name: "" });
+  const [formData, setFormData] = useState({ name: "", description: "", image_url: "" });
 
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name) return;
 
     startTransition(async () => {
-      const res = await createStaff({ name: formData.name });
+      const res = await createStaff({ name: formData.name, description: formData.description, image_url: formData.image_url });
       if (res.success && res.data) {
         setStaff([...staff, res.data]);
         setIsAdding(false);
-        setFormData({ name: "" });
+        setFormData({ name: "", description: "", image_url: "" });
       } else {
         alert(res.error || "Gagal menambah pegawai");
       }
@@ -40,11 +54,11 @@ export function StaffList({ initialStaff }: StaffListProps) {
     if (!formData.name) return;
 
     startTransition(async () => {
-      const res = await updateStaff({ id, name: formData.name });
+      const res = await updateStaff({ id, name: formData.name, description: formData.description, image_url: formData.image_url });
       if (res.success && res.data) {
         setStaff(staff.map((s) => (s.id === id ? res.data! : s)));
         setEditingId(null);
-        setFormData({ name: "" });
+        setFormData({ name: "", description: "", image_url: "" });
       } else {
         alert(res.error || "Gagal memperbarui pegawai");
       }
@@ -75,7 +89,7 @@ export function StaffList({ initialStaff }: StaffListProps) {
           <Button
             onClick={() => {
               setIsAdding(true);
-              setFormData({ name: "" });
+              setFormData({ name: "", description: "", image_url: "" });
             }}
             className="bg-teal-600 hover:bg-teal-700 text-white rounded-full shadow-md shadow-teal-600/20"
           >
@@ -100,11 +114,32 @@ export function StaffList({ initialStaff }: StaffListProps) {
                 <input
                   type="text"
                   value={formData.name}
-                  onChange={(e) => setFormData({ name: e.target.value })}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   placeholder="Misal: Budi"
                   className="w-full px-4 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 caret-teal-600 focus:outline-none focus:ring-4 focus:ring-teal-500/20 transition-all shadow-inner"
                   disabled={isPending}
                   autoFocus
+                />
+              </div>
+              <div className="space-y-1.5 mt-4">
+                <label className="text-sm font-semibold text-stone-700">Detail / Spesialisasi (Opsional)</label>
+                <textarea
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  placeholder="Misal: Spesialis hair coloring dan perm"
+                  className="w-full px-4 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 caret-teal-600 focus:outline-none focus:ring-4 focus:ring-teal-500/20 transition-all shadow-inner min-h-[80px]"
+                  disabled={isPending}
+                />
+              </div>
+              <div className="space-y-1.5 mt-4">
+                <label className="text-sm font-semibold text-stone-700">URL Foto Pegawai (Opsional)</label>
+                <input
+                  type="url"
+                  value={formData.image_url}
+                  onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+                  placeholder="Misal: https://contoh.com/foto-budi.jpg"
+                  className="w-full px-4 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 caret-teal-600 focus:outline-none focus:ring-4 focus:ring-teal-500/20 transition-all shadow-inner"
+                  disabled={isPending}
                 />
               </div>
               <div className="pt-4 flex justify-end gap-3">
@@ -143,10 +178,29 @@ export function StaffList({ initialStaff }: StaffListProps) {
                       <input
                         type="text"
                         value={formData.name}
-                        onChange={(e) => setFormData({ name: e.target.value })}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                         className="w-full px-4 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 caret-teal-600 focus:outline-none focus:ring-4 focus:ring-teal-500/20 transition-all shadow-inner"
                         disabled={isPending}
                         autoFocus
+                      />
+                    </div>
+                    <div className="space-y-1.5 mt-4">
+                      <label className="text-sm font-semibold text-stone-700">Detail / Spesialisasi (Opsional)</label>
+                      <textarea
+                        value={formData.description}
+                        onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                        className="w-full px-4 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 caret-teal-600 focus:outline-none focus:ring-4 focus:ring-teal-500/20 transition-all shadow-inner min-h-[80px]"
+                        disabled={isPending}
+                      />
+                    </div>
+                    <div className="space-y-1.5 mt-4">
+                      <label className="text-sm font-semibold text-stone-700">URL Foto Pegawai (Opsional)</label>
+                      <input
+                        type="url"
+                        value={formData.image_url}
+                        onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+                        className="w-full px-4 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 caret-teal-600 focus:outline-none focus:ring-4 focus:ring-teal-500/20 transition-all shadow-inner"
+                        disabled={isPending}
                       />
                     </div>
                     <div className="flex justify-end gap-3">
@@ -161,12 +215,22 @@ export function StaffList({ initialStaff }: StaffListProps) {
                 ) : (
                   <div className="flex items-center justify-between p-5">
                     <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center border border-teal-100">
-                        <User className="w-6 h-6" />
-                      </div>
+                      {s.image_url ? (
+                        <div className="w-12 h-12 rounded-2xl overflow-hidden border border-teal-100 flex-shrink-0 shadow-inner">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={s.image_url} alt={s.name} className="w-full h-full object-cover" />
+                        </div>
+                      ) : (
+                        <div className="w-12 h-12 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center border border-teal-100 flex-shrink-0">
+                          <User className="w-6 h-6" />
+                        </div>
+                      )}
                       <div>
                         <h4 className="font-bold text-stone-900 text-lg">{s.name}</h4>
-                        <p className="text-xs text-stone-500 font-medium">Terapis / Pegawai</p>
+                        <p className="text-xs text-stone-500 font-medium">{staffTerm}</p>
+                        {s.description && (
+                          <p className="text-sm text-stone-600 mt-1 line-clamp-2">{s.description}</p>
+                        )}
                       </div>
                     </div>
                     <div className="flex gap-2">
@@ -175,7 +239,7 @@ export function StaffList({ initialStaff }: StaffListProps) {
                         size="sm"
                         onClick={() => {
                           setEditingId(s.id);
-                          setFormData({ name: s.name });
+                          setFormData({ name: s.name, description: s.description || "", image_url: s.image_url || "" });
                         }}
                         disabled={isPending}
                         className="border-stone-200 text-stone-600 hover:text-teal-600 hover:border-teal-200 rounded-xl bg-white"

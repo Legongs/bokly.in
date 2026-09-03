@@ -503,8 +503,13 @@ export function BookingFlow({ tenant, services, staffList = [], dictionary }: Bo
                   : `border-stone-200 bg-white hover:border-stone-300 hover:bg-stone-50 active:scale-[0.98]`
               }`}
             >
-              <div className={`w-10 h-10 mx-auto rounded-full flex items-center justify-center mb-2 ${isSelected ? t.bgPrimary : "bg-stone-100"}`}>
-                <User className={`w-5 h-5 ${isSelected ? "text-white" : "text-stone-400"}`} />
+              <div className={`w-10 h-10 mx-auto rounded-full flex items-center justify-center mb-2 overflow-hidden border-2 ${isSelected ? "border-transparent" : "border-stone-100"} ${isSelected ? t.bgPrimary : "bg-stone-100"}`}>
+                {staff.image_url ? (
+                  /* eslint-disable-next-line @next/next/no-img-element */
+                  <img src={staff.image_url} alt={staff.name} className="w-full h-full object-cover" />
+                ) : (
+                  <User className={`w-5 h-5 ${isSelected ? "text-white" : "text-stone-400"}`} />
+                )}
               </div>
               <h4 className={`font-semibold text-sm ${isSelected ? t.textPrimary : "text-stone-700"}`}>
                 {staff.name}

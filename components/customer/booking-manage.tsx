@@ -1,31 +1,47 @@
 "use client";
 
-import React from "react";
-import { CheckCircle2, Clock, Calendar, AlertCircle, Store, User, MapPin } from "lucide-react";
+import React, { useState, useTransition, useRef } from "react";
+import { CheckCircle2, Clock, Calendar, AlertCircle, Store, User, UploadCloud, FileImage, ExternalLink } from "lucide-react";
 import type { CustomerPortalData } from "@/lib/actions/customer-portal.actions";
+import { submitPaymentProof, createMidtransToken } from "@/lib/actions/payment.actions";
+import { createClient } from "@/lib/supabase/client";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 export function BookingManageClient({ initialData }: { initialData: CustomerPortalData }) {
   const { booking, tenant, history } = initialData;
+  const router = useRouter();
+
+  // State untuk form pembayaran manual
+  const [isPending, startTransition] = useTransition();
+  const [file, setFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // ── Theme Mapping ──
   const themeColor = tenant.theme_color || "teal";
   const themeStyles: Record<string, any> = {
-    teal: { textPrimary: "text-teal-700", bgPrimary: "bg-teal-600", bgLight: "bg-teal-50", borderLight: "border-teal-100", gradient: "from-teal-500 to-teal-700" },
-    rose: { textPrimary: "text-rose-700", bgPrimary: "bg-rose-600", bgLight: "bg-rose-50", borderLight: "border-rose-100", gradient: "from-rose-500 to-rose-700" },
-    orange: { textPrimary: "text-orange-700", bgPrimary: "bg-orange-500", bgLight: "bg-orange-50", borderLight: "border-orange-100", gradient: "from-orange-400 to-orange-600" },
-    violet: { textPrimary: "text-violet-700", bgPrimary: "bg-violet-600", bgLight: "bg-violet-50", borderLight: "border-violet-100", gradient: "from-violet-500 to-violet-700" },
-    blue: { textPrimary: "text-blue-700", bgPrimary: "bg-blue-600", bgLight: "bg-blue-50", borderLight: "border-blue-100", gradient: "from-blue-500 to-blue-700" },
+    teal: { textPrimary: "text-teal-700", bgPrimary: "bg-teal-600", bgLight: "bg-teal-50", borderLight: "border-teal-100", gradient: "from-teal-500 to-teal-700", ring: "ring-teal-500" },
+    rose: { textPrimary: "text-rose-700", bgPrimary: "bg-rose-600", bgLight: "bg-rose-50", borderLight: "border-rose-100", gradient: "from-rose-500 to-rose-700", ring: "ring-rose-500" },
+    orange: { textPrimary: "text-orange-700", bgPrimary: "bg-orange-500", bgLight: "bg-orange-50", borderLight: "border-orange-100", gradient: "from-orange-400 to-orange-600", ring: "ring-orange-500" },
+    violet: { textPrimary: "text-violet-700", bgPrimary: "bg-violet-600", bgLight: "bg-violet-50", borderLight: "border-violet-100", gradient: "from-violet-500 to-violet-700", ring: "ring-violet-500" },
+    blue: { textPrimary: "text-blue-700", bgPrimary: "bg-blue-600", bgLight: "bg-blue-50", borderLight: "border-blue-100", gradient: "from-blue-500 to-blue-700", ring: "ring-blue-500" },
   };
   const t = themeStyles[themeColor] || themeStyles.teal;
 
-  const isApproved = booking.payment_status === "approved";
-  const isRejected = booking.payment_status === "rejected";
+  const status = booking.payment_status as string; // 'pending', 'pending_verification', 'approved', 'rejected'
+  const isApproved = status === "approved";
+  const isRejected = status === "rejected";
+  const isPendingVerification = status === "pending_verification";
+  const isPendingPayment = status === "pending" || isRejected; 
+  // Jika ditolak, anggap butuh bayar ulang.
 
   function formatIDR(amount: number): string {
     return new Intl.NumberFormat("id-ID", {
@@ -43,6 +59,81 @@ export function BookingManageClient({ initialData }: { initialData: CustomerPort
       year: "numeric",
     });
   }
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const selectedFile = e.target.files[0];
+      if (selectedFile.size > 5 * 1024 * 1024) {
+        toast.error("Ukuran file maksimal 5MB.");
+        return;
+      }
+      setFile(selectedFile);
+    }
+  };
+
+  const handleSubmitProof = async () => {
+    if (!file) return;
+
+    startTransition(async () => {
+      try {
+        const supabase = createClient();
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${booking.id}-${Date.now()}.${fileExt}`;
+
+        const { error: uploadError, data: uploadData } = await supabase.storage
+          .from("payment_proofs")
+          .upload(fileName, file, { upsert: true });
+
+        if (uploadError) {
+          throw new Error("Gagal mengunggah gambar. Pastikan format benar.");
+        }
+
+        const { data: { publicUrl } } = supabase.storage
+          .from("payment_proofs")
+          .getPublicUrl(uploadData.path);
+
+        const res = await submitPaymentProof(booking.id, publicUrl);
+        if (res.success) {
+          toast.success("Bukti pembayaran berhasil diunggah!");
+          router.refresh(); // Refresh halaman agar status berubah menjadi pending_verification
+        } else {
+          throw new Error(res.error || "Gagal menyimpan bukti.");
+        }
+      } catch (err: any) {
+        toast.error(err.message || "Terjadi kesalahan.");
+      }
+    });
+  };
+
+  const handlePayGateway = async () => {
+    startTransition(async () => {
+      const res = await createMidtransToken(booking.id);
+      if (res.success && res.data) {
+        // Asumsi script Snap Midtrans sudah dimuat secara global
+        if ((window as any).snap) {
+          (window as any).snap.pay(res.data.token, {
+            onSuccess: function (result: any) {
+              toast.success("Pembayaran berhasil!");
+              router.refresh();
+            },
+            onPending: function (result: any) {
+              toast.info("Menunggu pembayaran Anda.");
+            },
+            onError: function (result: any) {
+              toast.error("Pembayaran gagal.");
+            },
+            onClose: function () {
+              toast.error("Anda menutup popup sebelum menyelesaikan pembayaran.");
+            }
+          });
+        } else {
+          toast.error("Midtrans Snap belum siap. Hubungi admin.");
+        }
+      } else {
+        toast.error(res.error || "Gagal memproses pembayaran Gateway.");
+      }
+    });
+  };
 
   return (
     <div className="max-w-md mx-auto min-h-screen bg-stone-50 pb-12">
@@ -65,12 +156,17 @@ export function BookingManageClient({ initialData }: { initialData: CustomerPort
                 <CheckCircle2 className={`w-8 h-8 ${t.textPrimary}`} />
               ) : isRejected ? (
                 <AlertCircle className="w-8 h-8 text-rose-500" />
+              ) : isPendingVerification ? (
+                <Clock className={`w-8 h-8 ${t.textPrimary}`} />
               ) : (
                 <Clock className="w-8 h-8 text-amber-500" />
               )}
             </div>
             <CardTitle className="text-lg text-stone-900">
-              {isApproved ? "Booking Telah Dikonfirmasi" : isRejected ? "Booking Dibatalkan" : "Menunggu Konfirmasi"}
+              {isApproved ? "Booking Telah Dikonfirmasi" 
+               : isRejected ? "Booking Dibatalkan" 
+               : isPendingVerification ? "Menunggu Verifikasi" 
+               : "Menunggu Pembayaran"}
             </CardTitle>
             <p className="text-sm text-stone-500 mt-1">
               ID: <span className="font-mono text-xs">{booking.id.split("-")[0]}</span>
@@ -114,17 +210,92 @@ export function BookingManageClient({ initialData }: { initialData: CustomerPort
               )}
               {booking.services && Number(booking.services.dp_amount) > 0 && (
                 <div className="flex justify-between items-center text-sm pt-2">
-                  <span className="text-stone-500">Total DP</span>
-                  <span className="font-bold text-stone-900">{formatIDR(Number(booking.services.dp_amount))}</span>
+                  <span className="text-stone-500">Total Dibayar</span>
+                  <span className="font-bold text-stone-900 text-base">{formatIDR(Number(booking.services.dp_amount))}</span>
                 </div>
               )}
             </div>
 
+            {/* Aksi Pembayaran */}
+            {isPendingPayment && Number(booking.services?.dp_amount) > 0 && (
+              <div className="pt-4 border-t border-stone-100">
+                {tenant.payment_method_type === "manual" ? (
+                  <div className="space-y-4">
+                    <div className="bg-stone-50 rounded-2xl p-4 border border-stone-100 text-sm text-center">
+                      <p className="text-stone-500 mb-2">Transfer ke rekening berikut:</p>
+                      <p className="font-bold text-stone-800 text-base whitespace-pre-wrap">
+                        {tenant.bank_account_details || "Belum ada informasi rekening."}
+                      </p>
+                      {tenant.qris_image_url && (
+                        <div className="mt-4 flex justify-center">
+                          <Image 
+                            src={tenant.qris_image_url} 
+                            alt="QRIS" 
+                            width={200} 
+                            height={200} 
+                            className="rounded-xl shadow-sm border border-stone-200"
+                          />
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <input 
+                        type="file" 
+                        accept="image/*" 
+                        className="hidden" 
+                        ref={fileInputRef}
+                        onChange={handleFileChange}
+                      />
+                      {!file ? (
+                        <button
+                          onClick={() => fileInputRef.current?.click()}
+                          className={`w-full py-3 rounded-xl border-2 border-dashed ${t.borderLight} ${t.textPrimary} ${t.bgLight} font-semibold flex items-center justify-center gap-2 hover:bg-stone-50 transition-colors text-sm`}
+                        >
+                          <UploadCloud className="w-5 h-5" />
+                          Unggah Bukti Transfer
+                        </button>
+                      ) : (
+                        <div className={`w-full py-3 px-4 rounded-xl border-2 ${t.borderLight} ${t.bgLight} flex items-center justify-between text-sm`}>
+                          <div className="flex items-center gap-2 truncate">
+                            <FileImage className={`w-5 h-5 ${t.textPrimary} shrink-0`} />
+                            <span className="truncate text-stone-700 font-medium">{file.name}</span>
+                          </div>
+                          <button onClick={() => setFile(null)} className="text-stone-400 hover:text-rose-500">
+                            Batal
+                          </button>
+                        </div>
+                      )}
+
+                      <Button 
+                        disabled={!file || isPending}
+                        onClick={handleSubmitProof}
+                        className={`w-full rounded-xl shadow-sm ${t.bgPrimary} hover:opacity-90`}
+                      >
+                        {isPending ? "Mengunggah..." : "Kirim Bukti Pembayaran"}
+                      </Button>
+                    </div>
+                  </div>
+                ) : tenant.payment_method_type === "gateway" ? (
+                  <div className="space-y-4">
+                     <p className="text-sm text-stone-500 text-center">Silakan selesaikan pembayaran online Anda secara aman.</p>
+                     <Button 
+                        disabled={isPending}
+                        onClick={handlePayGateway}
+                        className={`w-full rounded-xl shadow-sm ${t.bgPrimary} hover:opacity-90 h-12 text-base font-bold`}
+                      >
+                        {isPending ? "Memproses..." : "Bayar Sekarang"}
+                      </Button>
+                  </div>
+                ) : null}
+              </div>
+            )}
+
             {/* Aksi Tambahan */}
-            {!isApproved && !isRejected && (
+            {(!isApproved && !isRejected && !isPendingPayment) && (
               <div className="pt-2">
                 <a
-                  href={`https://wa.me/${tenant.whatsapp_number.replace(/^[0|+62]/, "62")}?text=Halo admin ${tenant.business_name}, saya ${booking.customer_name} ingin konfirmasi booking ID ${booking.id.split("-")[0]}`}
+                  href={`https://wa.me/${tenant.whatsapp_number?.replace(/^[0|+62]/, "62")}?text=Halo admin ${tenant.business_name}, saya ${booking.customer_name} ingin konfirmasi pembayaran booking ID ${booking.id.split("-")[0]}`}
                   target="_blank"
                   rel="noreferrer"
                   className={`block w-full py-3 rounded-xl text-center text-sm font-semibold transition-colors ${t.bgLight} ${t.textPrimary} hover:bg-stone-100`}
@@ -162,7 +333,7 @@ export function BookingManageClient({ initialData }: { initialData: CustomerPort
                     hist.payment_status === "rejected" ? "bg-rose-50 text-rose-600" :
                     "bg-amber-50 text-amber-600"
                   }`}>
-                    {hist.payment_status === "approved" ? "Selesai" : hist.payment_status}
+                    {hist.payment_status === "approved" ? "Selesai" : hist.payment_status === "pending_verification" ? "Verifikasi" : hist.payment_status}
                   </span>
                 </div>
               </div>

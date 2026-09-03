@@ -20,7 +20,7 @@ export default async function StaffPage() {
 
   const { data: tenant } = await supabase
     .from("tenants")
-    .select("id, business_name")
+    .select("id, business_name, business_type")
     .eq("id", user.id)
     .single();
 
@@ -52,7 +52,7 @@ export default async function StaffPage() {
       </div>
 
       <div className="max-w-4xl mx-auto px-4 py-8 sm:px-8">
-        <StaffList initialStaff={initialStaff} />
+        <StaffList initialStaff={initialStaff} businessType={tenant.business_type} />
       </div>
     </main>
   );

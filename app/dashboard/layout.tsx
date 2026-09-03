@@ -20,14 +20,14 @@ export default async function DashboardLayout({
 
   const { data: tenant } = await supabase
     .from("tenants")
-    .select("business_type")
+    .select("business_type, slug")
     .eq("id", user.id)
     .single();
 
   const dict = getBusinessDictionary(tenant?.business_type || "lainnya");
 
   return (
-    <DashboardNav serviceLabel={dict.serviceLabel} staffLabel={dict.staffLabel}>
+    <DashboardNav serviceLabel={dict.serviceLabel} staffLabel={dict.staffLabel} tenantSlug={tenant?.slug}>
       {children}
     </DashboardNav>
   );

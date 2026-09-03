@@ -130,135 +130,136 @@ export function DateSlotPicker({
    return false;
  };
 
- return (
- <div className="space-y-5">
- {/* ── Horizontal Scroll Date Picker ── */}
- <div>
- <div className="flex items-center justify-between mb-3">
- <label className="text-sm font-semibold text-stone-900 flex items-center gap-1.5">
- <CalendarIcon className="w-4 h-4 text-teal-600" />
- Pilih Tanggal Kunjungan Kamu
- </label>
- <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-teal-100 text-teal-800 ">
- Tersedia s/d 14 Hari
- </span>
- </div>
+  return (
+    <div className="space-y-8">
+      {/* ── Horizontal Scroll Date Picker ── */}
+      <div>
+        <div className="flex items-end justify-between mb-4">
+          <div>
+            <label className="text-base font-extrabold text-stone-900 flex items-center gap-2">
+              <CalendarIcon className="w-5 h-5 text-teal-500" />
+              Pilih Tanggal
+            </label>
+            <p className="text-xs text-stone-500 mt-1">Geser untuk melihat hingga 14 hari ke depan</p>
+          </div>
+        </div>
 
- <div className="flex gap-2 overflow-x-auto pb-2 pt-0.5 no-scrollbar touch-pan-x -mx-1 px-1">
- {availableDays.map((day) => {
- const isSelected = activeDate === day.dateString;
- return (
- <button
- key={day.dateString}
- type="button"
- onClick={() => handleDateSelect(day.dateString)}
- className={cn(
- "flex flex-col items-center justify-center min-w-[68px] h-[84px] rounded-2xl border-2 transition-all duration-200 cursor-pointer select-none flex-shrink-0 relative",
- isSelected
- ? "border-teal-600 bg-teal-600 text-white shadow-lg shadow-teal-600/25 scale-[1.03]"
- : "border-stone-200 bg-white hover:border-teal-400 hover:bg-teal-50/40 :bg-teal-950/20 text-stone-700 "
- )}
- >
- {day.isToday && (
- <span
- className={cn(
- "absolute -top-1.5 left-1/2 -translate-x-1/2 text-[9px] font-bold px-1.5 py-0.5 rounded-full leading-tight",
- isSelected
- ? "bg-white text-teal-700"
- : "bg-teal-500 text-white"
- )}
- >
- Hari Ini
- </span>
- )}
- <span
- className={cn(
- "text-[11px] uppercase font-medium tracking-wide",
- isSelected ? "text-teal-100" : "text-stone-400"
- )}
- >
- {day.dayName}
- </span>
- <span className="text-[22px] font-extrabold leading-tight">
- {day.dayNumber}
- </span>
- <span
- className={cn(
- "text-[10px]",
- isSelected ? "text-teal-100" : "text-stone-500"
- )}
- >
- {day.monthName}
- </span>
- </button>
- );
- })}
- </div>
- </div>
+        {/* Scroll Container with soft edges */}
+        <div className="flex gap-3 overflow-x-auto pb-4 pt-2 no-scrollbar touch-pan-x -mx-1 px-1">
+          {availableDays.map((day) => {
+            const isSelected = activeDate === day.dateString;
+            return (
+              <button
+                key={day.dateString}
+                type="button"
+                onClick={() => handleDateSelect(day.dateString)}
+                className={cn(
+                  "flex flex-col items-center justify-center min-w-[72px] h-[96px] rounded-[2.5rem] border transition-all duration-300 cursor-pointer select-none flex-shrink-0 relative group",
+                  isSelected
+                    ? "border-teal-500 bg-teal-500 text-white shadow-xl shadow-teal-500/30 scale-105 z-10"
+                    : "border-stone-100 bg-white hover:border-teal-200 hover:bg-teal-50/50 text-stone-600 shadow-sm"
+                )}
+              >
+                {day.isToday && (
+                  <span
+                    className={cn(
+                      "absolute -top-2 -right-1 text-[9px] font-bold px-2 py-0.5 rounded-full shadow-sm z-20 transition-colors",
+                      isSelected
+                        ? "bg-white text-teal-600"
+                        : "bg-rose-500 text-white"
+                    )}
+                  >
+                    Hari Ini
+                  </span>
+                )}
+                <span
+                  className={cn(
+                    "text-[11px] uppercase font-semibold tracking-wider mb-0.5",
+                    isSelected ? "text-teal-50" : "text-stone-400 group-hover:text-teal-600"
+                  )}
+                >
+                  {day.dayName}
+                </span>
+                <span className="text-2xl font-black tracking-tight leading-none mb-0.5">
+                  {day.dayNumber}
+                </span>
+                <span
+                  className={cn(
+                    "text-[10px] font-medium",
+                    isSelected ? "text-teal-100" : "text-stone-500"
+                  )}
+                >
+                  {day.monthName}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
 
- {/* ── Time Slot Grid ── */}
- <div>
- <div className="flex items-center justify-between mb-2.5">
- <label className="text-sm font-semibold text-stone-900 flex items-center gap-1.5">
- <Clock className="w-4 h-4 text-teal-600" />
- Pilih Jam Kosongnya
- </label>
- {isPending && (
- <span className="flex items-center gap-1 text-[11px] text-stone-400">
- <Loader2 className="w-3 h-3 animate-spin" />
- Tunggu ya...
- </span>
- )}
- </div>
+      {/* ── Time Slot Grid ── */}
+      <div>
+        <div className="flex items-center justify-between mb-4">
+          <label className="text-base font-extrabold text-stone-900 flex items-center gap-2">
+            <Clock className="w-5 h-5 text-teal-500" />
+            Pilih Jam Kosong
+          </label>
+          {isPending && (
+            <span className="flex items-center gap-1.5 text-xs font-medium text-teal-600 bg-teal-50 px-2 py-1 rounded-full animate-pulse">
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              Tunggu...
+            </span>
+          )}
+        </div>
 
- <div className={cn("grid grid-cols-3 sm:grid-cols-4 gap-2 transition-opacity", isPending && "opacity-50 pointer-events-none")}>
- {TIME_SLOTS.map((time) => {
- const unavailable = isSlotUnavailable(time);
- const isSelected = activeTime === time;
+        <div className={cn("grid grid-cols-3 sm:grid-cols-4 gap-3 transition-opacity", isPending && "opacity-50 pointer-events-none")}>
+          {TIME_SLOTS.map((time) => {
+            const unavailable = isSlotUnavailable(time);
+            const isSelected = activeTime === time;
 
- return (
- <button
- key={time}
- type="button"
- disabled={unavailable}
- onClick={() => handleTimeSelect(time)}
- title={unavailable ? "Slot ini tidak tersedia" : undefined}
- className={cn(
- "py-2.5 px-2 rounded-xl text-sm font-medium border text-center transition-all duration-150 relative",
- unavailable
- ? "bg-stone-50 text-stone-300 border-stone-100 cursor-not-allowed"
- : isSelected
- ? "border-teal-600 bg-teal-600 text-white font-semibold shadow-md shadow-teal-600/20 scale-[1.02]"
- : "border-stone-200 bg-white hover:border-teal-500 hover:bg-teal-50/40 :bg-teal-950/20 text-stone-800 active:scale-95"
- )}
- >
- {unavailable && (
- <span className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-40">
- <span className="w-full h-[1.5px] bg-stone-300 absolute rotate-[-15deg]" />
- </span>
- )}
- <span className={cn(unavailable && "opacity-40")}>{time}</span>
- </button>
- );
- })}
- </div>
+            return (
+              <button
+                key={time}
+                type="button"
+                disabled={unavailable}
+                onClick={() => handleTimeSelect(time)}
+                title={unavailable ? "Slot ini tidak tersedia" : undefined}
+                className={cn(
+                  "py-3 px-2 rounded-2xl text-sm font-bold border transition-all duration-300 relative overflow-hidden",
+                  unavailable
+                    ? "bg-stone-50/50 text-stone-300 border-stone-200 border-dashed cursor-not-allowed"
+                    : isSelected
+                    ? "border-teal-500 bg-teal-500 text-white shadow-lg shadow-teal-500/25 scale-[1.03]"
+                    : "border-stone-100 bg-white shadow-sm hover:border-teal-300 hover:bg-teal-50 hover:text-teal-700 text-stone-700 active:scale-95"
+                )}
+              >
+                {unavailable && (
+                  <span className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20">
+                    <span className="w-full h-[2px] bg-stone-300 absolute rotate-[-20deg]" />
+                  </span>
+                )}
+                <span className={cn("relative z-10", unavailable && "opacity-60")}>{time}</span>
+              </button>
+            );
+          })}
+        </div>
 
- {/* Legend */}
- <div className="flex items-center gap-4 mt-3 text-[11px] text-stone-400">
- <span className="flex items-center gap-1">
- <span className="w-3 h-3 rounded border-2 border-teal-600 bg-teal-600 inline-block" />
- Dipilih
- </span>
- <span className="flex items-center gap-1">
- <span className="w-3 h-3 rounded border border-stone-200 bg-white inline-block" />
- Tersedia
- </span>
- <span className="flex items-center gap-1">
- <span className="w-3 h-3 rounded border border-stone-100 bg-stone-50 inline-block" />
- Tidak Tersedia
- </span>
- </div>
- </div>
- </div>
- );
+        {/* Legend */}
+        <div className="flex flex-wrap items-center gap-4 mt-6 text-xs font-medium text-stone-500 bg-stone-50/50 p-3 rounded-2xl border border-stone-100">
+          <span className="flex items-center gap-1.5">
+            <span className="w-3.5 h-3.5 rounded-full border border-teal-500 bg-teal-500 shadow-sm" />
+            Pilihanmu
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="w-3.5 h-3.5 rounded-full border border-stone-200 bg-white shadow-sm" />
+            Tersedia
+          </span>
+          <span className="flex items-center gap-1.5 opacity-70">
+            <span className="w-3.5 h-3.5 rounded-full border border-stone-200 border-dashed bg-stone-50" />
+            Penuh / Lewat
+          </span>
+        </div>
+      </div>
+    </div>
+  );
 }

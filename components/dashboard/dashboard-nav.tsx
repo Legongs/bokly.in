@@ -3,15 +3,17 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { CalendarDays, Scissors, Settings, BarChart3, Users, Contact } from "lucide-react";
+import { CalendarDays, Scissors, Settings, BarChart3, Users, Contact, Share2, Check, CreditCard } from "lucide-react";
+import { useState } from "react";
 
 interface DashboardNavProps {
   children: React.ReactNode;
   serviceLabel: string;
   staffLabel: string;
+  tenantSlug?: string;
 }
 
-export function DashboardNav({ children, serviceLabel, staffLabel }: DashboardNavProps) {
+export function DashboardNav({ children, serviceLabel, staffLabel, tenantSlug }: DashboardNavProps) {
   const pathname = usePathname();
 
   const navItems = [
@@ -41,6 +43,11 @@ export function DashboardNav({ children, serviceLabel, staffLabel }: DashboardNa
       icon: Contact,
     },
     {
+      label: "Pembayaran",
+      href: "/dashboard/payments",
+      icon: CreditCard,
+    },
+    {
       label: "Pengaturan",
       href: "/dashboard/settings",
       icon: Settings,
@@ -48,13 +55,20 @@ export function DashboardNav({ children, serviceLabel, staffLabel }: DashboardNa
   ];
 
   return (
-    <div className="min-h-screen bg-stone-50 flex flex-col font-sans text-stone-900 pb-20 sm:pb-0">
+    <div className="min-h-screen bg-stone-50 flex flex-col font-sans text-stone-900 pb-20 pt-16 sm:pb-0 sm:pt-0">
+      {/* Mobile Top Header (Visible only on mobile) */}
+      <div className="sm:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b border-stone-200 z-50 flex items-center justify-between px-4">
+        <h2 className="text-lg font-extrabold tracking-tight text-stone-900">
+          maubooking<span className="text-teal-600">.in</span>
+        </h2>
+      </div>
+
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col sm:flex-row">
         
         {/* Desktop Sidebar (Hidden on mobile) */}
         <aside className="hidden sm:flex flex-col w-64 bg-white border-r border-stone-200 h-screen sticky top-0 p-4">
-          <div className="mb-8 px-4">
+          <div className="mb-8 px-4 flex items-center justify-between">
             <h2 className="text-xl font-extrabold tracking-tight text-stone-900">
               maubooking<span className="text-teal-600">.in</span>
             </h2>

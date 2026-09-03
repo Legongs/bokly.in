@@ -27,14 +27,9 @@ const updateTenantSettingsSchema = z.object({
    "servis",
    "lainnya",
  ]),
- qris_image_url: z.string().url("Wah, link QRIS-nya nggak valid nih.").nullable().optional().or(z.literal("")),
- theme_color: z.enum(["teal", "rose", "orange", "violet", "blue"]).default("teal"),
  open_time: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Format jam buka harus HH:MM (contoh: 09:00)").default("09:00"),
  close_time: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Format jam tutup harus HH:MM (contoh: 21:00)").default("21:00"),
- payment_method_type: z.enum(["manual", "gateway"]).default("manual"),
- payment_gateway_provider: z.enum(["midtrans", "xendit"]).nullable().optional(),
- payment_gateway_server_key: z.string().nullable().optional(),
- payment_gateway_client_key: z.string().nullable().optional(),
+ timezone: z.string().default("Asia/Jakarta"),
 });
 
 type SettingsFields = z.infer<typeof updateTenantSettingsSchema>;
@@ -52,14 +47,9 @@ export function SettingsForm({ tenant }: SettingsFormProps) {
  whatsapp_number: tenant.whatsapp_number,
  business_type: (tenant as any).business_type || "lainnya",
  telegram_chat_id: tenant.telegram_chat_id ?? "",
- qris_image_url: tenant.qris_image_url ?? "",
- theme_color: (tenant as any).theme_color || "teal",
  open_time: (tenant as any).open_time || "09:00",
  close_time: (tenant as any).close_time || "21:00",
- payment_method_type: (tenant as any).payment_method_type || "manual",
- payment_gateway_provider: (tenant as any).payment_gateway_provider || "midtrans",
- payment_gateway_server_key: (tenant as any).payment_gateway_server_key || "",
- payment_gateway_client_key: (tenant as any).payment_gateway_client_key || "",
+ timezone: (tenant as any).timezone || "Asia/Jakarta",
  });
 
  const [fieldErrors, setFieldErrors] = useState<Partial<Record<keyof SettingsFields, string>>>({});
@@ -102,13 +92,13 @@ export function SettingsForm({ tenant }: SettingsFormProps) {
  };
 
  return (
- <Card className="w-full max-w-xl mx-auto rounded-[2rem] border-none bg-white shadow-md shadow-stone-200/50 mt-6 overflow-hidden">
+ <Card className="w-full max-w-xl mx-auto rounded-[2rem] border-none bg-white shadow-md shadow-stone-200/50 overflow-hidden">
  <CardHeader className="space-y-1 pb-4">
  <CardTitle className="text-xl font-extrabold text-stone-900 flex items-center gap-2">
  Pengaturan Toko
  </CardTitle>
  <CardDescription className="text-stone-500">
- Ubah nama toko, WA admin, sampai QRIS buat DP di sini ya.
+ Ubah nama toko, WA admin, jam operasional, dan zona waktu di sini.
  </CardDescription>
  </CardHeader>
  
@@ -234,93 +224,23 @@ export function SettingsForm({ tenant }: SettingsFormProps) {
  )}
  </div>
 
- <div className="space-y-1.5">
- <label className="text-sm font-semibold text-stone-700 ">
- URL Gambar QRIS (Opsional buat DP)
- </label>
- <div className="relative">
- <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400 pointer-events-none" />
- <input
- type="url"
- value={form.qris_image_url || ""}
- onChange={(e) => updateForm("qris_image_url", e.target.value)}
- onBlur={(e) => validateField("qris_image_url", e.target.value)}
- placeholder="https://contoh.com/qrisku.jpg"
- className={`w-full pl-10 pr-4 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 caret-teal-600 focus:outline-none focus:ring-4 focus:ring-teal-500/20 transition-all shadow-inner ${
- fieldErrors.qris_image_url ? "ring-2 ring-rose-400 bg-rose-50" : ""
- }`}
- disabled={isPending}
- />
- </div>
- {fieldErrors.qris_image_url && (
- <p className="text-xs text-rose-500 font-medium">{fieldErrors.qris_image_url}</p>
- )}
- </div>
-
- <div className="space-y-1.5">
-  <label className="text-sm font-semibold text-stone-700 ">
-  Metode Pembayaran DP
-  </label>
-  <div className="relative">
-  <select
-    value={form.payment_method_type}
-    onChange={(e) => updateForm("payment_method_type", e.target.value)}
-    className={`w-full px-4 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 caret-teal-600 focus:outline-none focus:ring-4 focus:ring-teal-500/20 transition-all shadow-inner appearance-none ${
-      fieldErrors.payment_method_type ? "ring-2 ring-rose-400 bg-rose-50" : ""
-    }`}
-    disabled={isPending}
-  >
-    <option value="manual">Manual (Transfer/QRIS)</option>
-    <option value="gateway">Otomatis (Payment Gateway)</option>
-  </select>
+  <div className="space-y-1.5">
+    <label className="text-sm font-semibold text-stone-700 ">
+      Zona Waktu Outlet
+    </label>
+    <select
+      value={form.timezone}
+      onChange={(e) => updateForm("timezone", e.target.value)}
+      className={`w-full px-4 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 caret-teal-600 focus:outline-none focus:ring-4 focus:ring-teal-500/20 transition-all shadow-inner appearance-none ${
+        fieldErrors.timezone ? "ring-2 ring-rose-400 bg-rose-50" : ""
+      }`}
+      disabled={isPending}
+    >
+      <option value="Asia/Jakarta">WIB (Waktu Indonesia Barat)</option>
+      <option value="Asia/Makassar">WITA (Waktu Indonesia Tengah)</option>
+      <option value="Asia/Jayapura">WIT (Waktu Indonesia Timur)</option>
+    </select>
   </div>
-  {fieldErrors.payment_method_type && (
-  <p className="text-xs text-rose-500 font-medium">{fieldErrors.payment_method_type}</p>
-  )}
-  </div>
-
-  {form.payment_method_type === "gateway" && (
-    <div className="p-4 bg-stone-50 rounded-2xl space-y-4">
-      <h3 className="font-bold text-sm text-stone-800">Pengaturan Payment Gateway</h3>
-      
-      <div className="space-y-1.5">
-        <label className="text-sm font-semibold text-stone-700 ">Penyedia (Provider)</label>
-        <select
-          value={form.payment_gateway_provider || "midtrans"}
-          onChange={(e) => updateForm("payment_gateway_provider", e.target.value)}
-          className={`w-full px-4 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 caret-teal-600 focus:outline-none focus:ring-4 focus:ring-teal-500/20 transition-all shadow-inner appearance-none`}
-          disabled={isPending}
-        >
-          <option value="midtrans">Midtrans</option>
-          <option value="xendit">Xendit</option>
-        </select>
-      </div>
-
-      <div className="space-y-1.5">
-        <label className="text-sm font-semibold text-stone-700 ">Server Key</label>
-        <input
-          type="password"
-          value={form.payment_gateway_server_key || ""}
-          onChange={(e) => updateForm("payment_gateway_server_key", e.target.value)}
-          placeholder="Masukkan Server Key"
-          className={`w-full px-4 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 caret-teal-600 focus:outline-none focus:ring-4 focus:ring-teal-500/20 transition-all shadow-inner`}
-          disabled={isPending}
-        />
-      </div>
-
-      <div className="space-y-1.5">
-        <label className="text-sm font-semibold text-stone-700 ">Client Key / Public Key</label>
-        <input
-          type="text"
-          value={form.payment_gateway_client_key || ""}
-          onChange={(e) => updateForm("payment_gateway_client_key", e.target.value)}
-          placeholder="Masukkan Client Key"
-          className={`w-full px-4 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 caret-teal-600 focus:outline-none focus:ring-4 focus:ring-teal-500/20 transition-all shadow-inner`}
-          disabled={isPending}
-        />
-      </div>
-    </div>
-  )}
 
   <div className="grid grid-cols-2 gap-4">
     <div className="space-y-1.5">

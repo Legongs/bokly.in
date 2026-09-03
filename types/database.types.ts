@@ -6,7 +6,7 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[];
 
-export type PaymentStatus = "pending" | "approved" | "rejected";
+export type PaymentStatus = "pending" | "pending_verification" | "approved" | "rejected";
 
 export interface Database {
   public: {
@@ -28,6 +28,15 @@ export interface Database {
           payment_gateway_provider: string | null;
           payment_gateway_server_key: string | null;
           payment_gateway_client_key: string | null;
+          wa_method: "manual" | "api";
+          wa_api_key: string | null;
+          hero_image_url: string | null;
+          welcome_message: string | null;
+          address: string | null;
+          instagram_handle: string | null;
+          cancellation_policy: string | null;
+          bank_account_details: string | null;
+          timezone: string | null;
           created_at: string;
         };
         Insert: {
@@ -46,6 +55,15 @@ export interface Database {
           payment_gateway_provider?: string | null;
           payment_gateway_server_key?: string | null;
           payment_gateway_client_key?: string | null;
+          wa_method?: "manual" | "api";
+          wa_api_key?: string | null;
+          hero_image_url?: string | null;
+          welcome_message?: string | null;
+          address?: string | null;
+          instagram_handle?: string | null;
+          cancellation_policy?: string | null;
+          bank_account_details?: string | null;
+          timezone?: string | null;
           created_at?: string;
         };
         Update: {
@@ -64,6 +82,15 @@ export interface Database {
           payment_gateway_provider?: string | null;
           payment_gateway_server_key?: string | null;
           payment_gateway_client_key?: string | null;
+          wa_method?: "manual" | "api";
+          wa_api_key?: string | null;
+          hero_image_url?: string | null;
+          welcome_message?: string | null;
+          address?: string | null;
+          instagram_handle?: string | null;
+          cancellation_policy?: string | null;
+          bank_account_details?: string | null;
+          timezone?: string;
           created_at?: string;
         };
         Relationships: [];
@@ -111,18 +138,24 @@ export interface Database {
           id: string;
           tenant_id: string;
           name: string;
+          description: string | null;
+          image_url: string | null;
           created_at: string;
         };
         Insert: {
           id?: string;
           tenant_id: string;
           name: string;
+          description?: string | null;
+          image_url?: string | null;
           created_at?: string;
         };
         Update: {
           id?: string;
           tenant_id?: string;
           name?: string;
+          description?: string | null;
+          image_url?: string | null;
           created_at?: string;
         };
         Relationships: [

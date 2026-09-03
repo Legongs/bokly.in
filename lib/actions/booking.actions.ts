@@ -366,3 +366,202 @@ export async function updateBookingPaymentStatus(
     return { success: false, error: "Server kita lagi ngambek dikit nih. Coba klik lagi ya." };
   }
 }
+
+// ── handleBookingSuccess ──────────────────────────────────────────────────────
+export async function handleBookingSuccess(
+  bookingId: string,
+  tenantId: string
+): Promise<ActionResponse<{ type: "manual" | "api"; url?: string }>> {
+  try {
+    const supabase = await createClient();
+
+    const { data: bookingData, error: bookingError } = await supabase
+      .from("bookings")
+      .select(`
+        *,
+        services (name, price, dp_amount),
+        tenants (business_name, whatsapp_number, wa_method, wa_api_key)
+      `)
+      .eq("id", bookingId)
+      .eq("tenant_id", tenantId)
+      .single();
+
+    if (bookingError || !bookingData) {
+      return { success: false, error: "Data booking tidak ditemukan." };
+    }
+
+    const tenant = bookingData.tenants as any;
+    const service = bookingData.services as any;
+
+    const messageText = `Halo ${tenant.business_name},\n\nSaya ${bookingData.customer_name} ingin konfirmasi booking:\n\nLayanan: ${service.name}\nTanggal: ${bookingData.booking_date}\nJam: ${bookingData.start_time.slice(0,5)}\n\nTerima kasih!`;
+    const encodedMessage = encodeURIComponent(messageText);
+
+    const waMethod = tenant.wa_method || "manual";
+
+    if (waMethod === "manual") {
+      // Hilangkan awalan 0, ganti jadi 62 untuk wa.me
+      let waNumber = tenant.whatsapp_number;
+      if (waNumber.startsWith("0")) waNumber = "62" + waNumber.slice(1);
+      
+      const url = `https://wa.me/${waNumber}?text=${encodedMessage}`;
+      return { success: true, data: { type: "manual", url } };
+    } else if (waMethod === "api") {
+      if (!tenant.wa_api_key) {
+        return { success: false, error: "API Key Fonnte belum diatur oleh tenant." };
+      }
+
+      const customerMessage = `Halo ${bookingData.customer_name},\n\nBooking kamu di ${tenant.business_name} berhasil dicatat!\n\nLayanan: ${service.name}\nTanggal: ${bookingData.booking_date}\nJam: ${bookingData.start_time.slice(0,5)}\n\nTerima kasih!`;
+
+      // Eksekusi POST ke Fonnte
+      const response = await fetch("https://api.fonnte.com/send", {
+        method: "POST",
+        headers: {
+          "Authorization": tenant.wa_api_key,
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: new URLSearchParams({
+          target: bookingData.customer_wa,
+          message: customerMessage,
+          countryCode: "62",
+        }).toString(),
+      });
+
+      const resData = await response.json();
+      if (!response.ok || !resData.status) {
+        console.error("Fonnte API Error:", resData);
+        return { success: false, error: "Gagal mengirim pesan otomatis via Fonnte." };
+      }
+
+      return { success: true, data: { type: "api" } };
+    }
+
+    return { success: false, error: "Metode WA tidak dikenali." };
+
+  } catch (err) {
+    console.error("Error di handleBookingSuccess:", err);
+    return { success: false, error: "Terjadi kesalahan internal." };
+  }
+}
+
+// ── getAvailableSlots ─────────────────────────────────────────────────────────
+const getAvailableSlotsSchema = z.object({
+  tenantId: z.string().uuid("ID Outlet tidak valid."),
+  serviceId: z.string().uuid("ID Layanan tidak valid."),
+  staffId: z.string().uuid("ID Pegawai tidak valid."),
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Format tanggal harus YYYY-MM-DD."),
+});
+
+function parseTime(timeStr: string): number {
+  const [h, m] = timeStr.split(":").map(Number);
+  return h * 60 + (m || 0);
+}
+
+function formatTime(minutes: number): string {
+  const h = Math.floor(minutes / 60).toString().padStart(2, "0");
+  const m = (minutes % 60).toString().padStart(2, "0");
+  return `${h}:${m}`;
+}
+
+export async function getAvailableSlots(
+  tenantId: string,
+  serviceId: string,
+  staffId: string,
+  date: string
+): Promise<ActionResponse<string[]>> {
+  const parsed = getAvailableSlotsSchema.safeParse({ tenantId, serviceId, staffId, date });
+  if (!parsed.success) {
+    return { success: false, error: parsed.error.issues[0].message };
+  }
+
+  try {
+    const supabase = await createClient();
+
+    // 1. Ambil jam operasional outlet
+    const { data: tenant, error: tenantErr } = await supabase
+      .from("tenants")
+      .select("open_time, close_time, timezone")
+      .eq("id", tenantId)
+      .single();
+
+    if (tenantErr || !tenant) return { success: false, error: "Data outlet tidak ditemukan." };
+
+    // 2. Ambil durasi & buffer layanan
+    const { data: service, error: serviceErr } = await supabase
+      .from("services")
+      .select("duration_minutes, buffer_minutes")
+      .eq("id", serviceId)
+      .single();
+    
+    if (serviceErr || !service) return { success: false, error: "Layanan tidak ditemukan." };
+
+    // 3. Ambil jadwal existing (pending/approved) milik staff ini di tanggal yang dipilih
+    const { data: existingBookings, error: bookingsErr } = await supabase
+      .from("bookings")
+      .select("start_time, end_time, services(buffer_minutes)")
+      .eq("tenant_id", tenantId)
+      .eq("staff_id", staffId)
+      .eq("booking_date", date)
+      .in("payment_status", ["pending", "approved"]);
+
+    if (bookingsErr) return { success: false, error: "Gagal mengambil data jadwal." };
+
+    // Parsing time to minutes
+    const openMinutes = parseTime(tenant.open_time);
+    const closeMinutes = parseTime(tenant.close_time);
+    const duration = service.duration_minutes;
+    const buffer = service.buffer_minutes || 0;
+    const totalRequiredMinutes = duration + buffer;
+
+    // Mapping existing bookings to ranges (start, end + buffer)
+    const existingRanges = (existingBookings || []).map((b: any) => {
+      const existingBuffer = b.services?.buffer_minutes || 0;
+      return {
+        start: parseTime(b.start_time),
+        end: parseTime(b.end_time) + existingBuffer,
+      };
+    });
+
+    // Menentukan waktu saat ini di lokasi outlet
+    const tenantTimezone = tenant.timezone || "Asia/Jakarta";
+    const now = new Date();
+    const todayLocal = new Date(now.toLocaleString("en-US", { timeZone: tenantTimezone }));
+    const todayDateString = todayLocal.getFullYear() + "-" + 
+                            String(todayLocal.getMonth() + 1).padStart(2, "0") + "-" + 
+                            String(todayLocal.getDate()).padStart(2, "0");
+
+    let currentMinutesLocal = -1;
+    if (date === todayDateString) {
+      currentMinutesLocal = todayLocal.getHours() * 60 + todayLocal.getMinutes();
+    }
+
+    const availableSlots: string[] = [];
+    const intervalMinutes = 30; // Interval pencarian slot tiap 30 menit
+
+    for (let slotStart = openMinutes; slotStart < closeMinutes; slotStart += intervalMinutes) {
+      const slotEnd = slotStart + totalRequiredMinutes;
+
+      // a. Apakah waktu pengerjaan melewati jam tutup?
+      if (slotEnd > closeMinutes) continue;
+
+      // b. Apakah slot ini sudah lewat dari jam sekarang (jika hari ini)?
+      if (slotStart <= currentMinutesLocal) continue;
+
+      // c. Apakah slot ini beririsan dengan jadwal yang sudah ada?
+      // Logika irisan (overlap): A.start < B.end AND A.end > B.start
+      const isOverlap = existingRanges.some((range) => {
+        return slotStart < range.end && slotEnd > range.start;
+      });
+
+      if (!isOverlap) {
+        availableSlots.push(formatTime(slotStart));
+      }
+    }
+
+    return { success: true, data: availableSlots };
+  } catch (err) {
+    console.error("Error di getAvailableSlots:", err);
+    return { success: false, error: "Terjadi kesalahan sistem saat mengecek slot." };
+  }
+}
+
+

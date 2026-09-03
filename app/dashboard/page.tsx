@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getTodayBookings } from "@/lib/actions/dashboard.actions";
 import { TimelineView } from "@/components/dashboard/timeline-view";
+import { ShareButton } from "@/components/dashboard/share-button";
 import { Store, CalendarDays, TrendingUp } from "lucide-react";
 
 export const metadata = {
@@ -59,23 +60,28 @@ export default async function DashboardPage() {
  const approvedCountToday = todayBookings.filter((b) => b.payment_status === "approved").length;
 
  return (
- <main className="min-h-screen bg-stone-50 pb-20">
- {/* ── Header Dashboard ── */}
- <header className="bg-white border-b border-stone-200 px-4 py-4 sticky top-0 z-10">
- <div className="max-w-3xl mx-auto flex items-center justify-between">
- <div>
- <h1 className="font-bold text-lg text-stone-900 ">
- Dashboard
- </h1>
- <p className="text-xs text-stone-500">
- {tenant.business_name} (maubooking.in/{tenant.slug})
- </p>
- </div>
- <div className="w-8 h-8 rounded-full bg-teal-100 flex items-center justify-center text-teal-700 font-bold text-sm">
- {tenant.business_name.charAt(0).toUpperCase()}
- </div>
- </div>
- </header>
+  <main className="min-h-screen bg-stone-50 pb-20">
+  {/* ── Header Dashboard ── */}
+  <header className="bg-white border-b border-stone-200 px-4 py-5 sticky top-0 z-10 shadow-sm">
+  <div className="max-w-3xl mx-auto flex items-center justify-between gap-4">
+  <div className="flex-1 min-w-0 flex items-center gap-4">
+    <div className="w-14 h-14 rounded-[1.2rem] bg-gradient-to-br from-teal-100 to-teal-50 flex-shrink-0 flex items-center justify-center text-teal-700 font-extrabold text-2xl shadow-inner border border-teal-200/50">
+      {tenant.business_name.charAt(0).toUpperCase()}
+    </div>
+    <div className="min-w-0">
+      <div className="flex items-center gap-3">
+        <h1 className="font-extrabold text-2xl text-stone-900 truncate tracking-tight">
+          {tenant.business_name}
+        </h1>
+        <ShareButton tenantSlug={tenant.slug} />
+      </div>
+      <p className="text-sm text-stone-500 truncate mt-0.5 font-medium">
+        maubooking.in/<span className="text-stone-700 font-bold">{tenant.slug}</span>
+      </p>
+    </div>
+  </div>
+  </div>
+  </header>
 
  <div className="max-w-3xl mx-auto px-4 pt-6 space-y-6">
   {/* ── Metrik Ringkas ── */}
@@ -92,18 +98,18 @@ export default async function DashboardPage() {
   </p>
   </div>
   
-  <div className="bg-gradient-to-br from-orange-500 to-orange-400 rounded-3xl p-5 shadow-lg shadow-orange-500/20 text-white relative overflow-hidden">
-  {/* Decorative blobs */}
-  <div className="absolute -top-6 -right-6 w-24 h-24 bg-white/20 rounded-full blur-xl" aria-hidden="true" />
+  <div className="bg-orange-50/80 rounded-[1.5rem] p-5 shadow-sm shadow-orange-900/5 border border-orange-200/50 relative overflow-hidden">
+  {/* Decorative earthy blob */}
+  <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-orange-200/30 rounded-full blur-2xl" aria-hidden="true" />
   <div className="relative">
-  <div className="flex items-center gap-2 text-orange-50 mb-3">
+  <div className="flex items-center gap-2 text-orange-700 mb-3">
   <TrendingUp className="w-4 h-4" />
-  <span className="text-[11px] font-bold uppercase tracking-widest">
+  <span className="text-[11px] font-bold uppercase tracking-widest text-orange-600/80">
   Perlu Tindakan
   </span>
   </div>
-  <p className="text-3xl font-extrabold flex items-baseline gap-1">
-  {pendingCount} <span className="text-sm font-semibold text-orange-200">Pending</span>
+  <p className="text-3xl font-extrabold text-orange-900 flex items-baseline gap-1">
+  {pendingCount} <span className="text-sm font-semibold text-orange-600/80">Pending</span>
   </p>
   </div>
   </div>

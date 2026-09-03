@@ -11,6 +11,8 @@ import type { ActionResponse } from "./tenant.actions";
 const staffSchema = z.object({
   id: z.string().uuid().optional(),
   name: z.string().min(2, "Nama pegawai minimal 2 huruf.").max(100, "Nama kepanjangan, maksimal 100 huruf."),
+  description: z.string().max(500, "Deskripsi kepanjangan, maksimal 500 huruf.").optional().nullable(),
+  image_url: z.string().url("Wah, link foto-nya nggak valid nih.").nullable().optional().or(z.literal("")),
 });
 
 type StaffPayload = z.infer<typeof staffSchema>;
@@ -64,12 +66,15 @@ export async function createStaff(payload: StaffPayload): Promise<ActionResponse
       .insert({
         tenant_id: tenantData.id,
         name: parsed.data.name,
+        description: parsed.data.description,
+        image_url: parsed.data.image_url,
       })
       .select()
       .single();
 
     if (error) {
-      return { success: false, error: "Gagal menyimpan pegawai" };
+      console.error("Kesalahan menyimpan pegawai:", error);
+      return { success: false, error: "Gagal menyimpan pegawai: " + error.message };
     }
 
     revalidatePath("/dashboard/staff");
@@ -102,6 +107,8 @@ export async function updateStaff(payload: StaffPayload): Promise<ActionResponse
       .from("staff")
       .update({
         name: parsed.data.name,
+        description: parsed.data.description,
+        image_url: parsed.data.image_url,
       })
       .eq("id", parsed.data.id)
       .eq("tenant_id", authData.user.id) // WAJIB: Validasi kepemilikan data

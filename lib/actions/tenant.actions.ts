@@ -107,14 +107,9 @@ const updateTenantSettingsSchema = z.object({
     .max(16, "Nomor WA kepanjangan, maksimal 16 angka ya.")
     .regex(/^(\+62|62|0)8[1-9][0-9]{6,11}$/, "Format WA kurang pas. Pakai awalan 08 atau 628 ya."),
   telegram_chat_id: z.string().nullable().optional(),
-  qris_image_url: z.string().url("Wah, link QRIS-nya nggak valid nih.").nullable().optional().or(z.literal("")),
-  theme_color: z.enum(["teal", "rose", "orange", "violet", "blue"]).default("teal"),
   open_time: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Format jam buka harus HH:MM (contoh: 09:00)").default("09:00"),
   close_time: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Format jam tutup harus HH:MM (contoh: 21:00)").default("21:00"),
-  payment_method_type: z.enum(["manual", "gateway"]).default("manual"),
-  payment_gateway_provider: z.enum(["midtrans", "xendit"]).nullable().optional(),
-  payment_gateway_server_key: z.string().nullable().optional(),
-  payment_gateway_client_key: z.string().nullable().optional(),
+  timezone: z.string().default("Asia/Jakarta"),
 });
 
 type UpdateTenantSettingsInput = z.infer<typeof updateTenantSettingsSchema>;
@@ -136,9 +131,6 @@ export async function updateTenantSettings(
       return { success: false, error: "Akses ditolak: Anda tidak memiliki akses untuk memperbarui pengaturan tenant ini." };
     }
 
-    // Jika qris_image_url berupa string kosong, ubah jadi null
-    const finalQris = parsed.data.qris_image_url === "" ? null : parsed.data.qris_image_url;
-
     const { data, error } = await supabase
       .from("tenants")
       .update({
@@ -146,14 +138,9 @@ export async function updateTenantSettings(
         business_type: parsed.data.business_type,
         whatsapp_number: parsed.data.whatsapp_number,
         telegram_chat_id: parsed.data.telegram_chat_id || null,
-        qris_image_url: finalQris,
-        theme_color: parsed.data.theme_color,
         open_time: parsed.data.open_time,
         close_time: parsed.data.close_time,
-        payment_method_type: parsed.data.payment_method_type,
-        payment_gateway_provider: parsed.data.payment_gateway_provider || null,
-        payment_gateway_server_key: parsed.data.payment_gateway_server_key || null,
-        payment_gateway_client_key: parsed.data.payment_gateway_client_key || null,
+        timezone: parsed.data.timezone,
       })
       .eq("id", parsed.data.id) // Aman karena user.id sudah divalidasi sama dengan parsed.data.id
       .select()
@@ -166,6 +153,174 @@ export async function updateTenantSettings(
     const tenant = data as Tenant;
     revalidatePath(`/${tenant.slug}`, "page");
     revalidatePath("/dashboard", "layout"); // Invalidasi seluruh dashboard
+
+    return { success: true, data: tenant };
+  } catch {
+    return { success: false, error: "Duh, server kita lagi agak ngambek. Coba muat ulang halamannya ya." };
+  }
+}
+
+// ── updatePaymentSettings ────────────────────────────────────────────────────────
+const updatePaymentSettingsSchema = z.object({
+  id: z.string().uuid("ID Tenant-nya kurang pas nih."),
+  qris_image_url: z.string().url("Wah, link QRIS-nya nggak valid nih.").nullable().optional().or(z.literal("")),
+  payment_method_type: z.enum(["manual", "gateway"]).default("manual"),
+  payment_gateway_provider: z.enum(["midtrans", "xendit"]).nullable().optional(),
+  payment_gateway_server_key: z.string().nullable().optional(),
+  payment_gateway_client_key: z.string().nullable().optional(),
+});
+
+type UpdatePaymentSettingsInput = z.infer<typeof updatePaymentSettingsSchema>;
+
+export async function updatePaymentSettings(
+  input: UpdatePaymentSettingsInput
+): Promise<ActionResponse<Tenant>> {
+  const parsed = updatePaymentSettingsSchema.safeParse(input);
+  if (!parsed.success) {
+    return { success: false, error: parsed.error.issues[0]?.message ?? "Ada data yang kurang pas nih." };
+  }
+
+  try {
+    const supabase = await createClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user || user.id !== parsed.data.id) {
+      return { success: false, error: "Akses ditolak: Anda tidak memiliki akses untuk memperbarui pengaturan tenant ini." };
+    }
+
+    const finalQris = parsed.data.qris_image_url === "" ? null : parsed.data.qris_image_url;
+
+    const { data, error } = await supabase
+      .from("tenants")
+      .update({
+        qris_image_url: finalQris,
+        payment_method_type: parsed.data.payment_method_type,
+        payment_gateway_provider: parsed.data.payment_gateway_provider || null,
+        payment_gateway_server_key: parsed.data.payment_gateway_server_key || null,
+        payment_gateway_client_key: parsed.data.payment_gateway_client_key || null,
+      })
+      .eq("id", parsed.data.id)
+      .select()
+      .single();
+
+    if (error) {
+      return { success: false, error: "Yah, gagal nyimpen pengaturan pembayaran. Coba lagi ya." };
+    }
+
+    const tenant = data as Tenant;
+    revalidatePath(`/${tenant.slug}`, "page");
+    revalidatePath("/dashboard", "layout");
+
+    return { success: true, data: tenant };
+  } catch {
+    return { success: false, error: "Duh, server kita lagi agak ngambek. Coba muat ulang halamannya ya." };
+  }
+}
+
+// ── updateWaSettings ───────────────────────────────────────────────────────────
+const updateWaSettingsSchema = z.object({
+  id: z.string().uuid("ID Tenant-nya kurang pas nih."),
+  wa_method: z.enum(["manual", "api"]),
+  wa_api_key: z.string().nullable().optional(),
+});
+
+type UpdateWaSettingsInput = z.infer<typeof updateWaSettingsSchema>;
+
+export async function updateWaSettings(
+  input: UpdateWaSettingsInput
+): Promise<ActionResponse<Tenant>> {
+  const parsed = updateWaSettingsSchema.safeParse(input);
+  if (!parsed.success) {
+    return { success: false, error: parsed.error.issues[0]?.message ?? "Ada data yang kurang pas nih." };
+  }
+
+  try {
+    const supabase = await createClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user || user.id !== parsed.data.id) {
+      return { success: false, error: "Akses ditolak: Anda tidak memiliki akses untuk memperbarui pengaturan tenant ini." };
+    }
+
+    const { data, error } = await supabase
+      .from("tenants")
+      .update({
+        wa_method: parsed.data.wa_method,
+        wa_api_key: parsed.data.wa_method === "api" ? (parsed.data.wa_api_key || null) : null,
+      })
+      .eq("id", parsed.data.id)
+      .select()
+      .single();
+
+    if (error) {
+      return { success: false, error: "Yah, gagal nyimpen pengaturan WhatsApp. Coba lagi ya." };
+    }
+
+    const tenant = data as Tenant;
+    revalidatePath(`/${tenant.slug}`, "page");
+    revalidatePath("/dashboard", "layout");
+
+    return { success: true, data: tenant };
+  } catch {
+    return { success: false, error: "Duh, server kita lagi agak ngambek. Coba muat ulang halamannya ya." };
+  }
+}
+// ── updateSiteSettings ─────────────────────────────────────────────────────────
+const updateSiteSettingsSchema = z.object({
+  id: z.string().uuid("ID Tenant-nya kurang pas nih."),
+  hero_image_url: z.string().url("Link gambarnya nggak valid nih. Pastikan pakai http/https.").nullable().optional().or(z.literal("")),
+  welcome_message: z.string().max(300, "Pesan sambutannya kepanjangan, maksimal 300 huruf aja ya.").nullable().optional(),
+  address: z.string().max(250, "Alamat kepanjangan nih.").nullable().optional(),
+  instagram_handle: z.string().max(50, "Username IG kepanjangan.").nullable().optional(),
+  cancellation_policy: z.string().max(500, "Kebijakan pembatalan kepanjangan.").nullable().optional(),
+  theme_color: z.enum(["teal", "rose", "orange", "violet", "blue"]).default("teal"),
+});
+
+type UpdateSiteSettingsInput = z.infer<typeof updateSiteSettingsSchema>;
+
+export async function updateSiteSettings(
+  input: UpdateSiteSettingsInput
+): Promise<ActionResponse<Tenant>> {
+  const parsed = updateSiteSettingsSchema.safeParse(input);
+  if (!parsed.success) {
+    return { success: false, error: parsed.error.issues[0]?.message ?? "Ada data yang kurang pas nih." };
+  }
+
+  try {
+    const supabase = await createClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user || user.id !== parsed.data.id) {
+      return { success: false, error: "Akses ditolak: Anda tidak memiliki akses." };
+    }
+
+    // Format fields
+    const finalHero = parsed.data.hero_image_url === "" ? null : parsed.data.hero_image_url;
+    let finalIg = parsed.data.instagram_handle?.trim() || null;
+    if (finalIg && !finalIg.startsWith('@') && !finalIg.includes('instagram.com')) {
+      finalIg = '@' + finalIg;
+    } else if (finalIg && finalIg.includes('instagram.com/')) {
+      finalIg = '@' + finalIg.split('instagram.com/')[1].replace('/', '');
+    }
+
+    const { data, error } = await supabase
+      .from("tenants")
+      .update({
+        hero_image_url: finalHero,
+        welcome_message: parsed.data.welcome_message?.trim() || null,
+        address: parsed.data.address?.trim() || null,
+        instagram_handle: finalIg,
+        cancellation_policy: parsed.data.cancellation_policy?.trim() || null,
+        theme_color: parsed.data.theme_color,
+      })
+      .eq("id", parsed.data.id)
+      .select()
+      .single();
+
+    if (error) {
+      return { success: false, error: "Yah, gagal nyimpen pengaturan situs. Coba lagi ya." };
+    }
+
+    const tenant = data as Tenant;
+    revalidatePath(`/${tenant.slug}`, "page");
+    revalidatePath("/dashboard", "layout");
 
     return { success: true, data: tenant };
   } catch {
