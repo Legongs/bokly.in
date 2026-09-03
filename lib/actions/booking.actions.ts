@@ -220,56 +220,12 @@ export async function submitBooking(
       }
     }
 
-    // ── Mulai Logika CRM Pelanggan (Menggunakan Service Role untuk bypass RLS) ──
-    let finalCustomerId: string | null = null;
-    try {
-      const adminSupabase = createAdminClient();
-
-      const { data: existingCustomer } = await adminSupabase
-        .from("customers")
-        .select("id, total_bookings")
-        .eq("tenant_id", parsed.data.tenant_id)
-        .eq("whatsapp_number", parsed.data.customer_wa)
-        .single();
-
-      if (existingCustomer) {
-        const { data: updatedCustomer } = await adminSupabase
-          .from("customers")
-          .update({ 
-            name: parsed.data.customer_name,
-            total_bookings: existingCustomer.total_bookings + 1,
-            updated_at: new Date().toISOString()
-          })
-          .eq("id", existingCustomer.id)
-          .select("id")
-          .single();
-        finalCustomerId = updatedCustomer?.id || existingCustomer.id;
-      } else {
-        const { data: newCustomer } = await adminSupabase
-          .from("customers")
-          .insert({
-            tenant_id: parsed.data.tenant_id,
-            name: parsed.data.customer_name,
-            whatsapp_number: parsed.data.customer_wa,
-            total_bookings: 1
-          })
-          .select("id")
-          .single();
-        finalCustomerId = newCustomer?.id || null;
-      }
-    } catch (e) {
-      console.warn("Gagal update data pelanggan (CRM):", e);
-      // Lanjutkan tanpa memblokir booking
-    }
-    // ── Selesai Logika CRM Pelanggan ──
-
     const { data, error } = await supabase
       .from("bookings")
       .insert({
         tenant_id: parsed.data.tenant_id,
         service_id: parsed.data.service_id,
         staff_id: finalStaffId,
-        customer_id: finalCustomerId,
         customer_name: parsed.data.customer_name,
         customer_wa: parsed.data.customer_wa,
         booking_date: parsed.data.booking_date,
