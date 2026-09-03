@@ -4,7 +4,7 @@ import { Store, MessageCircle, Star, MapPin, AtSign, Info } from "lucide-react";
 import { getTenantBySlug, getServicesByTenant } from "@/lib/actions/tenant.actions";
 import { getStaffByTenant } from "@/lib/actions/staff.actions";
 import { BookingFlow } from "@/components/customer/booking-flow";
-import { getBusinessDictionary } from "@/lib/business-dictionary";
+import { getSectorDictionary } from "@/lib/dictionaries";
 
 interface TenantPageProps {
  params: Promise<{ tenant: string }>;
@@ -73,7 +73,7 @@ export default async function TenantPage({ params }: TenantPageProps) {
  const staffRes = await getStaffByTenant(tenant.id);
  const staff = staffRes.success && staffRes.data ? staffRes.data : [];
 
- const dict = getBusinessDictionary((tenant as any).business_type);
+ const dict = getSectorDictionary(tenant.business_sector);
 
  // ── Theme Mapping ───────────────────────────────────────────────────────────
  const themeStyles: Record<string, any> = {

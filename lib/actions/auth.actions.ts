@@ -22,16 +22,7 @@ const registerSchema = z.object({
     .min(2, "Nama bisnis minimal 2 huruf ya.")
     .max(100, "Kepanjangan nih, maksimal 100 huruf aja ya.")
     .trim(),
-  business_type: z.enum([
-    "salon",
-    "klinik",
-    "konsultasi",
-    "studio_foto",
-    "cuci_kendaraan",
-    "olahraga",
-    "servis",
-    "lainnya",
-  ]),
+  business_sector: z.enum(["beauty", "space", "auto", "health"]),
   whatsapp_number: z
     .string()
     .min(10, "Nomor WA kependekan, minimal 10 angka ya.")
@@ -94,7 +85,7 @@ export async function register(payload: unknown): Promise<ActionResponse<any>> {
     return { success: false, error: parsed.error.issues[0]?.message ?? "Data kurang pas nih." };
   }
 
-  const { email, password, business_name, business_type, whatsapp_number, slug } = parsed.data;
+  const { email, password, business_name, business_sector, whatsapp_number, slug } = parsed.data;
 
   // Rate Limiting: Max 3 attempts per 10 minutes per email
   const rateLimitKey = `register_${email}`;
@@ -145,7 +136,8 @@ export async function register(payload: unknown): Promise<ActionResponse<any>> {
       id: userId,
       slug,
       business_name,
-      business_type,
+      business_sector,
+      business_type: "lainnya",
       whatsapp_number,
     });
 

@@ -17,16 +17,7 @@ const registerSchema = z.object({
     .min(2, "Nama bisnis minimal 2 huruf ya.")
     .max(100, "Kepanjangan nih, maksimal 100 huruf aja ya.")
     .trim(),
-  business_type: z.enum([
-    "salon",
-    "klinik",
-    "konsultasi",
-    "studio_foto",
-    "cuci_kendaraan",
-    "olahraga",
-    "servis",
-    "lainnya",
-  ]),
+  business_sector: z.enum(["beauty", "space", "auto", "health"]),
   whatsapp_number: z
     .string()
     .min(10, "Nomor WA kependekan, minimal 10 angka ya.")
@@ -53,7 +44,7 @@ export default function RegisterPageClient() {
     email: "",
     password: "",
     business_name: "",
-    business_type: "salon",
+    business_sector: "beauty",
     whatsapp_number: "",
     slug: "",
   });
@@ -156,27 +147,28 @@ export default function RegisterPageClient() {
 
               <div className="space-y-1.5 sm:col-span-2">
                 <label className="text-sm font-semibold text-stone-700">
-                  Jenis Bisnis Kamu
+                  Sektor Bisnis Kamu
                 </label>
-                <div className="relative">
-                  <select
-                    value={form.business_type}
-                    onChange={(e) => updateForm("business_type", e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl border border-stone-200 text-sm font-medium text-stone-900 bg-white shadow-inner focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors appearance-none cursor-pointer"
-                    disabled={isPending}
-                  >
-                    <option value="salon">✂️ Salon & Barbershop</option>
-                    <option value="klinik">💅 Klinik Kecantikan & Spa</option>
-                    <option value="konsultasi">🩺 Praktek Mandiri / Konsultasi</option>
-                    <option value="studio_foto">📸 Studio Foto / Videografi</option>
-                    <option value="cuci_kendaraan">🚗 Cuci Mobil & Detailing</option>
-                    <option value="olahraga">🏀 Sewa Fasilitas Olahraga</option>
-                    <option value="servis">🛠️ Jasa Perbaikan / Servis</option>
-                    <option value="lainnya">📦 Lainnya</option>
-                  </select>
-                  <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
-                    <svg className="w-4 h-4 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
-                  </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  {[
+                    { id: "beauty", label: "Kecantikan", icon: "💅" },
+                    { id: "space", label: "Sewa Ruang", icon: "🏢" },
+                    { id: "auto", label: "Otomotif", icon: "🚗" },
+                    { id: "health", label: "Kesehatan", icon: "🩺" },
+                  ].map((sector) => (
+                    <div
+                      key={sector.id}
+                      onClick={() => !isPending && updateForm("business_sector", sector.id)}
+                      className={`cursor-pointer border rounded-xl p-3 flex flex-col items-center justify-center gap-2 transition-all ${
+                        form.business_sector === sector.id
+                          ? "border-teal-600 bg-teal-50 ring-1 ring-teal-600 shadow-sm"
+                          : "border-stone-200 bg-white hover:border-stone-300"
+                      } ${isPending ? "opacity-50 cursor-not-allowed" : ""}`}
+                    >
+                      <span className="text-2xl">{sector.icon}</span>
+                      <span className="text-xs font-semibold text-stone-700">{sector.label}</span>
+                    </div>
+                  ))}
                 </div>
                 <p className="text-[11px] text-stone-500">Bakal dipakai buat nyesuaiin kata-kata di halaman booking kamu nanti.</p>
               </div>

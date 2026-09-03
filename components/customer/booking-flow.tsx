@@ -25,7 +25,7 @@ import {
 import { DateSlotPicker } from "./date-slot-picker";
 import { submitBooking } from "@/lib/actions/booking.actions";
 import type { Tenant, Service, Staff } from "@/types/database.types";
-import type { BusinessDictionary } from "@/lib/business-dictionary";
+import type { BusinessDictionary } from "@/lib/dictionaries";
 
 // ── Client-side Zod schema (mirrors server schema) ──────────────────────────
 const bookingFormSchema = z.object({

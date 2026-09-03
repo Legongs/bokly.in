@@ -22,6 +22,8 @@ export interface Database {
           qris_image_url: string | null;
           is_active: boolean;
           theme_color: string;
+          business_sector: Database["public"]["Enums"]["business_sector_enum"] | null;
+          template_id: string;
           open_time: string;
           close_time: string;
           payment_method_type: string;
@@ -52,6 +54,8 @@ export interface Database {
           qris_image_url?: string | null;
           is_active?: boolean;
           theme_color?: string;
+          business_sector?: Database["public"]["Enums"]["business_sector_enum"] | null;
+          template_id?: string;
           open_time?: string;
           close_time?: string;
           payment_method_type?: string;
@@ -83,6 +87,8 @@ export interface Database {
           qris_image_url?: string | null;
           is_active?: boolean;
           theme_color?: string;
+          business_sector?: Database["public"]["Enums"]["business_sector_enum"] | null;
+          template_id?: string;
           open_time?: string;
           close_time?: string;
           payment_method_type?: string;
@@ -313,6 +319,7 @@ export interface Database {
       [_ in never]: never;
     };
     Enums: {
+      business_sector_enum: "beauty" | "space" | "auto" | "health";
       payment_status: PaymentStatus;
     };
     CompositeTypes: {
