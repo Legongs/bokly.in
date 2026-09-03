@@ -2,6 +2,8 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { PaymentTable } from "@/components/dashboard/payment-table";
 
+export const dynamic = 'force-dynamic';
+
 export const metadata = {
   title: "Kelola Pembayaran | Admin Dasbor",
 };

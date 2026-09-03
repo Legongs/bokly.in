@@ -3,6 +3,8 @@ import { getTenantCustomers } from "@/lib/actions/customer.actions";
 import { Contact, TrendingUp } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 
+export const dynamic = 'force-dynamic';
+
 export const metadata = {
   title: "Pelanggan | maubooking.in",
 };
