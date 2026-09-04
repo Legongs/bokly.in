@@ -1,50 +1,32 @@
-import { createClient } from "@/lib/supabase/server";
-import { redirect } from "next/navigation";
+"use client";
+
+import React from "react";
+import useSWR from "swr";
+import { getPaymentBookings } from "@/lib/actions/dashboard.actions";
 import { PaymentTable } from "@/components/dashboard/payment-table";
+import { Loader2 } from "lucide-react";
 
-export const dynamic = 'force-dynamic';
+export default function PaymentsPage() {
+  const { data: response, isLoading } = useSWR("payment-bookings", getPaymentBookings);
 
-export const metadata = {
-  title: "Kelola Pembayaran | Admin Dasbor",
-};
-
-export default async function PaymentsPage() {
-  const supabase = await createClient();
-
-  const DEMO_TENANT_ID = "d290f1ee-6c54-4b01-90e6-d701748f0851";
-  const { data: authData } = await supabase.auth.getUser();
-  const tenantId = authData.user?.id || DEMO_TENANT_ID;
-
-  // Ambil data tenant
-  const { data: tenant } = await supabase
-    .from("tenants")
-    .select("id")
-    .eq("id", tenantId)
-    .single();
-
-  if (!tenant) {
-    redirect("/onboarding");
+  if (isLoading || !response) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[50vh]">
+        <Loader2 className="w-8 h-8 animate-spin text-teal-600 mb-4" />
+        <p className="text-stone-500 font-medium">Memuat data pembayaran...</p>
+      </div>
+    );
   }
 
-  // Ambil semua pesanan yang butuh verifikasi (atau semua pesanan dengan bukti)
-  // Di sini kita ambil semua pesanan dengan bukti transfer (tidak null)
-  const { data: bookings } = await supabase
-    .from("bookings")
-    .select(`
-      id,
-      customer_name,
-      customer_wa,
-      booking_date,
-      payment_status,
-      proof_url,
-      services (
-        name,
-        dp_amount
-      )
-    `)
-    .eq("tenant_id", tenant.id)
-    .not("proof_url", "is", null)
-    .order("created_at", { ascending: false });
+  if (!response.success) {
+    return (
+      <div className="text-center py-10">
+        <p className="text-rose-500 font-medium">{response.error || "Gagal memuat data pembayaran."}</p>
+      </div>
+    );
+  }
+
+  const bookings = response.data || [];
 
   return (
     <div className="space-y-6">
@@ -57,7 +39,7 @@ export default async function PaymentsPage() {
         </p>
       </div>
 
-      <PaymentTable bookings={bookings || []} />
+      <PaymentTable bookings={bookings} />
     </div>
   );
 }

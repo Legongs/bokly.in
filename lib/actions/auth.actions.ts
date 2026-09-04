@@ -196,3 +196,68 @@ export async function logout(): Promise<ActionResponse<null>> {
     return { success: false, error: "Server error saat keluar." };
   }
 }
+
+const forgotPasswordSchema = z.object({
+  email: z.string().email("Format email kurang pas nih."),
+});
+
+export async function sendPasswordResetEmail(email: string): Promise<ActionResponse<null>> {
+  const parsed = forgotPasswordSchema.safeParse({ email });
+  if (!parsed.success) {
+    return { success: false, error: parsed.error.issues[0]?.message };
+  }
+
+  // Rate Limiting: Max 3 attempts per 10 minutes per email
+  const rateLimitKey = `forgot_${email}`;
+  if (!(await checkRateLimit(rateLimitKey, 3, 600_000))) {
+    return { success: false, error: "Tunggu sebentar ya sebelum mencoba minta link reset lagi." };
+  }
+
+  try {
+    const supabase = await createClient();
+    const { error } = await supabase.auth.resetPasswordForEmail(parsed.data.email, {
+      redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/auth/callback?next=/reset-password`,
+    });
+
+    if (error) {
+      return { success: false, error: "Gagal mengirim email reset password. Pastikan email terdaftar." };
+    }
+
+    return { success: true, data: null };
+  } catch {
+    return { success: false, error: "Terjadi kesalahan sistem, coba lagi nanti." };
+  }
+}
+
+const resetPasswordSchema = z.object({
+  password: z.string().min(6, "Password minimal 6 karakter biar aman ya."),
+});
+
+export async function resetPassword(password: string): Promise<ActionResponse<null>> {
+  const parsed = resetPasswordSchema.safeParse({ password });
+  if (!parsed.success) {
+    return { success: false, error: parsed.error.issues[0]?.message };
+  }
+
+  try {
+    const supabase = await createClient();
+    
+    // Pastikan user memiliki sesi valid dari pertukaran kode (PKCE)
+    const { data: authData, error: authError } = await supabase.auth.getUser();
+    if (authError || !authData.user) {
+      return { success: false, error: "Sesi tidak valid atau telah kedaluwarsa. Silakan minta link reset lagi." };
+    }
+
+    const { error } = await supabase.auth.updateUser({
+      password: parsed.data.password,
+    });
+
+    if (error) {
+      return { success: false, error: "Gagal mengatur password baru. Coba lagi." };
+    }
+
+    return { success: true, data: null };
+  } catch {
+    return { success: false, error: "Terjadi kesalahan sistem saat memperbarui password." };
+  }
+}

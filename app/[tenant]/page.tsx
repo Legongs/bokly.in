@@ -172,12 +172,6 @@ export default async function TenantPage({ params }: TenantPageProps) {
   {tenant.business_name}
   </span>
   </div>
-  <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-stone-100 shadow-sm flex-shrink-0">
-  <span className={`w-2 h-2 rounded-full ${currentTheme.dot} animate-pulse`} />
-  <span className="text-[11px] font-bold text-stone-600 ">
-  Buka
-  </span>
-  </div>
   </div>
   </header>
 

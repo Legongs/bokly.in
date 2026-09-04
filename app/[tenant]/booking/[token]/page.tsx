@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 export default async function BookingManagePage({
   params,
 }: {
-  params: Promise<{ slug: string; token: string }>;
+  params: Promise<{ tenant: string; token: string }>;
 }) {
   const resolvedParams = await params;
   const { data, success, error } = await getCustomerPortalData(resolvedParams.token);

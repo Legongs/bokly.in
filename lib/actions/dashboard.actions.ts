@@ -155,3 +155,116 @@ export async function markReminderSent(
   }
 }
 
+
+// ── getDashboardOverview ──────────────────────────────────────────────────────────
+export async function getDashboardOverview(): Promise<ActionResponse<any>> {
+  try {
+    const supabase = await createClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    
+    // For demo purposes or real login
+    const DEMO_TENANT_ID = "d290f1ee-6c54-4b01-90e6-d701748f0851";
+    const tenantId = user?.id || DEMO_TENANT_ID;
+
+    if (!tenantId) {
+      return { success: false, error: "Akses ditolak" };
+    }
+
+    const { data: tenant } = await supabase
+      .from("tenants")
+      .select("id, business_name, slug, hero_image_url")
+      .eq("id", tenantId)
+      .single();
+
+    if (!tenant) {
+      return { success: false, error: "Profil Tenant Tidak Ditemukan" };
+    }
+
+    const today = new Date().toLocaleString("en-CA", {
+      timeZone: "Asia/Jakarta",
+    }).split(",")[0];
+
+    const [servicesRes, staffRes, bookingsRes] = await Promise.all([
+      supabase.from("services").select("id, name, duration_minutes").eq("tenant_id", tenant.id).order("name"),
+      supabase.from("staff").select("id, name").eq("tenant_id", tenant.id).order("name"),
+      supabase.from("bookings").select(`
+        *,
+        services ( name ),
+        staff ( name )
+      `)
+      .eq("tenant_id", tenant.id)
+      .or(`payment_status.eq.pending,booking_date.gte.${today}`)
+      .order("booking_date", { ascending: true })
+      .order("start_time", { ascending: true })
+    ]);
+
+    const bookings = (bookingsRes.data ?? []).map((b: any) => ({
+      ...b,
+      service_name: b.services?.name ?? "Layanan",
+      staff_name: b.staff?.name ?? null,
+    }));
+
+    return { 
+      success: true, 
+      data: {
+        tenant,
+        services: servicesRes.data || [],
+        staff: staffRes.data || [],
+        bookings
+      }
+    };
+  } catch {
+    return { success: false, error: "Terjadi kesalahan internal pada server" };
+  }
+}
+
+// ── getPaymentBookings ──────────────────────────────────────────────────────────
+export async function getPaymentBookings(): Promise<ActionResponse<any>> {
+  try {
+    const supabase = await createClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    
+    const DEMO_TENANT_ID = "d290f1ee-6c54-4b01-90e6-d701748f0851";
+    const tenantId = user?.id || DEMO_TENANT_ID;
+
+    if (!tenantId) {
+      return { success: false, error: "Akses ditolak" };
+    }
+
+    const { data: tenant } = await supabase
+      .from("tenants")
+      .select("id")
+      .eq("id", tenantId)
+      .single();
+
+    if (!tenant) {
+      return { success: false, error: "Profil Tenant Tidak Ditemukan" };
+    }
+
+    const { data: bookings, error } = await supabase
+      .from("bookings")
+      .select(`
+        id,
+        customer_name,
+        customer_wa,
+        booking_date,
+        payment_status,
+        proof_url,
+        services (
+          name,
+          dp_amount
+        )
+      `)
+      .eq("tenant_id", tenant.id)
+      .not("proof_url", "is", null)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+       return { success: false, error: "Gagal memuat data pembayaran" };
+    }
+
+    return { success: true, data: bookings || [] };
+  } catch {
+    return { success: false, error: "Terjadi kesalahan internal pada server" };
+  }
+}

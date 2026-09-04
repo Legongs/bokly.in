@@ -300,7 +300,10 @@ export default function RegisterPageClient() {
                 ) : slugStatus === "available" ? (
                   <p className="text-xs text-teal-600 font-medium">URL tersedia.</p>
                 ) : (
-                  <p className="text-[11px] text-stone-400">Nanti linknya: maubooking.in/<strong>{form.slug || "url"}</strong></p>
+                  <div className="mt-2 p-3 bg-stone-50 border border-stone-200 rounded-xl flex flex-col gap-1">
+                    <p className="text-[11px] font-medium text-stone-500">🔗 Toko kamu akan bisa diakses di:</p>
+                    <p className="text-sm font-bold text-teal-700 break-all">maubooking.in/{form.slug || "url-toko-kamu"}</p>
+                  </div>
                 )}
               </div>
 

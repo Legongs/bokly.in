@@ -146,9 +146,13 @@ export function DashboardNav({ children, serviceLabel, staffLabel }: DashboardNa
                   isActive ? "text-teal-700" : "text-stone-400 active:text-stone-600"
                 }`}
               >
-                <Icon className={`w-5 h-5 transition-transform duration-200 ${isActive ? "text-teal-600 scale-110" : ""}`} />
-                {/* Label hanya di md+ sesuai aturan ui_ux.md */}
-                <span className="hidden md:block text-[10px] font-bold">{item.label}</span>
+                <div className="relative flex flex-col items-center">
+                  <Icon className={`w-5 h-5 transition-transform duration-200 ${isActive ? "text-teal-600 scale-110" : ""}`} />
+                  {isActive && (
+                    <span className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-teal-600" />
+                  )}
+                </div>
+                <span className="text-[10px] font-bold mt-0.5">{item.label}</span>
               </Link>
             );
           })}
@@ -163,13 +167,13 @@ export function DashboardNav({ children, serviceLabel, staffLabel }: DashboardNa
             }`}
           >
             {/* Dot indicator jika halaman aktif ada di dalam drawer */}
-            <div className="relative">
-              <MoreHorizontal className={`w-5 h-5 transition-transform duration-200 ${isMoreActive ? "text-teal-600" : ""}`} />
+            <div className="relative flex flex-col items-center">
+              <MoreHorizontal className={`w-5 h-5 transition-transform duration-200 ${isMoreActive ? "text-teal-600 scale-110" : ""}`} />
               {isMoreActive && (
-                <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-teal-600 border-2 border-white" />
+                <span className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-teal-600" />
               )}
             </div>
-            <span className="hidden md:block text-[10px] font-bold">Lainnya</span>
+            <span className="text-[10px] font-bold mt-0.5">Lainnya</span>
           </button>
         </div>
       </nav>
