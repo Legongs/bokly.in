@@ -20,6 +20,9 @@ export interface Database {
           whatsapp_number: string;
           telegram_chat_id: string | null;
           qris_image_url: string | null;
+          bank_name: string | null;
+          bank_account_number: string | null;
+          bank_account_name: string | null;
           is_active: boolean;
           theme_color: string;
           business_sector: Database["public"]["Enums"]["business_sector_enum"] | null;
@@ -53,6 +56,9 @@ export interface Database {
           whatsapp_number: string;
           telegram_chat_id?: string | null;
           qris_image_url?: string | null;
+          bank_name?: string | null;
+          bank_account_number?: string | null;
+          bank_account_name?: string | null;
           is_active?: boolean;
           theme_color?: string;
           business_sector?: Database["public"]["Enums"]["business_sector_enum"] | null;
@@ -87,6 +93,9 @@ export interface Database {
           whatsapp_number?: string;
           telegram_chat_id?: string | null;
           qris_image_url?: string | null;
+          bank_name?: string | null;
+          bank_account_number?: string | null;
+          bank_account_name?: string | null;
           is_active?: boolean;
           theme_color?: string;
           business_sector?: Database["public"]["Enums"]["business_sector_enum"] | null;
@@ -286,6 +295,8 @@ export interface Database {
           is_reminder_sent: boolean;
           reschedule_request: Json | null;
           is_no_show: boolean;
+          manage_token: string;
+          manage_token_expires_at: string | null;
           created_at: string;
         };
         Insert: {
@@ -304,6 +315,8 @@ export interface Database {
           is_reminder_sent?: boolean;
           reschedule_request?: Json | null;
           is_no_show?: boolean;
+          manage_token?: string;
+          manage_token_expires_at?: string | null;
           created_at?: string;
         };
         Update: {
@@ -322,6 +335,8 @@ export interface Database {
           is_reminder_sent?: boolean;
           reschedule_request?: Json | null;
           is_no_show?: boolean;
+          manage_token?: string;
+          manage_token_expires_at?: string | null;
           created_at?: string;
         };
         Relationships: [

@@ -65,6 +65,10 @@ export function BookingFlow({ tenant, services, staffList = [], dictionary }: Bo
     { label: "Data" },
   ];
 
+  const augmentedStaffList = staffList.length > 1 
+    ? [{ id: "any", name: "Siapa saja (Bebas)", tenant_id: tenant.id, is_active: true } as unknown as Staff, ...staffList]
+    : staffList;
+
   // ── Form utama multi-step ────────────────────────────────────────────────
   return (
     <form id="booking-form" onSubmit={flow.handleSubmit} noValidate className="space-y-5 pb-32">
@@ -98,7 +102,7 @@ export function BookingFlow({ tenant, services, staffList = [], dictionary }: Bo
       {/* Step 2 (Opsional): Pilih Staff */}
       {staffList.length > 1 && (
         <StepStaffSelect
-          staffList={staffList}
+          staffList={augmentedStaffList}
           selectedStaff={flow.selectedStaff}
           activeStep={flow.activeStep}
           t={t}

@@ -96,7 +96,7 @@ export async function getBookedSlotsForDate(
   }
 
   try {
-    const supabase = await createClient();
+    const supabase = await createAdminClient();
 
     // 1. Ambil jumlah total staff
     const { count: staffCount } = await supabase
@@ -173,7 +173,7 @@ export async function submitBooking(
   // --- 0. Rate Limiting ---
   // Batasi 3 booking per nomor WA per tenant dalam 5 menit (300.000 ms)
   const rateLimitKey = `booking_${parsed.data.tenant_id}_${parsed.data.customer_wa}`;
-  if (!checkRateLimit(rateLimitKey, 3, 300_000)) {
+  if (!(await checkRateLimit(rateLimitKey, 3, 300_000))) {
     return { success: false, error: "Wow, bookingnya kenceng banget! Tunggu beberapa menit lagi ya sebelum bikin booking baru." };
   }
 
@@ -315,27 +315,24 @@ export async function submitBooking(
       }
     }
 
-    // --- 5. Insert Booking ---
-    const { data, error } = await supabase
-      .from("bookings")
-      .insert({
-        tenant_id: parsed.data.tenant_id,
-        service_id: parsed.data.service_id,
-        staff_id: finalStaffId,
-        customer_name: parsed.data.customer_name,
-        customer_wa: parsed.data.customer_wa,
-        booking_date: parsed.data.booking_date,
-        start_time: parsed.data.start_time,
-        end_time: parsed.data.end_time,
-        payment_status: parsed.data.is_walkin ? "approved" : "pending",
-        proof_url: parsed.data.proof_url ?? null,
-      })
-      .select()
-      .single();
+    // --- 5. Insert Booking via Secure RPC (Anti Double-Booking) ---
+    // Cast supabase client to any to bypass type checking for newly created RPC
+    const { data, error } = await (supabase as any).rpc("create_booking_secure", {
+      p_tenant_id: parsed.data.tenant_id,
+      p_service_id: parsed.data.service_id,
+      p_staff_id: finalStaffId,
+      p_customer_name: parsed.data.customer_name,
+      p_customer_wa: parsed.data.customer_wa,
+      p_booking_date: parsed.data.booking_date,
+      p_start_time: parsed.data.start_time,
+      p_end_time: parsed.data.end_time,
+      p_payment_status: parsed.data.is_walkin ? "approved" : "pending",
+      p_proof_url: parsed.data.proof_url ?? null,
+      p_manage_token_expires_at: new Date(new Date(parsed.data.booking_date).getTime() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+    });
 
     if (error) {
-      const pgError = error as unknown as PostgrestError;
-      if (pgError.code === PG_UNIQUE_VIOLATION && pgError.message.includes(UNIQUE_SLOT_CONSTRAINT)) {
+      if (error.message.includes("UNIQUE_SLOT_VIOLATION") || error.message.includes("Layanan tidak ditemukan")) {
         return { success: false, error: "Waduh, slot ini baru aja diambil orang lain. Pilih jam yang lain yuk!" };
       }
       return { success: false, error: "Yah, gagal nyimpen jadwal kamu. Coba klik sekali lagi ya." };
@@ -435,7 +432,7 @@ export async function handleBookingSuccess(
 
     const tenant = bookingData.tenants as any;
     const service = bookingData.services as any;
-    const portalUrl = `https://maubooking.in/${tenant.slug}/booking/${bookingId}`;
+    const portalUrl = `https://maubooking.in/${tenant.slug}/booking/${bookingData.manage_token}`;
 
     const messageText = `Halo ${tenant.business_name},\n\nSaya ${bookingData.customer_name} ingin konfirmasi booking:\n\nLayanan: ${service.name}\nTanggal: ${bookingData.booking_date}\nJam: ${bookingData.start_time.slice(0,5)}\n\nCek status: ${portalUrl}\n\nTerima kasih!`;
     const encodedMessage = encodeURIComponent(messageText);
@@ -534,18 +531,32 @@ export async function getAvailableSlots(
       .from("services")
       .select("duration_minutes, buffer_minutes")
       .eq("id", serviceId)
+      .eq("tenant_id", tenantId)
       .single();
     
     if (serviceErr || !service) return { success: false, error: "Layanan tidak ditemukan." };
 
-    // 3. Ambil jadwal existing (pending/approved) milik staff ini di tanggal yang dipilih
-    const { data: existingBookings, error: bookingsErr } = await supabase
+    // 3. Ambil jadwal existing (pending/approved) di tanggal yang dipilih
+    let staffCount = 1;
+    if (!staffId || staffId === "any") {
+      const { count } = await supabase
+        .from("staff")
+        .select("*", { count: "exact", head: true })
+        .eq("tenant_id", tenantId);
+      staffCount = count || 1;
+    }
+
+    let query = supabase
       .from("bookings")
       .select("start_time, end_time, services(buffer_minutes)")
       .eq("tenant_id", tenantId)
-      .eq("staff_id", staffId)
       .eq("booking_date", date)
       .in("payment_status", ["pending", "approved"]);
+
+    if (staffId && staffId !== "any") {
+      query = query.eq("staff_id", staffId);
+    }
+    const { data: existingBookings, error: bookingsErr } = await query;
 
     if (bookingsErr) return { success: false, error: "Gagal mengambil data jadwal." };
 
@@ -592,11 +603,11 @@ export async function getAvailableSlots(
 
       // c. Apakah slot ini beririsan dengan jadwal yang sudah ada?
       // Logika irisan (overlap): A.start < B.end AND A.end > B.start
-      const isOverlap = existingRanges.some((range) => {
+      const overlaps = existingRanges.filter((range) => {
         return slotStart < range.end && slotEnd > range.start;
       });
 
-      if (!isOverlap) {
+      if (overlaps.length < staffCount) {
         availableSlots.push(formatTime(slotStart));
       }
     }
@@ -628,6 +639,16 @@ export async function proposeReschedule(
   try {
     const supabase = await createClient();
     
+    // Jika tenant, verifikasi login terlebih dahulu
+    let currentUser = null;
+    if (role === "tenant") {
+      const { data: { user }, error: authErr } = await supabase.auth.getUser();
+      if (authErr || !user) {
+        return { success: false, error: "Akses ditolak: Anda tidak memiliki akses untuk tindakan ini." };
+      }
+      currentUser = user;
+    }
+    
     // Cek booking
     const { data: bookingData, error: bookingErr } = await supabase
       .from("bookings")
@@ -636,6 +657,13 @@ export async function proposeReschedule(
       .single();
       
     if (bookingErr || !bookingData) return { success: false, error: "Booking tidak ditemukan." };
+
+    // Jika tenant, verifikasi kepemilikan booking
+    if (role === "tenant" && currentUser) {
+      if (bookingData.tenant_id !== currentUser.id) {
+        return { success: false, error: "Akses ditolak: Booking bukan milik Anda." };
+      }
+    }
 
     const tenant = bookingData.tenants as any;
     const service = bookingData.services as any;
@@ -659,7 +687,7 @@ export async function proposeReschedule(
     revalidatePath("/[slug]/booking/[token]", "page");
 
     // Format pesan WA
-    const portalUrl = `https://maubooking.in/${tenant.slug}/booking/${bookingId}`;
+    const portalUrl = `https://maubooking.in/${tenant.slug}/booking/${bookingData.manage_token}`;
     let messageText = "";
     let targetWa = "";
 
@@ -699,7 +727,8 @@ export async function proposeReschedule(
 
 export async function respondToReschedule(
   bookingId: string,
-  response: "accepted" | "rejected"
+  response: "accepted" | "rejected",
+  manageToken?: string
 ): Promise<ActionResponse<void>> {
   try {
     const supabase = await createClient();
@@ -707,6 +736,19 @@ export async function respondToReschedule(
     if (!bookingData || !bookingData.reschedule_request) return { success: false, error: "Tidak ada pengajuan reschedule aktif." };
     
     const req = bookingData.reschedule_request as any;
+    
+    // Jika yang mengajukan reschedule adalah customer, maka yang merespons adalah tenant. Wajib verifikasi otorisasi.
+    if (req.proposedBy === "customer") {
+      const { data: { user }, error: authErr } = await supabase.auth.getUser();
+      if (authErr || !user || user.id !== bookingData.tenant_id) {
+        return { success: false, error: "Akses ditolak: Anda tidak memiliki akses untuk tindakan ini." };
+      }
+    } else {
+      // Yang merespons adalah customer, verifikasi manageToken
+      if (!manageToken || bookingData.manage_token !== manageToken) {
+        return { success: false, error: "Akses ditolak: Token tidak valid." };
+      }
+    }
     
     if (response === "accepted") {
       // Ubah jadwal permanen

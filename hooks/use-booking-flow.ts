@@ -154,7 +154,7 @@ export function useBookingFlow({
     const payload = {
       tenant_id: tenant.id,
       service_id: selectedService.id,
-      staff_id: selectedStaff?.id,
+      staff_id: selectedStaff?.id === "any" ? null : selectedStaff?.id,
       customer_name: parsed.data.customer_name,
       customer_wa: parsed.data.customer_wa,
       booking_date: selectedDate,

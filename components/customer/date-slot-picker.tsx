@@ -262,37 +262,45 @@ export function DateSlotPicker({
           )}
         </div>
 
-        <div className={cn("grid grid-cols-3 sm:grid-cols-4 gap-3 transition-opacity", isPending && "opacity-50 pointer-events-none")}>
-          {TIME_SLOTS.map((time) => {
-            const unavailable = isSlotUnavailable(time);
-            const isSelected = activeTime === time;
+        {isPending ? (
+          <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} className="py-3 px-2 rounded-2xl border border-stone-100 bg-stone-100 animate-pulse h-11" />
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 transition-opacity">
+            {TIME_SLOTS.map((time) => {
+              const unavailable = isSlotUnavailable(time);
+              const isSelected = activeTime === time;
 
-            return (
-              <button
-                key={time}
-                type="button"
-                disabled={unavailable}
-                onClick={() => handleTimeSelect(time)}
-                title={unavailable ? "Slot ini tidak tersedia" : undefined}
-                className={cn(
-                  "py-3 px-2 rounded-2xl text-sm font-bold border transition-all duration-300 relative overflow-hidden",
-                  unavailable
-                    ? "bg-stone-50/50 text-stone-300 border-stone-200 border-dashed cursor-not-allowed"
-                    : isSelected
-                    ? "border-teal-500 bg-teal-500 text-white shadow-lg shadow-teal-500/25 scale-[1.03]"
-                    : "border-stone-100 bg-white shadow-sm hover:border-teal-300 hover:bg-teal-50 hover:text-teal-700 text-stone-700 active:scale-95"
-                )}
-              >
-                {unavailable && (
-                  <span className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20">
-                    <span className="w-full h-[2px] bg-stone-300 absolute rotate-[-20deg]" />
-                  </span>
-                )}
-                <span className={cn("relative z-10", unavailable && "opacity-60")}>{time}</span>
-              </button>
-            );
-          })}
-        </div>
+              return (
+                <button
+                  key={time}
+                  type="button"
+                  disabled={unavailable}
+                  onClick={() => handleTimeSelect(time)}
+                  title={unavailable ? "Slot ini tidak tersedia" : undefined}
+                  className={cn(
+                    "py-3 px-2 rounded-2xl text-sm font-bold border transition-all duration-300 relative overflow-hidden",
+                    unavailable
+                      ? "bg-stone-50/50 text-stone-300 border-stone-200 border-dashed cursor-not-allowed"
+                      : isSelected
+                      ? "border-teal-500 bg-teal-500 text-white shadow-lg shadow-teal-500/25 scale-[1.03]"
+                      : "border-stone-100 bg-white shadow-sm hover:border-teal-300 hover:bg-teal-50 hover:text-teal-700 text-stone-700 active:scale-95"
+                  )}
+                >
+                  {unavailable && (
+                    <span className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20">
+                      <span className="w-full h-[2px] bg-stone-300 absolute rotate-[-20deg]" />
+                    </span>
+                  )}
+                  <span className={cn("relative z-10", unavailable && "opacity-60")}>{time}</span>
+                </button>
+              );
+            })}
+          </div>
+        )}
 
         {/* Legend */}
         <div className="flex flex-wrap items-center gap-4 mt-6 text-xs font-medium text-stone-500 bg-stone-50/50 p-3 rounded-2xl border border-stone-100">

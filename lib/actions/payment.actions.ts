@@ -16,7 +16,8 @@ const urlSchema = z.string().url("URL tidak valid");
 // ── submitPaymentProof ────────────────────────────────────────────────────────
 export async function submitPaymentProof(
   bookingId: string,
-  fileUrl: string
+  fileUrl: string,
+  manageToken?: string
 ): Promise<ActionResponse> {
   const parsedId = uuidSchema.safeParse(bookingId);
   const parsedUrl = urlSchema.safeParse(fileUrl);
@@ -31,12 +32,16 @@ export async function submitPaymentProof(
     // Pastikan booking ada
     const { data: booking, error: fetchError } = await supabase
       .from("bookings")
-      .select("id, tenant_id")
+      .select("id, tenant_id, manage_token")
       .eq("id", parsedId.data)
       .single();
 
     if (fetchError || !booking) {
       return { success: false, error: "Booking tidak ditemukan." };
+    }
+
+    if (!manageToken || booking.manage_token !== manageToken) {
+      return { success: false, error: "Akses ditolak: Token tidak valid." };
     }
 
     // Update status pembayaran
@@ -177,7 +182,8 @@ export async function rejectPayment(
 // ── createMidtransToken ───────────────────────────────────────────────────────
 // Fungsi ini masih bersifat stubs / simulasi sebelum integrasi Midtrans yang sebenarnya.
 export async function createMidtransToken(
-  bookingId: string
+  bookingId: string,
+  manageToken?: string
 ): Promise<ActionResponse<{ token: string }>> {
   const parsedId = uuidSchema.safeParse(bookingId);
   if (!parsedId.success) {
@@ -195,6 +201,10 @@ export async function createMidtransToken(
 
     if (fetchError || !booking || !booking.services || !booking.tenants) {
       return { success: false, error: "Gagal memuat data booking." };
+    }
+
+    if (!manageToken || booking.manage_token !== manageToken) {
+      return { success: false, error: "Akses ditolak: Token tidak valid." };
     }
 
     const serverKey = (booking.tenants as any).payment_gateway_server_key;

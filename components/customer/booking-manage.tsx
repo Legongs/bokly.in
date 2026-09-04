@@ -120,7 +120,7 @@ export function BookingManageClient({ initialData }: { initialData: CustomerPort
           .from("payment_proofs")
           .getPublicUrl(uploadData.path);
 
-        const res = await submitPaymentProof(booking.id, publicUrl);
+        const res = await submitPaymentProof(booking.id, publicUrl, booking.manage_token);
         if (res.success) {
           toast.success("Bukti pembayaran berhasil diunggah!");
           router.refresh(); // Refresh halaman agar status berubah menjadi pending_verification
@@ -135,7 +135,7 @@ export function BookingManageClient({ initialData }: { initialData: CustomerPort
 
   const handlePayGateway = async () => {
     startTransition(async () => {
-      const res = await createMidtransToken(booking.id);
+      const res = await createMidtransToken(booking.id, booking.manage_token);
       if (res.success && res.data) {
         // Asumsi script Snap Midtrans sudah dimuat secara global
         if ((window as any).snap) {
@@ -264,7 +264,7 @@ export function BookingManageClient({ initialData }: { initialData: CustomerPort
                         size="sm" 
                         className="bg-amber-600 hover:bg-amber-700 text-white rounded-xl shadow-sm px-4"
                         onClick={async () => {
-                          const res = await respondToReschedule(booking.id, "accepted");
+                          const res = await respondToReschedule(booking.id, "accepted", booking.manage_token);
                           if (res.success) toast.success("Perubahan jadwal disetujui!");
                           else toast.error(res.error || "Gagal menyetujui.");
                         }}
@@ -274,7 +274,7 @@ export function BookingManageClient({ initialData }: { initialData: CustomerPort
                         variant="outline"
                         className="border-amber-300 text-amber-800 hover:bg-amber-100 rounded-xl px-4"
                         onClick={async () => {
-                          const res = await respondToReschedule(booking.id, "rejected");
+                          const res = await respondToReschedule(booking.id, "rejected", booking.manage_token);
                           if (res.success) toast.success("Perubahan ditolak.");
                           else toast.error(res.error || "Gagal menolak.");
                         }}
@@ -292,19 +292,45 @@ export function BookingManageClient({ initialData }: { initialData: CustomerPort
                 {tenant.payment_method_type === "manual" ? (
                   <div className="space-y-4">
                     <div className="bg-stone-50 rounded-2xl p-4 border border-stone-100 text-sm text-center">
-                      <p className="text-stone-500 mb-2">Transfer ke rekening berikut:</p>
-                      <p className="font-bold text-stone-800 text-base whitespace-pre-wrap">
-                        {tenant.bank_account_details || "Belum ada informasi rekening."}
-                      </p>
+                      <p className="text-stone-500 mb-4">Silakan transfer DP ke:</p>
+                      
                       {tenant.qris_image_url && (
-                        <div className="mt-4 flex justify-center">
-                          <Image 
-                            src={tenant.qris_image_url} 
-                            alt="QRIS" 
-                            width={200} 
-                            height={200} 
-                            className="rounded-xl shadow-sm border border-stone-200"
-                          />
+                        <div className="mb-4">
+                          <p className="text-xs font-medium text-stone-600 border-b pb-1 mb-2">Via QRIS</p>
+                          <div className="flex justify-center">
+                            <Image 
+                              src={tenant.qris_image_url} 
+                              alt="QRIS" 
+                              width={200} 
+                              height={200} 
+                              className="rounded-xl shadow-sm border border-stone-200"
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      {(tenant as any).bank_account_number && (
+                        <div>
+                          <p className="text-xs font-medium text-stone-600 border-b pb-1 mb-2 text-left">Via Transfer Bank</p>
+                          <div className="bg-white rounded-xl p-3 border border-stone-200 text-left flex justify-between items-center gap-3">
+                            <div className="overflow-hidden">
+                              <p className="text-xs font-bold text-stone-800 truncate">{(tenant as any).bank_name}</p>
+                              <p className="text-sm font-mono text-stone-700 tracking-wide mt-0.5">{(tenant as any).bank_account_number}</p>
+                              <p className="text-[10px] text-stone-500 uppercase mt-0.5 truncate">A.N. {(tenant as any).bank_account_name}</p>
+                            </div>
+                            <Button 
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              className="h-8 px-3 text-[10px] font-bold rounded-lg shrink-0"
+                              onClick={() => {
+                                navigator.clipboard.writeText((tenant as any).bank_account_number);
+                                alert("Nomor rekening disalin!");
+                              }}
+                            >
+                              Salin
+                            </Button>
+                          </div>
                         </div>
                       )}
                     </div>

@@ -16,6 +16,9 @@ const updatePaymentSettingsSchema = z.object({
   payment_gateway_provider: z.enum(["midtrans", "xendit"]).nullable().optional(),
   payment_gateway_server_key: z.string().nullable().optional(),
   payment_gateway_client_key: z.string().nullable().optional(),
+  bank_name: z.string().max(50, "Nama bank kepanjangan nih.").nullable().optional().or(z.literal("")),
+  bank_account_number: z.string().max(50, "Nomor rekening kepanjangan nih.").nullable().optional().or(z.literal("")),
+  bank_account_name: z.string().max(100, "Atas nama rekening kepanjangan nih.").nullable().optional().or(z.literal("")),
 });
 
 type SettingsFields = z.infer<typeof updatePaymentSettingsSchema>;
@@ -34,6 +37,9 @@ export function PaymentSettings({ tenant }: PaymentSettingsProps) {
     payment_gateway_provider: (tenant as any).payment_gateway_provider || "midtrans",
     payment_gateway_server_key: (tenant as any).payment_gateway_server_key || "",
     payment_gateway_client_key: (tenant as any).payment_gateway_client_key || "",
+    bank_name: (tenant as any).bank_name || "",
+    bank_account_number: (tenant as any).bank_account_number || "",
+    bank_account_name: (tenant as any).bank_account_name || "",
   });
 
   const [fieldErrors, setFieldErrors] = useState<Partial<Record<keyof SettingsFields, string>>>({});
@@ -138,6 +144,66 @@ export function PaymentSettings({ tenant }: PaymentSettingsProps) {
               <p className="text-xs text-rose-500 font-medium">{fieldErrors.payment_method_type}</p>
             )}
           </div>
+
+          {form.payment_method_type === "manual" && (
+            <div className="p-4 bg-stone-50 rounded-2xl space-y-4">
+              <h3 className="font-bold text-sm text-stone-800">Informasi Rekening Bank (Alternatif QRIS)</h3>
+              
+              <div className="space-y-1.5">
+                <label className="text-sm font-semibold text-stone-700 ">Nama Bank</label>
+                <input
+                  type="text"
+                  value={form.bank_name || ""}
+                  onChange={(e) => updateForm("bank_name", e.target.value)}
+                  onBlur={(e) => validateField("bank_name", e.target.value)}
+                  placeholder="Misal: BCA, Mandiri, BSI"
+                  className={`w-full px-4 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 caret-teal-600 focus:outline-none focus:ring-4 focus:ring-teal-500/20 transition-all shadow-inner ${
+                    fieldErrors.bank_name ? "ring-2 ring-rose-400 bg-rose-50" : ""
+                  }`}
+                  disabled={isPending}
+                />
+                {fieldErrors.bank_name && (
+                  <p className="text-xs text-rose-500 font-medium">{fieldErrors.bank_name}</p>
+                )}
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-sm font-semibold text-stone-700 ">Nomor Rekening</label>
+                <input
+                  type="text"
+                  value={form.bank_account_number || ""}
+                  onChange={(e) => updateForm("bank_account_number", e.target.value)}
+                  onBlur={(e) => validateField("bank_account_number", e.target.value)}
+                  placeholder="Contoh: 1234567890"
+                  className={`w-full px-4 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 caret-teal-600 focus:outline-none focus:ring-4 focus:ring-teal-500/20 transition-all shadow-inner ${
+                    fieldErrors.bank_account_number ? "ring-2 ring-rose-400 bg-rose-50" : ""
+                  }`}
+                  disabled={isPending}
+                />
+                {fieldErrors.bank_account_number && (
+                  <p className="text-xs text-rose-500 font-medium">{fieldErrors.bank_account_number}</p>
+                )}
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-sm font-semibold text-stone-700 ">Atas Nama Rekening</label>
+                <input
+                  type="text"
+                  value={form.bank_account_name || ""}
+                  onChange={(e) => updateForm("bank_account_name", e.target.value)}
+                  onBlur={(e) => validateField("bank_account_name", e.target.value)}
+                  placeholder="Atas nama siapa rekening tersebut?"
+                  className={`w-full px-4 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 caret-teal-600 focus:outline-none focus:ring-4 focus:ring-teal-500/20 transition-all shadow-inner ${
+                    fieldErrors.bank_account_name ? "ring-2 ring-rose-400 bg-rose-50" : ""
+                  }`}
+                  disabled={isPending}
+                />
+                {fieldErrors.bank_account_name && (
+                  <p className="text-xs text-rose-500 font-medium">{fieldErrors.bank_account_name}</p>
+                )}
+              </div>
+            </div>
+          )}
 
           {form.payment_method_type === "gateway" && (
             <div className="p-4 bg-stone-50 rounded-2xl space-y-4">

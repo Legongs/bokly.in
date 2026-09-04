@@ -1,25 +1,28 @@
+import { createAdminClient } from "@/lib/supabase/server";
+
 /**
- * In-memory Rate Limiter
- * Catatan: Jika di-deploy ke Serverless (seperti Vercel), in-memory Map bisa keriset antar cold-start 
- * atau tidak tersinkronisasi antar lambda/edge node. 
- * Namun ini cukup efektif untuk memblokir spam burst berkecepatan tinggi.
+ * Database-backed Rate Limiter
+ * Menggunakan Supabase RPC untuk menghitung dan mengecek limit secara tersentralisasi.
+ * Cocok untuk lingkungan Serverless (Vercel) yang tersebar di banyak edge/lambda.
  */
+export async function checkRateLimit(key: string, limit: number, windowMs: number): Promise<boolean> {
+  try {
+    const supabase = createAdminClient();
+    const { data, error } = await (supabase as any).rpc("check_rate_limit", {
+      p_key: key,
+      p_limit: limit,
+      p_window_ms: windowMs
+    });
 
-const rateLimitMap = new Map<string, { count: number; expiresAt: number }>();
+    if (error) {
+      console.error("Rate limit check failed:", error);
+      // Jika terjadi error pada DB, lebih baik allow saja (fail-open) agar tidak memblokir pengguna sah
+      return true;
+    }
 
-export function checkRateLimit(key: string, limit: number, windowMs: number): boolean {
-  const now = Date.now();
-  const record = rateLimitMap.get(key);
-
-  if (!record || record.expiresAt < now) {
-    rateLimitMap.set(key, { count: 1, expiresAt: now + windowMs });
-    return true;
+    return data; // returns true jika allowed, false jika terkena limit
+  } catch (err) {
+    console.error("Rate limit check exception:", err);
+    return true; // fail-open
   }
-
-  if (record.count >= limit) {
-    return false; // Terkena Rate Limit
-  }
-
-  record.count += 1;
-  return true;
 }

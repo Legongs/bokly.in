@@ -21,7 +21,7 @@ export interface CustomerPortalData {
  * tanpa memerlukan autentikasi login (karena mengandalkan token URL/booking ID yang sulit ditebak).
  */
 export async function getCustomerPortalData(
-  bookingId: string
+  token: string
 ): Promise<ActionResponse<CustomerPortalData>> {
   try {
     const supabase = createAdminClient(); // Gunakan admin client untuk bypass RLS, krn keamanan berbasis unguessable UUID
@@ -30,11 +30,16 @@ export async function getCustomerPortalData(
     const { data: booking, error: bookingError } = await supabase
       .from("bookings")
       .select("*, services(*), staff(*)")
-      .eq("id", bookingId)
+      .eq("manage_token", token)
       .single();
 
     if (bookingError || !booking) {
       return { success: false, error: "Data reservasi tidak ditemukan atau URL tidak valid." };
+    }
+
+    // Periksa apakah token sudah kedaluwarsa
+    if (booking.manage_token_expires_at && new Date(booking.manage_token_expires_at) < new Date()) {
+      return { success: false, error: "Tautan portal ini sudah kedaluwarsa. Silakan hubungi admin jika butuh bantuan." };
     }
 
     // 2. Ambil data tenant untuk tema dan info bisnis

@@ -53,7 +53,7 @@ export async function login(payload: unknown): Promise<ActionResponse<any>> {
 
   // Rate Limiting: Max 5 attempts per 5 minutes per email
   const rateLimitKey = `login_${parsed.data.email}`;
-  if (!checkRateLimit(rateLimitKey, 5, 300_000)) {
+  if (!(await checkRateLimit(rateLimitKey, 5, 300_000))) {
     return { success: false, error: "Terlalu banyak percobaan login. Tunggu 5 menit lagi ya." };
   }
 
@@ -114,7 +114,7 @@ export async function register(payload: unknown): Promise<ActionResponse<any>> {
 
   // Rate Limiting: Max 3 attempts per 10 minutes per email
   const rateLimitKey = `register_${email}`;
-  if (!checkRateLimit(rateLimitKey, 3, 600_000)) {
+  if (!(await checkRateLimit(rateLimitKey, 3, 600_000))) {
     return { success: false, error: "Tunggu sebentar ya sebelum mencoba daftar lagi." };
   }
 

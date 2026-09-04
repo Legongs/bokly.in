@@ -151,6 +151,9 @@ const updatePaymentSettingsSchema = z.object({
   payment_gateway_provider: z.enum(["midtrans", "xendit"]).nullable().optional(),
   payment_gateway_server_key: z.string().nullable().optional(),
   payment_gateway_client_key: z.string().nullable().optional(),
+  bank_name: z.string().max(50, "Nama bank kepanjangan nih.").nullable().optional().or(z.literal("")),
+  bank_account_number: z.string().max(50, "Nomor rekening kepanjangan nih.").nullable().optional().or(z.literal("")),
+  bank_account_name: z.string().max(100, "Atas nama rekening kepanjangan nih.").nullable().optional().or(z.literal("")),
 });
 
 type UpdatePaymentSettingsInput = z.infer<typeof updatePaymentSettingsSchema>;
@@ -180,6 +183,9 @@ export async function updatePaymentSettings(
         payment_gateway_provider: parsed.data.payment_gateway_provider || null,
         payment_gateway_server_key: parsed.data.payment_gateway_server_key || null,
         payment_gateway_client_key: parsed.data.payment_gateway_client_key || null,
+        bank_name: parsed.data.bank_name || null,
+        bank_account_number: parsed.data.bank_account_number || null,
+        bank_account_name: parsed.data.bank_account_name || null,
       })
       .eq("id", parsed.data.id)
       .select()

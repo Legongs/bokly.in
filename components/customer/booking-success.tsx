@@ -77,15 +77,48 @@ export function BookingSuccess({ bookingResult, tenant, t, dictionary, onReset }
         </CardContent>
       </Card>
 
-      {/* QRIS DP — jika ada */}
-      {Number(service.dp_amount) > 0 && (tenant as any).qris_image_url && (tenant as any).payment_method_type === "manual" && (
-        <div className="bg-stone-50 rounded-3xl p-5 border border-stone-100 text-center space-y-3">
-          <p className="text-sm font-semibold text-stone-800">Scan QRIS untuk DP</p>
-          <p className="text-xs text-stone-500">
-            Silakan scan QR di bawah untuk membayar DP sebesar {formatIDR(Number(service.dp_amount))}
-          </p>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={(tenant as any).qris_image_url} alt="QRIS DP" className="w-full max-w-[200px] mx-auto rounded-xl border border-stone-200 shadow-sm" />
+      {/* Pembayaran Manual (QRIS / Rekening) */}
+      {Number(service.dp_amount) > 0 && (tenant as any).payment_method_type === "manual" && ((tenant as any).qris_image_url || (tenant as any).bank_account_number) && (
+        <div className="bg-stone-50 rounded-3xl p-5 border border-stone-100 text-center space-y-4">
+          <div>
+            <p className="text-sm font-semibold text-stone-800">Pembayaran DP</p>
+            <p className="text-xs text-stone-500">
+              Silakan bayar DP sebesar {formatIDR(Number(service.dp_amount))}
+            </p>
+          </div>
+
+          {(tenant as any).qris_image_url && (
+            <div className="space-y-2">
+              <p className="text-xs font-medium text-stone-600 border-b pb-1">Via QRIS</p>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={(tenant as any).qris_image_url} alt="QRIS DP" className="w-full max-w-[200px] mx-auto rounded-xl border border-stone-200 shadow-sm" />
+            </div>
+          )}
+
+          {(tenant as any).bank_account_number && (
+            <div className="space-y-2">
+              <p className="text-xs font-medium text-stone-600 border-b pb-1">Via Transfer Bank</p>
+              <div className="bg-white rounded-xl p-3 border border-stone-200 text-left flex justify-between items-center gap-3">
+                <div className="overflow-hidden">
+                  <p className="text-xs font-bold text-stone-800 truncate">{(tenant as any).bank_name}</p>
+                  <p className="text-sm font-mono text-stone-700 tracking-wide mt-0.5">{(tenant as any).bank_account_number}</p>
+                  <p className="text-[10px] text-stone-500 uppercase mt-0.5 truncate">A.N. {(tenant as any).bank_account_name}</p>
+                </div>
+                <Button 
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="h-8 px-3 text-[10px] font-bold rounded-lg shrink-0"
+                  onClick={() => {
+                    navigator.clipboard.writeText((tenant as any).bank_account_number);
+                    alert("Nomor rekening disalin!");
+                  }}
+                >
+                  Salin
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
