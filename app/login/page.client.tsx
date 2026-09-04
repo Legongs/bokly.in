@@ -10,8 +10,8 @@ import { login } from "@/lib/actions/auth.actions";
 
 // Client-side schema mirroring server
 const loginSchema = z.object({
-  email: z.string().email("Format email-nya kurang pas nih."),
-  password: z.string().min(6, "Password minimal 6 karakter ya."),
+  email: z.string().email("Ups, format email-nya kayaknya belum pas nih."),
+  password: z.string().min(6, "Password-nya kurang panjang, minimal 6 karakter ya."),
 });
 
 type LoginFields = z.infer<typeof loginSchema>;
@@ -22,6 +22,18 @@ export default function LoginPage() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isDemoMode, setIsDemoMode] = useState(false);
+
+  React.useEffect(() => {
+    if (typeof window !== "undefined") {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get("demo") === "true") {
+        setEmail("demo@maubooking.in");
+        setPassword("Demo123456!");
+        setIsDemoMode(true);
+      }
+    }
+  }, []);
   
   const [fieldErrors, setFieldErrors] = useState<Partial<Record<keyof LoginFields, string>>>({});
   const [serverError, setServerError] = useState<string | null>(null);
@@ -86,6 +98,13 @@ export default function LoginPage() {
               <div className="flex items-start gap-2 bg-rose-50 text-rose-600 p-3 rounded-xl text-sm font-medium border border-rose-100">
                 <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
                 <p>{serverError}</p>
+              </div>
+            )}
+
+            {isDemoMode && (
+              <div className="flex items-start gap-2 bg-teal-50 text-teal-700 p-3 rounded-xl text-sm font-medium border border-teal-100">
+                <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                <p>Mode Demo diaktifkan. Kredensial telah diisi otomatis, silakan langsung klik Masuk.</p>
               </div>
             )}
 
@@ -164,37 +183,39 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* Kanan: Visual Benefit (Split Screen) */}
-      <div className="hidden lg:flex flex-1 bg-stone-50 items-center justify-center p-12 border-l border-stone-200">
-        <div className="max-w-md w-full">
-          <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-teal-600 mb-6 shadow-sm border border-stone-100">
-            <Coffee className="w-8 h-8" />
-          </div>
-          <h2 className="text-3xl font-extrabold text-stone-900 leading-tight mb-4">
-            Selamat datang kembali!
-          </h2>
-          <p className="text-lg text-stone-600 leading-relaxed mb-8">
-            Cek jadwal hari ini, konfirmasi DP, dan siap-siap sambut pelanggan.
-          </p>
-          
-          <div className="space-y-4">
-            <div className="flex items-center gap-3 p-4 bg-white rounded-2xl border border-stone-100 shadow-sm">
-              <div className="w-10 h-10 rounded-full bg-teal-50 flex items-center justify-center text-teal-600">
-                <CheckCircle2 className="w-5 h-5" />
-              </div>
-              <div>
-                <p className="font-bold text-stone-900">Konfirmasi DP Cepat</p>
-                <p className="text-sm text-stone-500">Approve booking masuk cuma dengan satu klik.</p>
-              </div>
+      {/* Kanan: Visual Benefit (Bento Grid) */}
+      <div className="hidden lg:flex flex-1 bg-stone-50 items-center justify-center p-12 relative overflow-hidden">
+        {/* Dekorasi Organik */}
+        <div className="absolute top-0 right-0 w-[40rem] h-[40rem] bg-teal-50/50 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" />
+        <div className="absolute bottom-0 left-0 w-[30rem] h-[30rem] bg-orange-50/50 rounded-full blur-3xl translate-y-1/3 -translate-x-1/4" />
+        
+        <div className="relative z-10 max-w-lg w-full flex flex-col gap-4">
+          <div className="bg-white/60 backdrop-blur-xl border border-stone-100 rounded-[2rem] p-8 shadow-sm">
+            <div className="w-14 h-14 bg-teal-100/50 rounded-2xl flex items-center justify-center text-teal-700 mb-6 border border-teal-100">
+              <Coffee className="w-7 h-7" />
             </div>
-            <div className="flex items-center gap-3 p-4 bg-white rounded-2xl border border-stone-100 shadow-sm">
-              <div className="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-orange-600">
-                <Store className="w-5 h-5" />
+            <h2 className="text-3xl font-extrabold text-stone-900 leading-tight tracking-tight mb-3">
+              Selamat datang kembali, Juragan!
+            </h2>
+            <p className="text-stone-600 leading-relaxed font-medium">
+              Cek jadwal hari ini, santai sejenak, dan siap-siap sambut pelanggan yang udah antre.
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-4">
+            <div className="bg-gradient-to-br from-teal-600 to-teal-500 text-white rounded-[2rem] p-6 shadow-lg shadow-teal-600/20 relative overflow-hidden group">
+              <div className="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full blur-xl transition-all duration-500 group-hover:scale-150" />
+              <CheckCircle2 className="w-8 h-8 mb-4 text-teal-100" />
+              <p className="font-bold text-lg leading-tight mb-1">Terima DP Instan</p>
+              <p className="text-teal-50 text-sm font-medium leading-snug">Approve booking masuk cuma dengan satu klik aja.</p>
+            </div>
+            
+            <div className="bg-white/80 backdrop-blur-xl border border-stone-100 rounded-[2rem] p-6 shadow-sm hover:shadow-md transition-all duration-300">
+              <div className="w-12 h-12 bg-orange-50 rounded-2xl flex items-center justify-center text-orange-600 mb-4 border border-orange-100">
+                <Store className="w-6 h-6" />
               </div>
-              <div>
-                <p className="font-bold text-stone-900">Manajemen Layanan</p>
-                <p className="text-sm text-stone-500">Update harga atau ganti nama layanan kapan saja.</p>
-              </div>
+              <p className="font-bold text-stone-900 leading-tight mb-1">Atur Sesukamu</p>
+              <p className="text-stone-500 text-sm leading-snug">Ubah harga atau layanan kapan aja dari HP-mu.</p>
             </div>
           </div>
         </div>

@@ -8,6 +8,7 @@ export interface BusinessDictionary {
   selectServicePrompt: string;
   staffLabel: string;
   themeColor: "teal" | "rose" | "orange" | "violet" | "blue";
+  iconName: "Scissors" | "Building" | "Car" | "Stethoscope" | "Store";
 }
 
 export function getSectorDictionary(sector: BusinessSector | null | undefined): BusinessDictionary {
@@ -21,6 +22,7 @@ export function getSectorDictionary(sector: BusinessSector | null | undefined): 
         selectServicePrompt: "Pilih Perawatan Anda",
         staffLabel: "Kapster / Terapis",
         themeColor: "rose",
+        iconName: "Scissors",
       };
     case "space":
       return {
@@ -31,6 +33,7 @@ export function getSectorDictionary(sector: BusinessSector | null | undefined): 
         selectServicePrompt: "Pilih Paket Durasi",
         staffLabel: "Ruangan",
         themeColor: "blue",
+        iconName: "Building",
       };
     case "auto":
       return {
@@ -41,6 +44,7 @@ export function getSectorDictionary(sector: BusinessSector | null | undefined): 
         selectServicePrompt: "Pilih Paket Layanan Kendaraan",
         staffLabel: "Tim / Teknisi",
         themeColor: "orange",
+        iconName: "Car",
       };
     case "health":
       return {
@@ -51,6 +55,7 @@ export function getSectorDictionary(sector: BusinessSector | null | undefined): 
         selectServicePrompt: "Pilih Tindakan / Pemeriksaan",
         staffLabel: "Dokter / Perawat",
         themeColor: "teal",
+        iconName: "Stethoscope",
       };
     default:
       return {
@@ -61,6 +66,7 @@ export function getSectorDictionary(sector: BusinessSector | null | undefined): 
         selectServicePrompt: "Pilih Layanan",
         staffLabel: "Pegawai",
         themeColor: "teal",
+        iconName: "Store",
       };
   }
 }

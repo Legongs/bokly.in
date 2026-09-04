@@ -23,6 +23,7 @@ const registerSchema = z.object({
     .max(100, "Kepanjangan nih, maksimal 100 huruf aja ya.")
     .trim(),
   business_sector: z.enum(["beauty", "space", "auto", "health"]),
+  business_type: z.string().min(1, "Sub sektor bisnis harus dipilih ya."),
   whatsapp_number: z
     .string()
     .min(10, "Nomor WA kependekan, minimal 10 angka ya.")
@@ -79,13 +80,37 @@ export async function login(payload: unknown): Promise<ActionResponse<any>> {
   }
 }
 
+export async function checkSlugAvailability(slug: string): Promise<boolean> {
+  if (!slug || slug.trim() === "") return false;
+
+  try {
+    const supabase = await createClient();
+    const { data } = await supabase
+      .from("tenants")
+      .select("id")
+      .eq("slug", slug.trim())
+      .single();
+
+    if (data) {
+      // Data ditemukan, berarti slug sudah dipakai
+      return false;
+    }
+
+    // Jika tidak ada data (kemungkinan error PGRST116 - no rows returned), berarti tersedia
+    return true;
+  } catch (error) {
+    // Tangani error tak terduga dengan default false (mencegah pendaftaran bocor)
+    return false;
+  }
+}
+
 export async function register(payload: unknown): Promise<ActionResponse<any>> {
   const parsed = registerSchema.safeParse(payload);
   if (!parsed.success) {
     return { success: false, error: parsed.error.issues[0]?.message ?? "Data kurang pas nih." };
   }
 
-  const { email, password, business_name, business_sector, whatsapp_number, slug } = parsed.data;
+  const { email, password, business_name, business_sector, business_type, whatsapp_number, slug } = parsed.data;
 
   // Rate Limiting: Max 3 attempts per 10 minutes per email
   const rateLimitKey = `register_${email}`;
@@ -137,7 +162,7 @@ export async function register(payload: unknown): Promise<ActionResponse<any>> {
       slug,
       business_name,
       business_sector,
-      business_type: "lainnya",
+      business_type,
       whatsapp_number,
     });
 
@@ -156,5 +181,18 @@ export async function register(payload: unknown): Promise<ActionResponse<any>> {
     return { success: true, data: authData.user };
   } catch {
     return { success: false, error: "Server kita lagi ngambek dikit nih. Coba lagi ya." };
+  }
+}
+
+export async function logout(): Promise<ActionResponse<null>> {
+  try {
+    const supabase = await createClient();
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      return { success: false, error: "Gagal keluar. Coba lagi ya." };
+    }
+    return { success: true, data: null };
+  } catch {
+    return { success: false, error: "Server error saat keluar." };
   }
 }

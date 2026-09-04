@@ -1,23 +1,25 @@
 "use client";
 
-import React, { useState, useTransition } from "react";
+import React, { useState, useTransition, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { z } from "zod";
-import { Loader2, Store, Mail, Lock, AlertCircle, Type, Phone, Link as LinkIcon, CheckCircle2 } from "lucide-react";
+import { Loader2, Store, Mail, Lock, AlertCircle, Type, Phone, Link as LinkIcon, CheckCircle2, Sparkles, Building2, Car, Stethoscope } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { register } from "@/lib/actions/auth.actions";
+import { register, checkSlugAvailability } from "@/lib/actions/auth.actions";
 
 // Client-side schema mirroring server
 const registerSchema = z.object({
-  email: z.string().email("Format email-nya kurang pas nih."),
-  password: z.string().min(6, "Password minimal 6 karakter biar aman ya."),
+  email: z.string().email("Ups, format email-nya kayaknya belum pas nih."),
+  password: z.string().min(6, "Password-nya kurang panjang, minimal 6 karakter ya."),
   business_name: z
     .string()
     .min(2, "Nama bisnis minimal 2 huruf ya.")
     .max(100, "Kepanjangan nih, maksimal 100 huruf aja ya.")
     .trim(),
   business_sector: z.enum(["beauty", "space", "auto", "health"]),
+  business_type: z.string().min(1, "Pilih sub sektor bisnisnya juga ya."),
+  custom_business_type: z.string().optional(),
   whatsapp_number: z
     .string()
     .min(10, "Nomor WA kependekan, minimal 10 angka ya.")
@@ -45,12 +47,55 @@ export default function RegisterPageClient() {
     password: "",
     business_name: "",
     business_sector: "beauty",
+    business_type: "",
+    custom_business_type: "",
     whatsapp_number: "",
     slug: "",
   });
+
+  const SUB_SECTORS: Record<string, string[]> = {
+    beauty: ["Salon", "Barbershop", "Spa", "Klinik Kecantikan", "Lainnya"],
+    space: ["Studio Foto", "Futsal / Lapangan", "Coworking Space", "Vila / Penginapan", "Lainnya"],
+    auto: ["Cuci Mobil", "Detailing", "Bengkel", "Lainnya"],
+    health: ["Dokter Umum", "Dokter Gigi", "Fisioterapi", "Bidan", "Lainnya"],
+  };
+
+  // Reset business_type when business_sector changes
+  useEffect(() => {
+    setForm((prev) => ({ ...prev, business_type: "", custom_business_type: "" }));
+  }, [form.business_sector]);
+  
+  // Clear custom when business_type changes from Lainnya
+  useEffect(() => {
+    if (form.business_type !== "Lainnya") {
+      setForm((prev) => ({ ...prev, custom_business_type: "" }));
+    }
+  }, [form.business_type]);
   
   const [fieldErrors, setFieldErrors] = useState<Partial<Record<keyof RegisterFields, string>>>({});
   const [serverError, setServerError] = useState<string | null>(null);
+  const [slugStatus, setSlugStatus] = useState<"idle" | "checking" | "available" | "taken">("idle");
+
+  useEffect(() => {
+    const slug = form.slug;
+    if (!slug) {
+      setSlugStatus("idle");
+      return;
+    }
+
+    if (fieldErrors.slug) {
+      setSlugStatus("idle");
+      return;
+    }
+
+    setSlugStatus("checking");
+    const timer = setTimeout(async () => {
+      const isAvailable = await checkSlugAvailability(slug);
+      setSlugStatus(isAvailable ? "available" : "taken");
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [form.slug, fieldErrors.slug]);
 
   const updateForm = (field: keyof RegisterFields, value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -68,11 +113,17 @@ export default function RegisterPageClient() {
     e.preventDefault();
     setServerError(null);
 
-    const parsed = registerSchema.safeParse(form);
+    const payload = {
+        ...form,
+        business_type: form.business_type === "Lainnya" ? form.custom_business_type || "Lainnya" : form.business_type,
+    };
+      
+    const parsed = registerSchema.safeParse(payload);
     if (!parsed.success) {
-      const errors: any = {};
+      const errors: Partial<Record<keyof RegisterFields, string>> = {};
       parsed.error.issues.forEach((issue) => {
-        errors[issue.path[0]] = issue.message;
+        const fieldName = issue.path[0] as keyof RegisterFields;
+        errors[fieldName] = issue.message;
       });
       setFieldErrors(errors);
       return;
@@ -149,27 +200,70 @@ export default function RegisterPageClient() {
                 <label className="text-sm font-semibold text-stone-700">
                   Sektor Bisnis Kamu
                 </label>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <div className="grid grid-cols-2 gap-3">
                   {[
-                    { id: "beauty", label: "Kecantikan", icon: "💅" },
-                    { id: "space", label: "Sewa Ruang", icon: "🏢" },
-                    { id: "auto", label: "Otomotif", icon: "🚗" },
-                    { id: "health", label: "Kesehatan", icon: "🩺" },
+                    { id: "beauty", label: "Kecantikan", icon: <Sparkles className="w-5 h-5" />, desc: "Salon, Barbershop, Spa" },
+                    { id: "space", label: "Ruang & Tempat", icon: <Building2 className="w-5 h-5" />, desc: "Studio, Futsal, Lapangan" },
+                    { id: "auto", label: "Otomotif", icon: <Car className="w-5 h-5" />, desc: "Cuci Mobil, Detailing" },
+                    { id: "health", label: "Kesehatan", icon: <Stethoscope className="w-5 h-5" />, desc: "Dokter, Terapis, Klinik" },
                   ].map((sector) => (
                     <div
                       key={sector.id}
                       onClick={() => !isPending && updateForm("business_sector", sector.id)}
-                      className={`cursor-pointer border rounded-xl p-3 flex flex-col items-center justify-center gap-2 transition-all ${
+                      className={`cursor-pointer border rounded-xl p-3 flex flex-col items-start gap-1.5 transition-all ${
                         form.business_sector === sector.id
                           ? "border-teal-600 bg-teal-50 ring-1 ring-teal-600 shadow-sm"
                           : "border-stone-200 bg-white hover:border-stone-300"
                       } ${isPending ? "opacity-50 cursor-not-allowed" : ""}`}
                     >
-                      <span className="text-2xl">{sector.icon}</span>
-                      <span className="text-xs font-semibold text-stone-700">{sector.label}</span>
+                      <div className={`p-2 rounded-lg ${form.business_sector === sector.id ? "bg-teal-100 text-teal-700" : "bg-stone-100 text-stone-600"}`}>
+                        {sector.icon}
+                      </div>
+                      <span className="text-sm font-bold text-stone-900 mt-1">{sector.label}</span>
+                      <span className="text-[10px] text-stone-500 leading-tight">{sector.desc}</span>
                     </div>
                   ))}
                 </div>
+                
+                {form.business_sector && (
+                  <div className="mt-4 space-y-2 animate-in fade-in slide-in-from-top-2 duration-300">
+                    <label className="text-[13px] font-semibold text-stone-700">
+                      Lebih Spesifik (Sub Sektor)
+                    </label>
+                    <div className="flex flex-wrap gap-2">
+                      {SUB_SECTORS[form.business_sector]?.map((sub) => (
+                        <div
+                          key={sub}
+                          onClick={() => !isPending && updateForm("business_type", sub)}
+                          className={`cursor-pointer px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all ${
+                            form.business_type === sub
+                              ? "border-teal-600 bg-teal-600 text-white shadow-sm"
+                              : "border-stone-200 bg-white text-stone-600 hover:border-stone-300 hover:bg-stone-50"
+                          } ${isPending ? "opacity-50 cursor-not-allowed" : ""}`}
+                        >
+                          {sub}
+                        </div>
+                      ))}
+                    </div>
+                    
+                    {form.business_type === "Lainnya" && (
+                      <div className="mt-3 animate-in fade-in slide-in-from-top-1 duration-300">
+                        <input
+                          type="text"
+                          disabled={isPending}
+                          value={form.custom_business_type || ""}
+                          onChange={(e) => updateForm("custom_business_type", e.target.value)}
+                          placeholder="Ketik spesifik bisnis kamu..."
+                          className="w-full h-10 px-3 bg-white border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all text-sm text-stone-700 placeholder:text-stone-400"
+                        />
+                      </div>
+                    )}
+
+                    {fieldErrors.business_type && (
+                      <p className="text-xs text-rose-500 font-medium">{fieldErrors.business_type}</p>
+                    )}
+                  </div>
+                )}
                 <p className="text-[11px] text-stone-500">Bakal dipakai buat nyesuaiin kata-kata di halaman booking kamu nanti.</p>
               </div>
 
@@ -195,6 +289,14 @@ export default function RegisterPageClient() {
                 </div>
                 {fieldErrors.slug ? (
                   <p className="text-xs text-rose-500 font-medium">{fieldErrors.slug}</p>
+                ) : slugStatus === "checking" ? (
+                  <p className="text-xs text-stone-500 font-medium flex items-center gap-1">
+                    <Loader2 className="w-3 h-3 animate-spin" /> Mengecek URL...
+                  </p>
+                ) : slugStatus === "taken" ? (
+                  <p className="text-xs text-rose-500 font-medium">URL ini sudah dipakai toko lain.</p>
+                ) : slugStatus === "available" ? (
+                  <p className="text-xs text-teal-600 font-medium">URL tersedia.</p>
                 ) : (
                   <p className="text-[11px] text-stone-400">Nanti linknya: maubooking.in/<strong>{form.slug || "url"}</strong></p>
                 )}
@@ -286,7 +388,11 @@ export default function RegisterPageClient() {
                 !form.password ||
                 !form.business_name ||
                 !form.slug ||
-                !form.whatsapp_number
+                !form.whatsapp_number ||
+                !form.business_type ||
+                (form.business_type === "Lainnya" && !form.custom_business_type?.trim()) ||
+                slugStatus === "checking" ||
+                slugStatus === "taken"
               }
             >
               {isPending ? (
@@ -309,38 +415,40 @@ export default function RegisterPageClient() {
         </div>
       </div>
 
-      {/* Kanan: Visual Benefit (Split Screen) */}
-      <div className="hidden lg:flex flex-1 bg-stone-50 items-center justify-center p-12 border-l border-stone-200">
-        <div className="max-w-md w-full">
-          <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-teal-600 mb-6 shadow-sm border border-stone-100">
-            <CheckCircle2 className="w-8 h-8" />
-          </div>
-          <h2 className="text-3xl font-extrabold text-stone-900 leading-tight mb-4">
-            Nggak perlu lagi repot balas chat satu-satu.<br />
-            <span className="text-teal-700">Tinggal share link, jadwal langsung keisi.</span>
-          </h2>
-          <p className="text-lg text-stone-600 leading-relaxed mb-8">
-            Lebih dari ribuan usaha jasa telah meninggalkan buku catatan manual dan beralih ke maubooking.in untuk mengunci jadwal tanpa bentrok.
-          </p>
-          
-          <div className="space-y-4">
-            <div className="flex items-center gap-3 p-4 bg-white rounded-2xl border border-stone-100 shadow-sm">
-              <div className="w-10 h-10 rounded-full bg-teal-50 flex items-center justify-center text-teal-600">
-                <Store className="w-5 h-5" />
-              </div>
-              <div>
-                <p className="font-bold text-stone-900">Siap Pakai 1 Menit</p>
-                <p className="text-sm text-stone-500">Isi form di samping, web langsung online.</p>
-              </div>
+      {/* Kanan: Visual Benefit (Bento Grid) */}
+      <div className="hidden lg:flex flex-1 bg-stone-50 items-center justify-center p-12 relative overflow-hidden">
+        {/* Dekorasi Organik */}
+        <div className="absolute top-0 left-0 w-[40rem] h-[40rem] bg-teal-50/60 rounded-full blur-3xl -translate-y-1/2 -translate-x-1/3" />
+        <div className="absolute bottom-0 right-0 w-[30rem] h-[30rem] bg-orange-50/60 rounded-full blur-3xl translate-y-1/3 translate-x-1/4" />
+        
+        <div className="relative z-10 max-w-lg w-full flex flex-col gap-4">
+          <div className="bg-white/60 backdrop-blur-xl border border-stone-100 rounded-[2rem] p-8 shadow-sm">
+            <div className="w-14 h-14 bg-teal-100/50 rounded-2xl flex items-center justify-center text-teal-700 mb-6 border border-teal-100">
+              <CheckCircle2 className="w-7 h-7" />
             </div>
-            <div className="flex items-center gap-3 p-4 bg-white rounded-2xl border border-stone-100 shadow-sm">
-              <div className="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-orange-600">
-                <Lock className="w-5 h-5" />
+            <h2 className="text-3xl font-extrabold text-stone-900 leading-tight tracking-tight mb-3">
+              Nggak usah lagi repot <br/>
+              balas chat satu-satu.
+            </h2>
+            <p className="text-stone-600 leading-relaxed font-medium">
+              Ribuan usaha jasa udah pakai maubooking.in buat ngunci jadwal tanpa bentrok. Tinggal share link, beres!
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-4">
+            <div className="bg-gradient-to-br from-teal-600 to-teal-500 text-white rounded-[2rem] p-6 shadow-lg shadow-teal-600/20 relative overflow-hidden group">
+              <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-white/10 rounded-full blur-xl transition-all duration-500 group-hover:scale-150" />
+              <Store className="w-8 h-8 mb-4 text-teal-100" />
+              <p className="font-bold text-lg leading-tight mb-1">Siap Pakai 1 Menit</p>
+              <p className="text-teal-50 text-sm font-medium leading-snug">Isi form di samping, halaman bookingmu langsung online.</p>
+            </div>
+            
+            <div className="bg-white/80 backdrop-blur-xl border border-stone-100 rounded-[2rem] p-6 shadow-sm hover:shadow-md transition-all duration-300">
+              <div className="w-12 h-12 bg-orange-50 rounded-2xl flex items-center justify-center text-orange-600 mb-4 border border-orange-100">
+                <Lock className="w-6 h-6" />
               </div>
-              <div>
-                <p className="font-bold text-stone-900">Anti Pelanggan PHP</p>
-                <p className="text-sm text-stone-500">Wajibin pelanggan bayar DP pakai QRIS.</p>
-              </div>
+              <p className="font-bold text-stone-900 leading-tight mb-1">Anti Pelanggan PHP</p>
+              <p className="text-stone-500 text-sm leading-snug">Wajibin pelanggan bayar DP pakai QRIS, biar jadwal aman.</p>
             </div>
           </div>
         </div>

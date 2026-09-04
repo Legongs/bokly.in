@@ -1,5 +1,4 @@
 import { createClient } from "@/lib/supabase/client";
-import { v4 as uuidv4 } from "uuid";
 
 const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
@@ -15,7 +14,7 @@ export async function uploadImage(file: File, oldImageUrl?: string | null): Prom
 
   const supabase = createClient();
   const fileExt = file.name.split(".").pop();
-  const fileName = `${uuidv4()}.${fileExt}`;
+  const fileName = `${crypto.randomUUID()}.${fileExt}`;
 
   // 1. Delete old image if it exists
   if (oldImageUrl) {

@@ -64,6 +64,7 @@ const submitBookingSchema = z.object({
     .url("URL fotonya nggak valid nih.")
     .nullable()
     .optional(),
+  is_walkin: z.boolean().optional(),
 });
 
 export type SubmitBookingPayload = z.infer<typeof submitBookingSchema>;
@@ -175,25 +176,79 @@ export async function submitBooking(
   if (!checkRateLimit(rateLimitKey, 3, 300_000)) {
     return { success: false, error: "Wow, bookingnya kenceng banget! Tunggu beberapa menit lagi ya sebelum bikin booking baru." };
   }
-  // -------------------------
 
   try {
     const supabase = await createClient();
-
     let finalStaffId = parsed.data.staff_id || null;
 
-    // --- 1. Verifikasi Keamanan Lintas-Tenant (Cross-Tenant Forgery) ---
-    const { data: serviceData, error: serviceError } = await supabase
+    // --- 1. Ambil Data Tenant & Service ---
+    const { data: tenant, error: tenantErr } = await supabase
+      .from("tenants")
+      .select("weekly_schedule, minimum_notice_hours, timezone, open_time, close_time")
+      .eq("id", parsed.data.tenant_id)
+      .single();
+
+    if (tenantErr || !tenant) return { success: false, error: "Toko tidak ditemukan." };
+
+    const { data: service, error: serviceErr } = await supabase
       .from("services")
-      .select("id")
+      .select("id, duration_minutes, buffer_minutes, max_capacity")
       .eq("id", parsed.data.service_id)
       .eq("tenant_id", parsed.data.tenant_id)
       .single();
 
-    if (serviceError || !serviceData) {
-      return { success: false, error: "Akses ditolak: Layanan tidak valid atau bukan milik toko ini." };
+    if (serviceErr || !service) return { success: false, error: "Akses ditolak: Layanan tidak valid." };
+
+    // --- 2. Validasi Jadwal Mingguan & Jam Operasional ---
+    const bookingDateObj = new Date(parsed.data.booking_date);
+    const dayNameEn = bookingDateObj.toLocaleDateString("en-US", { weekday: "long" }).toLowerCase();
+    
+    let dayOpenTime = tenant.open_time;
+    let dayCloseTime = tenant.close_time;
+    const weeklySchedule: any = tenant.weekly_schedule;
+    
+    if (weeklySchedule && weeklySchedule[dayNameEn]) {
+      if (!weeklySchedule[dayNameEn].isOpen) {
+        return { success: false, error: "Maaf, toko libur di hari ini." };
+      }
+      dayOpenTime = weeklySchedule[dayNameEn].openTime || dayOpenTime;
+      dayCloseTime = weeklySchedule[dayNameEn].closeTime || dayCloseTime;
     }
 
+    const parseTime = (timeStr: string) => {
+      const [h, m] = timeStr.split(":").map(Number);
+      return h * 60 + (m || 0);
+    };
+    
+    const startMinutes = parseTime(parsed.data.start_time);
+    const endMinutes = parseTime(parsed.data.end_time);
+    
+    // Validasi apakah pesanan melanggar jam operasional
+    if (startMinutes < parseTime(dayOpenTime) || endMinutes > parseTime(dayCloseTime)) {
+      return { success: false, error: "Jam yang dipilih di luar jam operasional toko." };
+    }
+
+    // --- 3. Validasi Minimum Notice ---
+    const tenantTimezone = tenant.timezone || "Asia/Jakarta";
+    const now = new Date();
+    const todayLocal = new Date(now.toLocaleString("en-US", { timeZone: tenantTimezone }));
+    const todayDateString = todayLocal.getFullYear() + "-" + 
+                            String(todayLocal.getMonth() + 1).padStart(2, "0") + "-" + 
+                            String(todayLocal.getDate()).padStart(2, "0");
+                            
+    if (!parsed.data.is_walkin) {
+      if (parsed.data.booking_date === todayDateString) {
+        const currentMinutesLocal = todayLocal.getHours() * 60 + todayLocal.getMinutes();
+        const minimumNotice = (tenant.minimum_notice_hours || 0) * 60;
+        if (startMinutes < currentMinutesLocal + minimumNotice) {
+          return { success: false, error: `Maaf, minimal pemesanan adalah ${tenant.minimum_notice_hours} jam sebelumnya.` };
+        }
+      } else if (parsed.data.booking_date < todayDateString) {
+        return { success: false, error: "Tanggal pemesanan sudah lewat." };
+      }
+    }
+
+    // --- 4. Validasi Pegawai & Overlap ---
     if (finalStaffId) {
       const { data: staffData, error: staffError } = await supabase
         .from("staff")
@@ -201,12 +256,41 @@ export async function submitBooking(
         .eq("id", finalStaffId)
         .eq("tenant_id", parsed.data.tenant_id)
         .single();
-      
       if (staffError || !staffData) {
-        return { success: false, error: "Akses ditolak: Pegawai tidak valid atau bukan milik toko ini." };
+        return { success: false, error: "Akses ditolak: Pegawai tidak valid." };
       }
     }
-    // -------------------------------------------------------------------
+
+    // Mengambil semua jadwal pada tanggal tersebut untuk cek overlap
+    const { data: existingBookings, error: bookingsErr } = await supabase
+      .from("bookings")
+      .select("start_time, end_time, staff_id, services(buffer_minutes)")
+      .eq("tenant_id", parsed.data.tenant_id)
+      .eq("booking_date", parsed.data.booking_date)
+      .in("payment_status", ["pending", "approved"]);
+
+    if (bookingsErr) return { success: false, error: "Gagal memverifikasi ketersediaan jadwal." };
+
+    let overlappingCount = 0;
+    const busyStaffIds = new Set<string>();
+
+    for (const b of (existingBookings || [])) {
+      const bStart = parseTime(b.start_time);
+      const bBuffer = b.services?.buffer_minutes || 0;
+      const bEnd = parseTime(b.end_time) + bBuffer;
+
+      const requestEnd = endMinutes + (service.buffer_minutes || 0);
+
+      // Cek overlap: A.start < B.end AND A.end > B.start
+      if (startMinutes < bEnd && requestEnd > bStart) {
+        if (b.staff_id) busyStaffIds.add(b.staff_id);
+        overlappingCount++;
+      }
+    }
+
+    if (finalStaffId && busyStaffIds.has(finalStaffId)) {
+      return { success: false, error: "Waduh, pegawai ini sudah ada jadwal di jam tersebut. Pilih jam lain yuk!" };
+    }
 
     // Auto-assign staff jika tidak dipilih spesifik
     if (!finalStaffId) {
@@ -216,27 +300,22 @@ export async function submitBooking(
         .eq("tenant_id", parsed.data.tenant_id);
 
       if (staffList && staffList.length > 0) {
-        // Ambil staff yang sedang bertugas di jam tersebut
-        const { data: busyBookings } = await supabase
-          .from("bookings")
-          .select("staff_id")
-          .eq("tenant_id", parsed.data.tenant_id)
-          .eq("booking_date", parsed.data.booking_date)
-          .eq("start_time", parsed.data.start_time)
-          .in("payment_status", ["pending", "approved"]);
-
-        const busyStaffIds = (busyBookings || []).map((b) => b.staff_id).filter(Boolean);
-        const availableStaff = staffList.filter((s) => !busyStaffIds.includes(s.id));
-
+        const availableStaff = staffList.filter((s) => !busyStaffIds.has(s.id));
         if (availableStaff.length > 0) {
-          // Pilih random dari yang tersedia (atau yang pertama)
           finalStaffId = availableStaff[0].id;
         } else {
-          return { success: false, error: "Waduh, semua pegawai sedang sibuk di jam ini. Pilih jam lain yuk!" };
+          return { success: false, error: "Waduh, semua pegawai sedang sibuk di jam ini. Pilih jam atau hari lain yuk!" };
+        }
+      } else {
+        // Tidak ada pegawai yang didaftarkan, cek max_capacity dari service
+        const maxCap = service.max_capacity || 1;
+        if (overlappingCount >= maxCap) {
+          return { success: false, error: "Waduh, slot di jam ini sudah penuh. Pilih jam atau hari lain yuk!" };
         }
       }
     }
 
+    // --- 5. Insert Booking ---
     const { data, error } = await supabase
       .from("bookings")
       .insert({
@@ -248,25 +327,17 @@ export async function submitBooking(
         booking_date: parsed.data.booking_date,
         start_time: parsed.data.start_time,
         end_time: parsed.data.end_time,
-        payment_status: "pending",
+        payment_status: parsed.data.is_walkin ? "approved" : "pending",
         proof_url: parsed.data.proof_url ?? null,
       })
       .select()
       .single();
 
     if (error) {
-      // Tangkap pelanggaran constraint unique_tenant_slot (race condition)
       const pgError = error as unknown as PostgrestError;
-      if (
-        pgError.code === PG_UNIQUE_VIOLATION &&
-        pgError.message.includes(UNIQUE_SLOT_CONSTRAINT)
-      ) {
-        return {
-          success: false,
-          error: "Waduh, slot ini baru aja diambil orang lain. Pilih jam yang lain yuk!",
-        };
+      if (pgError.code === PG_UNIQUE_VIOLATION && pgError.message.includes(UNIQUE_SLOT_CONSTRAINT)) {
+        return { success: false, error: "Waduh, slot ini baru aja diambil orang lain. Pilih jam yang lain yuk!" };
       }
-
       return { success: false, error: "Yah, gagal nyimpen jadwal kamu. Coba klik sekali lagi ya." };
     }
 
@@ -274,7 +345,7 @@ export async function submitBooking(
     revalidatePath("/[tenant]", "page");
     revalidatePath("/dashboard");
 
-    // Kirim notifikasi Telegram ke tenant (tanpa menghentikan flow jika gagal)
+    // Kirim notifikasi Telegram ke tenant
     try {
       const { data: tenantData } = await supabase
         .from("tenants")
@@ -284,7 +355,6 @@ export async function submitBooking(
 
       if (tenantData?.telegram_chat_id) {
         const message = `Asyik, ada booking baru masuk! 📅 ${parsed.data.booking_date} ⏰ ${parsed.data.start_time.slice(0, 5)} 👤 ${parsed.data.customer_name}. Buruan cek dasbor buat konfirmasi DP-nya!`;
-        // Jangan await agar tidak memblokir response ke user, atau await tidak apa-apa karena fetch cepat
         await sendTelegramNotification(tenantData.telegram_chat_id, message);
       }
     } catch (err) {
@@ -353,7 +423,7 @@ export async function handleBookingSuccess(
       .select(`
         *,
         services (name, price, dp_amount),
-        tenants (business_name, whatsapp_number, wa_method, wa_api_key)
+        tenants (slug, business_name, whatsapp_number, wa_method, wa_api_key)
       `)
       .eq("id", bookingId)
       .eq("tenant_id", tenantId)
@@ -365,8 +435,9 @@ export async function handleBookingSuccess(
 
     const tenant = bookingData.tenants as any;
     const service = bookingData.services as any;
+    const portalUrl = `https://maubooking.in/${tenant.slug}/booking/${bookingId}`;
 
-    const messageText = `Halo ${tenant.business_name},\n\nSaya ${bookingData.customer_name} ingin konfirmasi booking:\n\nLayanan: ${service.name}\nTanggal: ${bookingData.booking_date}\nJam: ${bookingData.start_time.slice(0,5)}\n\nTerima kasih!`;
+    const messageText = `Halo ${tenant.business_name},\n\nSaya ${bookingData.customer_name} ingin konfirmasi booking:\n\nLayanan: ${service.name}\nTanggal: ${bookingData.booking_date}\nJam: ${bookingData.start_time.slice(0,5)}\n\nCek status: ${portalUrl}\n\nTerima kasih!`;
     const encodedMessage = encodeURIComponent(messageText);
 
     const waMethod = tenant.wa_method || "manual";
@@ -383,7 +454,7 @@ export async function handleBookingSuccess(
         return { success: false, error: "API Key Fonnte belum diatur oleh tenant." };
       }
 
-      const customerMessage = `Halo ${bookingData.customer_name},\n\nBooking kamu di ${tenant.business_name} berhasil dicatat!\n\nLayanan: ${service.name}\nTanggal: ${bookingData.booking_date}\nJam: ${bookingData.start_time.slice(0,5)}\n\nTerima kasih!`;
+      const customerMessage = `Halo ${bookingData.customer_name},\n\nBooking kamu di ${tenant.business_name} berhasil dicatat!\n\nLayanan: ${service.name}\nTanggal: ${bookingData.booking_date}\nJam: ${bookingData.start_time.slice(0,5)}\n\nCek status dan kelola booking kamu di sini:\n${portalUrl}\n\nTerima kasih!`;
 
       // Eksekusi POST ke Fonnte
       const response = await fetch("https://api.fonnte.com/send", {
@@ -537,4 +608,147 @@ export async function getAvailableSlots(
   }
 }
 
+// ── Reschedule & No-Show Actions ──────────────────────────────────────────────
 
+const rescheduleSchema = z.object({
+  bookingId: z.string().uuid(),
+  role: z.enum(["tenant", "customer"]),
+  newDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  newStartTime: z.string().regex(/^\d{2}:\d{2}(:\d{2})?$/),
+  newEndTime: z.string().regex(/^\d{2}:\d{2}(:\d{2})?$/),
+});
+
+export async function proposeReschedule(
+  bookingId: string,
+  role: "tenant" | "customer",
+  newDate: string,
+  newStartTime: string,
+  newEndTime: string
+): Promise<ActionResponse<{ type: "manual" | "api"; url?: string }>> {
+  try {
+    const supabase = await createClient();
+    
+    // Cek booking
+    const { data: bookingData, error: bookingErr } = await supabase
+      .from("bookings")
+      .select(`*, tenants (business_name, whatsapp_number, wa_method, wa_api_key, slug), services (name)`)
+      .eq("id", bookingId)
+      .single();
+      
+    if (bookingErr || !bookingData) return { success: false, error: "Booking tidak ditemukan." };
+
+    const tenant = bookingData.tenants as any;
+    const service = bookingData.services as any;
+
+    const rescheduleRequest = {
+      proposedBy: role,
+      date: newDate,
+      startTime: newStartTime,
+      endTime: newEndTime,
+      status: "pending"
+    };
+
+    const { error: updateErr } = await supabase
+      .from("bookings")
+      .update({ reschedule_request: rescheduleRequest })
+      .eq("id", bookingId);
+
+    if (updateErr) return { success: false, error: "Gagal menyimpan pengajuan reschedule." };
+
+    revalidatePath("/dashboard");
+    revalidatePath("/[slug]/booking/[token]", "page");
+
+    // Format pesan WA
+    const portalUrl = `https://maubooking.in/${tenant.slug}/booking/${bookingId}`;
+    let messageText = "";
+    let targetWa = "";
+
+    if (role === "tenant") {
+      messageText = `Halo ${bookingData.customer_name},\n\nMohon maaf, admin ${tenant.business_name} meminta untuk memindahkan jadwal booking layanan ${service.name} Anda menjadi:\nTanggal: ${newDate}\nJam: ${newStartTime.slice(0,5)}\n\nMohon konfirmasi (Setuju/Tolak) melalui tautan berikut:\n${portalUrl}\n\nTerima kasih!`;
+      targetWa = bookingData.customer_wa;
+    } else {
+      messageText = `Halo admin ${tenant.business_name},\n\nPelanggan atas nama ${bookingData.customer_name} mengajukan perpindahan jadwal untuk layanan ${service.name} menjadi:\nTanggal: ${newDate}\nJam: ${newStartTime.slice(0,5)}\n\nSilakan cek Dasbor Kasir untuk menyetujui atau menolak.`;
+      targetWa = tenant.whatsapp_number;
+    }
+
+    const waMethod = tenant.wa_method || "manual";
+
+    if (waMethod === "manual" || role === "customer") {
+      let phone = targetWa;
+      if (phone.startsWith("0")) phone = "62" + phone.slice(1);
+      const url = `https://wa.me/${phone}?text=${encodeURIComponent(messageText)}`;
+      return { success: true, data: { type: "manual", url } };
+    } else if (waMethod === "api" && role === "tenant") {
+      if (!tenant.wa_api_key) return { success: false, error: "Fonnte API Key belum diatur." };
+      
+      const response = await fetch("https://api.fonnte.com/send", {
+        method: "POST",
+        headers: { "Authorization": tenant.wa_api_key, "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({ target: targetWa, message: messageText, countryCode: "62" }).toString(),
+      });
+      const resData = await response.json();
+      if (!response.ok || !resData.status) return { success: false, error: "Gagal mengirim pesan otomatis via Fonnte." };
+      return { success: true, data: { type: "api" } };
+    }
+
+    return { success: false, error: "Metode WA tidak dikenali." };
+  } catch (err) {
+    return { success: false, error: "Kesalahan internal." };
+  }
+}
+
+export async function respondToReschedule(
+  bookingId: string,
+  response: "accepted" | "rejected"
+): Promise<ActionResponse<void>> {
+  try {
+    const supabase = await createClient();
+    const { data: bookingData } = await supabase.from("bookings").select("*").eq("id", bookingId).single();
+    if (!bookingData || !bookingData.reschedule_request) return { success: false, error: "Tidak ada pengajuan reschedule aktif." };
+    
+    const req = bookingData.reschedule_request as any;
+    
+    if (response === "accepted") {
+      // Ubah jadwal permanen
+      const { error } = await supabase.from("bookings").update({
+        booking_date: req.date,
+        start_time: req.startTime,
+        end_time: req.endTime,
+        reschedule_request: null
+      }).eq("id", bookingId);
+      if (error) return { success: false, error: "Gagal mengubah jadwal." };
+    } else {
+      // Hapus request
+      await supabase.from("bookings").update({ reschedule_request: null }).eq("id", bookingId);
+    }
+    
+    revalidatePath("/dashboard");
+    revalidatePath("/[slug]/booking/[token]", "page");
+    return { success: true };
+  } catch (err) {
+    return { success: false, error: "Kesalahan internal." };
+  }
+}
+
+export async function markNoShow(bookingId: string): Promise<ActionResponse<void>> {
+  try {
+    const supabase = await createClient();
+    
+    // Verifikasi akses tenant
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { success: false, error: "Akses ditolak." };
+
+    const { error } = await supabase
+      .from("bookings")
+      .update({ is_no_show: true, payment_status: "rejected" }) // tandai rejected agar slot kosong
+      .eq("id", bookingId)
+      .eq("tenant_id", user.id);
+      
+    if (error) return { success: false, error: "Gagal menandai tidak hadir." };
+    
+    revalidatePath("/dashboard");
+    return { success: true };
+  } catch (err) {
+    return { success: false, error: "Kesalahan internal." };
+  }
+}

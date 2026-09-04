@@ -14,14 +14,13 @@ export default async function DashboardLayout({
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) {
-    redirect("/login");
-  }
+  const DEMO_TENANT_ID = "d290f1ee-6c54-4b01-90e6-d701748f0851";
+  const tenantId = user?.id || DEMO_TENANT_ID;
 
   const { data: tenant } = await supabase
     .from("tenants")
     .select("business_type, slug")
-    .eq("id", user.id)
+    .eq("id", tenantId)
     .single();
 
   const dict = getBusinessDictionary(tenant?.business_type || "lainnya");

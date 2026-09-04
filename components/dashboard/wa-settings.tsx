@@ -35,8 +35,8 @@ export function WaSettings({ tenant }: WaSettingsProps) {
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden p-6 animate-in fade-in zoom-in-95 duration-200">
-      <h3 className="text-lg font-bold text-stone-900 mb-1">Metode Notifikasi WhatsApp</h3>
+    <div className="w-full max-w-xl mx-auto bg-white rounded-[2rem] shadow-md shadow-stone-200/50 border-none overflow-hidden p-6 sm:p-8 animate-in fade-in zoom-in-95 duration-200">
+      <h3 className="text-xl font-extrabold text-stone-900 mb-1">Notifikasi WhatsApp</h3>
       <p className="text-sm text-stone-500 mb-6 leading-relaxed">
         Tentukan bagaimana Anda dan pelanggan menerima informasi pesanan. Pilih opsi <strong>Manual</strong> untuk interaksi personal yang gratis, atau <strong>API Fonnte</strong> untuk mengirim notifikasi otomatis layaknya sistem profesional.
       </p>

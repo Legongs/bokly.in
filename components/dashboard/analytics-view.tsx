@@ -1,12 +1,12 @@
 "use client";
 
 import React from "react";
-import { 
-  BarChart3, 
-  Wallet, 
-  CheckCircle2, 
-  Trophy, 
-  Clock, 
+import {
+  BarChart3,
+  Wallet,
+  CheckCircle2,
+  Trophy,
+  Clock,
   Lightbulb,
   TrendingUp,
   Activity
@@ -49,7 +49,7 @@ export function AnalyticsView({ analytics, dictionary }: AnalyticsViewProps) {
 
       {/* ── Top Metrics ── */}
       <div className="grid grid-cols-2 gap-4">
-        <Card className="rounded-3xl border-none shadow-md shadow-stone-200/50 bg-white overflow-hidden p-0 sm:p-0">
+        <Card className="rounded-[2rem] border-none shadow-md shadow-stone-200/50 bg-white overflow-hidden p-0 sm:p-0">
           <CardContent className="p-5">
             <div className="flex items-center gap-2 text-stone-500 mb-3">
               <Wallet className="w-4 h-4 text-teal-600" />
@@ -64,7 +64,7 @@ export function AnalyticsView({ analytics, dictionary }: AnalyticsViewProps) {
           </CardContent>
         </Card>
 
-        <Card className="rounded-3xl border-none shadow-md shadow-stone-200/50 bg-white overflow-hidden p-0 sm:p-0">
+        <Card className="rounded-[2rem] border-none shadow-md shadow-stone-200/50 bg-white overflow-hidden p-0 sm:p-0">
           <CardContent className="p-5">
             <div className="flex items-center gap-2 text-stone-500 mb-3">
               <CheckCircle2 className="w-4 h-4 text-teal-600" />
@@ -87,12 +87,12 @@ export function AnalyticsView({ analytics, dictionary }: AnalyticsViewProps) {
             <Activity className="w-4 h-4 text-violet-500" />
             Tren Pendapatan 30 Hari Terakhir
           </h3>
-          <div className="h-48 flex items-end gap-1.5 w-full overflow-x-auto hide-scrollbar pb-2">
+          <div className="h-48 flex items-end gap-1.5 w-full overflow-x-auto scrollbar-hide pb-2">
             {recentTrend.map((t, idx) => {
               const heightPercent = (t.value / maxTrendValue) * 100;
               return (
                 <div key={idx} className="relative flex flex-col justify-end items-center flex-1 group" style={{ minWidth: "12px" }}>
-                  <div 
+                  <div
                     className="w-full bg-teal-500 rounded-sm transition-all duration-300 hover:bg-teal-400"
                     style={{ height: `${heightPercent}%`, minHeight: "2px" }}
                   >
@@ -109,7 +109,7 @@ export function AnalyticsView({ analytics, dictionary }: AnalyticsViewProps) {
         </CardContent>
       </Card>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2">
-        
+
         {/* Top Services */}
         <div>
           <h3 className="font-bold text-stone-900 flex items-center gap-2 mb-4">
@@ -148,14 +148,14 @@ export function AnalyticsView({ analytics, dictionary }: AnalyticsViewProps) {
             <Lightbulb className="w-4 h-4 text-orange-500" />
             Status Reservasi
           </h3>
-          <Card className="rounded-[1.5rem] border-none shadow-sm bg-orange-50/50 p-5">
+          <Card className="rounded-[2rem] border-none shadow-sm bg-orange-50/50 p-5">
             <div className="flex justify-between items-center mb-1">
               <span className="text-sm font-semibold text-stone-600">Diselesaikan</span>
               <span className="text-lg font-extrabold text-stone-900">{completedBookings}</span>
             </div>
             <p className="text-xs text-stone-500">Reservasi sukses dikerjakan</p>
           </Card>
-          <Card className="rounded-[1.5rem] border-none shadow-sm bg-rose-50/50 p-5">
+          <Card className="rounded-[2rem] border-none shadow-sm bg-rose-50/50 p-5">
             <div className="flex justify-between items-center mb-1">
               <span className="text-sm font-semibold text-stone-600">Dibatalkan</span>
               <span className="text-lg font-extrabold text-stone-900">{cancelledBookings}</span>

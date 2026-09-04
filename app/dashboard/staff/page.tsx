@@ -1,7 +1,7 @@
 import React from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { getStaffByTenant } from "@/lib/actions/staff.actions";
+import { getStaffByTenant, getSuggestedRoles } from "@/lib/actions/staff.actions";
 import { StaffList } from "@/components/dashboard/staff-list";
 
 export const metadata = {
@@ -10,18 +10,14 @@ export const metadata = {
 
 export default async function StaffPage() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    redirect("/login");
-  }
+  const DEMO_TENANT_ID = "d290f1ee-6c54-4b01-90e6-d701748f0851";
+  const { data: authData } = await supabase.auth.getUser();
+  const tenantId = authData.user?.id || DEMO_TENANT_ID;
 
   const { data: tenant } = await supabase
     .from("tenants")
     .select("id, business_name, business_type")
-    .eq("id", user.id)
+    .eq("id", tenantId)
     .single();
 
   if (!tenant) {
@@ -30,6 +26,9 @@ export default async function StaffPage() {
 
   const staffRes = await getStaffByTenant(tenant.id);
   const initialStaff = staffRes.success && staffRes.data ? staffRes.data : [];
+
+  const suggestedRolesRes = await getSuggestedRoles(tenant.business_type);
+  const suggestedRoles = suggestedRolesRes.success && suggestedRolesRes.data ? suggestedRolesRes.data : [];
 
   return (
     <main className="min-h-screen bg-stone-50 pb-20">
@@ -52,7 +51,11 @@ export default async function StaffPage() {
       </div>
 
       <div className="max-w-4xl mx-auto px-4 py-8 sm:px-8">
-        <StaffList initialStaff={initialStaff} businessType={tenant.business_type} />
+        <StaffList 
+          initialStaff={initialStaff} 
+          businessType={tenant.business_type} 
+          suggestedRoles={suggestedRoles}
+        />
       </div>
     </main>
   );

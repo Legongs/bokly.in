@@ -9,9 +9,10 @@ interface ImageUploaderProps {
   onChange: (url: string) => void;
   disabled?: boolean;
   label?: string;
+  validateFile?: (file: File) => Promise<boolean>;
 }
 
-export function ImageUploader({ value, onChange, disabled, label = "Upload Gambar" }: ImageUploaderProps) {
+export function ImageUploader({ value, onChange, disabled, label = "Upload Gambar", validateFile }: ImageUploaderProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -22,6 +23,22 @@ export function ImageUploader({ value, onChange, disabled, label = "Upload Gamba
 
     setErrorMsg("");
     setIsUploading(true);
+
+    if (validateFile) {
+      try {
+        const isValid = await validateFile(file);
+        if (!isValid) {
+          setIsUploading(false);
+          if (fileInputRef.current) fileInputRef.current.value = "";
+          return;
+        }
+      } catch (err: any) {
+        setErrorMsg(err.message || "File tidak valid.");
+        setIsUploading(false);
+        if (fileInputRef.current) fileInputRef.current.value = "";
+        return;
+      }
+    }
 
     try {
       const url = await uploadImage(file, value);

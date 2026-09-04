@@ -28,14 +28,14 @@ export default function HomePage() {
           <div className="flex items-center gap-3">
             <Link href="/login">
               <Button
-                className="bg-transparent text-stone-700 hover:bg-stone-200 hover:text-stone-900 font-bold shadow-none"
+                className="bg-transparent text-stone-700 hover:bg-stone-200 hover:text-stone-900 font-bold shadow-none transition-all duration-200"
                 size="sm"
               >
                 Masuk
               </Button>
             </Link>
             <Link href="/demo-salon">
-              <Button size="sm" className="bg-teal-600 text-white font-semibold hover:bg-teal-700 shadow-sm">
+              <Button size="sm" className="bg-teal-600 text-white font-semibold hover:bg-teal-700 shadow-sm transition-all duration-200">
                 Lihat Demo
               </Button>
             </Link>
@@ -57,25 +57,25 @@ export default function HomePage() {
             <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-stone-900 leading-[1.15] sm:leading-[1.1]">
               Nggak perlu lagi repot balas chat satu-satu. <br />
               <span className="text-teal-700">
-                Tinggal share link, jadwal langsung keisi.
+                Biar pelanggan yang atur jadwal sendiri.
               </span>
             </h1>
 
             <p className="mt-6 text-base sm:text-lg text-stone-600 max-w-lg leading-relaxed">
-              Cocok banget buat Barbershop, Salon, Studio Foto, atau Jasa lainnya. Gak ada lagi jadwal bentrok atau pelanggan yang hit & run.
+              Solusi reservasi santai buat Barbershop, Salon, Studio Foto, dan Jasa lainnya. Gak ada lagi jadwal bentrok atau pelanggan yang hit & run.
             </p>
 
             <div className="mt-8 flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
               <Link href="/register" className="w-full sm:w-auto">
-                <Button size="lg" className="w-full sm:w-auto bg-teal-600 text-white font-bold hover:bg-teal-700 shadow-md shadow-teal-600/10">
-                  Mulai Buka Jadwal
+                <Button size="lg" className="w-full sm:w-auto bg-teal-600 text-white font-bold hover:bg-teal-700 shadow-md shadow-teal-600/10 transition-all duration-200 hover:shadow-lg hover:shadow-teal-600/20 hover:-translate-y-0.5">
+                  Bikin Halaman Booking Sekarang
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
               </Link>
               <Link href="/demo-salon" className="w-full sm:w-auto">
                 <Button
                   size="lg"
-                  className="w-full sm:w-auto bg-white border border-stone-300 text-stone-800 hover:bg-stone-100 font-bold shadow-sm"
+                  className="w-full sm:w-auto bg-white border border-stone-300 text-stone-800 hover:bg-stone-100 font-bold shadow-sm transition-all duration-200 hover:border-stone-400"
                 >
                   Coba Pesan Sekarang
                 </Button>
@@ -144,36 +144,57 @@ export default function HomePage() {
 
         </div>
 
-        {/* Feature Highlights Grid */}
-        <div className="mt-24 sm:mt-32 grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 w-full border-t border-stone-200 pt-16">
-          <div className="p-6 rounded-3xl bg-white border border-stone-200 shadow-sm hover:shadow-md transition-shadow">
-            <div className="w-12 h-12 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center mb-5">
-              <Calendar className="w-6 h-6" />
-            </div>
-            <h3 className="font-bold text-xl text-stone-900">Gak Ada Lagi Jadwal Bentrok</h3>
-            <p className="text-sm text-stone-600 mt-2.5 leading-relaxed">
-              Sistem akan mengunci waktu secara otomatis saat pelanggan memesan, jadi mustahil ada dua pelanggan di jam yang sama.
-            </p>
+        {/* Feature Highlights - Bento Grid (Asimetri Terkendali) */}
+        <div className="mt-24 sm:mt-32 w-full border-t border-stone-200 pt-16">
+          <div className="text-center max-w-2xl mx-auto mb-12">
+            <h2 className="text-3xl font-extrabold text-stone-900">Kenapa pakai maubooking.in?</h2>
+            <p className="text-stone-600 mt-4">Desain simpel, fungsi maksimal. Fokus ngerjain orderan, biar sistem yang ngurusin jadwal pelangganmu.</p>
           </div>
 
-          <div className="p-6 rounded-3xl bg-white border border-stone-200 shadow-sm hover:shadow-md transition-shadow">
-            <div className="w-12 h-12 rounded-2xl bg-orange-50 text-orange-600 flex items-center justify-center mb-5">
-              <CheckCircle2 className="w-6 h-6" />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+            {/* Card Besar - Span 2 Kolom di Desktop */}
+            <div className="md:col-span-2 p-8 rounded-3xl bg-white border border-stone-200 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 cursor-default flex flex-col sm:flex-row gap-6 items-start sm:items-center">
+              <div className="w-16 h-16 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center flex-shrink-0">
+                <Calendar className="w-8 h-8" />
+              </div>
+              <div>
+                <h3 className="font-bold text-2xl text-stone-900">Gak Ada Lagi Jadwal Bentrok</h3>
+                <p className="text-base text-stone-600 mt-2.5 leading-relaxed">
+                  Sistem akan mengunci waktu secara otomatis saat pelanggan memesan, jadi mustahil ada dua pelanggan di jam yang sama. Semua jadwal tertata rapi.
+                </p>
+              </div>
             </div>
-            <h3 className="font-bold text-xl text-stone-900">Bebas Pelanggan PHP</h3>
-            <p className="text-sm text-stone-600 mt-2.5 leading-relaxed">
-              Terapkan sistem uang muka (DP) pakai QRIS supaya pelanggan komitmen datang dan hindari hit & run.
-            </p>
-          </div>
 
-          <div className="p-6 rounded-3xl bg-white border border-stone-200 shadow-sm hover:shadow-md transition-shadow">
-            <div className="w-12 h-12 rounded-2xl bg-sky-50 text-sky-600 flex items-center justify-center mb-5">
-              <Scissors className="w-6 h-6" />
+            {/* Card Kecil 1 */}
+            <div className="p-8 rounded-3xl bg-white border border-stone-200 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 cursor-default">
+              <div className="w-14 h-14 rounded-2xl bg-orange-50 text-orange-600 flex items-center justify-center mb-5">
+                <CheckCircle2 className="w-7 h-7" />
+              </div>
+              <h3 className="font-bold text-xl text-stone-900">Bebas Pelanggan PHP</h3>
+              <p className="text-sm text-stone-600 mt-2.5 leading-relaxed">
+                Fitur wajibin DP bantu mastiin pelanggan komitmen datang. Gak ada lagi cerita hit & run.
+              </p>
             </div>
-            <h3 className="font-bold text-xl text-stone-900">Pas Buat Semua Usaha Jasa</h3>
-            <p className="text-sm text-stone-600 mt-2.5 leading-relaxed">
-              Tinggal sesuaikan nama layanan, durasi menit pengerjaan, dan harga. Sisanya biar sistem yang urus.
-            </p>
+
+            {/* Card Kecil 2 - Span 3 Kolom di Mobile, 1 di Desktop tapi beda warna latar (Asimetri) */}
+            <div className="md:col-span-3 p-8 rounded-3xl bg-stone-900 text-stone-50 shadow-md hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-default flex flex-col sm:flex-row items-center justify-between gap-6">
+              <div className="flex items-center gap-5">
+                <div className="w-14 h-14 rounded-2xl bg-stone-800 text-stone-300 flex items-center justify-center flex-shrink-0">
+                  <Scissors className="w-7 h-7" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-xl text-white">Pas Buat Semua Usaha Jasa</h3>
+                  <p className="text-sm text-stone-400 mt-1.5 leading-relaxed max-w-xl">
+                    Tinggal atur nama layanan, durasi pengerjaan, dan harga. Cocok buat Barbershop, Nail Art, Konsultasi, dll.
+                  </p>
+                </div>
+              </div>
+              <Link href="/login?demo=true">
+                <Button className="bg-white text-stone-900 hover:bg-stone-200 font-bold rounded-xl whitespace-nowrap transition-all duration-200">
+                  Lihat Demo Dashboard
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       </main>

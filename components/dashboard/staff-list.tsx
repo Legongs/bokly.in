@@ -10,9 +10,10 @@ import type { Staff } from "@/types/database.types";
 interface StaffListProps {
   initialStaff: Staff[];
   businessType: string;
+  suggestedRoles?: string[];
 }
 
-export function StaffList({ initialStaff, businessType }: StaffListProps) {
+export function StaffList({ initialStaff, businessType, suggestedRoles = [] }: StaffListProps) {
   const getStaffTerm = (type: string) => {
     switch (type) {
       case "salon": return "Terapis / Kapster";
@@ -31,18 +32,18 @@ export function StaffList({ initialStaff, businessType }: StaffListProps) {
   
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [formData, setFormData] = useState({ name: "", description: "", image_url: "" });
+  const [formData, setFormData] = useState({ name: "", role: "", description: "", image_url: "" });
 
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name) return;
 
     startTransition(async () => {
-      const res = await createStaff({ name: formData.name, description: formData.description, image_url: formData.image_url });
+      const res = await createStaff({ name: formData.name, role: formData.role, description: formData.description, image_url: formData.image_url });
       if (res.success && res.data) {
         setStaff([...staff, res.data]);
         setIsAdding(false);
-        setFormData({ name: "", description: "", image_url: "" });
+        setFormData({ name: "", role: "", description: "", image_url: "" });
       } else {
         alert(res.error || "Gagal menambah pegawai");
       }
@@ -54,11 +55,11 @@ export function StaffList({ initialStaff, businessType }: StaffListProps) {
     if (!formData.name) return;
 
     startTransition(async () => {
-      const res = await updateStaff({ id, name: formData.name, description: formData.description, image_url: formData.image_url });
+      const res = await updateStaff({ id, name: formData.name, role: formData.role, description: formData.description, image_url: formData.image_url });
       if (res.success && res.data) {
         setStaff(staff.map((s) => (s.id === id ? res.data! : s)));
         setEditingId(null);
-        setFormData({ name: "", description: "", image_url: "" });
+        setFormData({ name: "", role: "", description: "", image_url: "" });
       } else {
         alert(res.error || "Gagal memperbarui pegawai");
       }
@@ -89,7 +90,7 @@ export function StaffList({ initialStaff, businessType }: StaffListProps) {
           <Button
             onClick={() => {
               setIsAdding(true);
-              setFormData({ name: "", description: "", image_url: "" });
+              setFormData({ name: "", role: "", description: "", image_url: "" });
             }}
             className="bg-teal-600 hover:bg-teal-700 text-white rounded-full shadow-md shadow-teal-600/20"
           >
@@ -120,6 +121,23 @@ export function StaffList({ initialStaff, businessType }: StaffListProps) {
                   disabled={isPending}
                   autoFocus
                 />
+              </div>
+              <div className="space-y-1.5 mt-4">
+                <label className="text-sm font-semibold text-stone-700">Jabatan / Peran (Opsional)</label>
+                <input
+                  type="text"
+                  list="suggested-roles"
+                  value={formData.role}
+                  onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+                  placeholder={`Misal: ${staffTerm.split(" / ")[0]}`}
+                  className="w-full px-4 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 caret-teal-600 focus:outline-none focus:ring-4 focus:ring-teal-500/20 transition-all shadow-inner"
+                  disabled={isPending}
+                />
+                <datalist id="suggested-roles">
+                  {suggestedRoles.map((role) => (
+                    <option key={role} value={role} />
+                  ))}
+                </datalist>
               </div>
               <div className="space-y-1.5 mt-4">
                 <label className="text-sm font-semibold text-stone-700">Detail / Spesialisasi (Opsional)</label>
@@ -185,6 +203,23 @@ export function StaffList({ initialStaff, businessType }: StaffListProps) {
                       />
                     </div>
                     <div className="space-y-1.5 mt-4">
+                      <label className="text-sm font-semibold text-stone-700">Jabatan / Peran (Opsional)</label>
+                      <input
+                        type="text"
+                        list="suggested-roles-edit"
+                        value={formData.role}
+                        onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+                        placeholder={`Misal: ${staffTerm.split(" / ")[0]}`}
+                        className="w-full px-4 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 caret-teal-600 focus:outline-none focus:ring-4 focus:ring-teal-500/20 transition-all shadow-inner"
+                        disabled={isPending}
+                      />
+                      <datalist id="suggested-roles-edit">
+                        {suggestedRoles.map((role) => (
+                          <option key={role} value={role} />
+                        ))}
+                      </datalist>
+                    </div>
+                    <div className="space-y-1.5 mt-4">
                       <label className="text-sm font-semibold text-stone-700">Detail / Spesialisasi (Opsional)</label>
                       <textarea
                         value={formData.description}
@@ -227,7 +262,7 @@ export function StaffList({ initialStaff, businessType }: StaffListProps) {
                       )}
                       <div>
                         <h4 className="font-bold text-stone-900 text-lg">{s.name}</h4>
-                        <p className="text-xs text-stone-500 font-medium">{staffTerm}</p>
+                        <p className="text-xs text-stone-500 font-medium">{s.role || staffTerm}</p>
                         {s.description && (
                           <p className="text-sm text-stone-600 mt-1 line-clamp-2">{s.description}</p>
                         )}
@@ -239,7 +274,7 @@ export function StaffList({ initialStaff, businessType }: StaffListProps) {
                         size="sm"
                         onClick={() => {
                           setEditingId(s.id);
-                          setFormData({ name: s.name, description: s.description || "", image_url: s.image_url || "" });
+                          setFormData({ name: s.name, role: s.role || "", description: s.description || "", image_url: s.image_url || "" });
                         }}
                         disabled={isPending}
                         className="border-stone-200 text-stone-600 hover:text-teal-600 hover:border-teal-200 rounded-xl bg-white"

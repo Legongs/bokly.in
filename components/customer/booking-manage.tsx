@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState, useTransition, useRef } from "react";
+import React, { useState, useTransition, useRef, useEffect } from "react";
 import { CheckCircle2, Clock, Calendar, AlertCircle, Store, User, UploadCloud, FileImage, ExternalLink } from "lucide-react";
 import type { CustomerPortalData } from "@/lib/actions/customer-portal.actions";
 import { submitPaymentProof, createMidtransToken } from "@/lib/actions/payment.actions";
+import { respondToReschedule, proposeReschedule } from "@/lib/actions/booking.actions";
 import { createClient } from "@/lib/supabase/client";
 import {
   Card,
@@ -24,6 +25,33 @@ export function BookingManageClient({ initialData }: { initialData: CustomerPort
   const [isPending, startTransition] = useTransition();
   const [file, setFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Setup Supabase Realtime
+  useEffect(() => {
+    const supabase = createClient();
+    const channel = supabase
+      .channel("booking_updates")
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "bookings",
+          filter: `id=eq.${booking.id}`,
+        },
+        (payload) => {
+          if (payload.new.payment_status !== booking.payment_status) {
+            router.refresh();
+            toast.info("Status booking Anda telah diperbarui!");
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [booking.id, booking.payment_status, router]);
 
   // ── Theme Mapping ──
   const themeColor = tenant.theme_color || "teal";
@@ -216,6 +244,48 @@ export function BookingManageClient({ initialData }: { initialData: CustomerPort
               )}
             </div>
 
+            {/* Notifikasi Reschedule dari Admin */}
+            {booking.reschedule_request && (booking.reschedule_request as any).proposedBy === "tenant" && (
+              <div className="bg-amber-50 rounded-2xl p-4 border border-amber-200 mt-2">
+                <div className="flex items-start gap-3 text-amber-800">
+                  <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
+                  <div>
+                    <h4 className="font-bold text-sm mb-1">Perubahan Jadwal</h4>
+                    <p className="text-xs text-amber-700 leading-relaxed mb-3">
+                      Mohon maaf, admin mengajukan perpindahan jadwal Anda menjadi:
+                      <br/>
+                      <span className="font-semibold block mt-1 text-sm text-amber-900">
+                        {formatDate((booking.reschedule_request as any).date)}<br/>
+                        Jam {(booking.reschedule_request as any).startTime.slice(0,5)} WIB
+                      </span>
+                    </p>
+                    <div className="flex gap-2">
+                      <Button 
+                        size="sm" 
+                        className="bg-amber-600 hover:bg-amber-700 text-white rounded-xl shadow-sm px-4"
+                        onClick={async () => {
+                          const res = await respondToReschedule(booking.id, "accepted");
+                          if (res.success) toast.success("Perubahan jadwal disetujui!");
+                          else toast.error(res.error || "Gagal menyetujui.");
+                        }}
+                      >Setuju</Button>
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        className="border-amber-300 text-amber-800 hover:bg-amber-100 rounded-xl px-4"
+                        onClick={async () => {
+                          const res = await respondToReschedule(booking.id, "rejected");
+                          if (res.success) toast.success("Perubahan ditolak.");
+                          else toast.error(res.error || "Gagal menolak.");
+                        }}
+                      >Tolak</Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+
             {/* Aksi Pembayaran */}
             {isPendingPayment && Number(booking.services?.dp_amount) > 0 && (
               <div className="pt-4 border-t border-stone-100">
@@ -292,18 +362,29 @@ export function BookingManageClient({ initialData }: { initialData: CustomerPort
             )}
 
             {/* Aksi Tambahan */}
-            {(!isApproved && !isRejected && !isPendingPayment) && (
-              <div className="pt-2">
+            <div className="pt-2 flex flex-col gap-2">
+              <Button
+                variant="outline"
+                className={`w-full h-12 rounded-xl text-stone-700 font-semibold border-stone-200 bg-white hover:bg-stone-50 transition-colors shadow-sm`}
+                onClick={() => {
+                  navigator.clipboard.writeText(window.location.href);
+                  toast.success("Tautan berhasil disalin!");
+                }}
+              >
+                <ExternalLink className="w-4 h-4 mr-2 text-stone-400" />
+                Simpan Tautan Halaman Ini
+              </Button>
+              {(!isApproved && !isRejected && !isPendingPayment) && (
                 <a
                   href={`https://wa.me/${tenant.whatsapp_number?.replace(/^[0|+62]/, "62")}?text=Halo admin ${tenant.business_name}, saya ${booking.customer_name} ingin konfirmasi pembayaran booking ID ${booking.id.split("-")[0]}`}
                   target="_blank"
                   rel="noreferrer"
-                  className={`block w-full py-3 rounded-xl text-center text-sm font-semibold transition-colors ${t.bgLight} ${t.textPrimary} hover:bg-stone-100`}
+                  className={`flex items-center justify-center w-full h-12 rounded-xl text-sm font-semibold transition-colors ${t.bgLight} ${t.textPrimary} hover:bg-stone-100 border ${t.borderLight}`}
                 >
                   Hubungi Admin via WA
                 </a>
-              </div>
-            )}
+              )}
+            </div>
           </CardContent>
         </Card>
       </div>

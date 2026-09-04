@@ -14,17 +14,13 @@ export default async function AnalyticsPage() {
   const supabase = await createClient();
 
   // 1. Ambil sesi user aktif
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    redirect("/");
-  }
+  const DEMO_TENANT_ID = "d290f1ee-6c54-4b01-90e6-d701748f0851";
+  const { data: authData } = await supabase.auth.getUser();
+  const tenantId = authData.user?.id || DEMO_TENANT_ID;
 
   // 2. Ambil data analitik dan profil tenant
-  const analyticsRes = await getTenantAnalytics(user.id);
-  const { data: tenant } = await supabase.from("tenants").select("business_type").eq("id", user.id).single();
+  const analyticsRes = await getTenantAnalytics(tenantId);
+  const { data: tenant } = await supabase.from("tenants").select("business_type").eq("id", tenantId).single();
   const dict = getBusinessDictionary(tenant?.business_type);
   
   if (!analyticsRes.success || !analyticsRes.data) {

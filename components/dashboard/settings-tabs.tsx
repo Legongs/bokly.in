@@ -7,7 +7,8 @@ import { SiteSettings } from "@/components/dashboard/site-settings";
 import { WaSettings } from "@/components/dashboard/wa-settings";
 import { PaymentSettings } from "@/components/dashboard/payment-settings";
 import { CalendarSettings } from "@/components/dashboard/calendar-settings";
-import { CalendarDays } from "lucide-react";
+import { PortfolioSettings } from "@/components/dashboard/portfolio-settings";
+import { CalendarDays, ImageIcon } from "lucide-react";
 import type { Tenant } from "@/types/database.types";
 import { cn } from "@/lib/utils";
 
@@ -16,12 +17,12 @@ interface SettingsTabsProps {
 }
 
 export function SettingsTabs({ tenant }: SettingsTabsProps) {
-  const [activeTab, setActiveTab] = useState<"store" | "calendar" | "wa" | "payment" | "site">("store");
+  const [activeTab, setActiveTab] = useState<"store" | "calendar" | "portfolio" | "wa" | "payment" | "site">("store");
 
   return (
     <div className="space-y-6">
       {/* Tab Navigation */}
-      <div className="flex bg-stone-100/50 p-1.5 rounded-2xl border border-stone-200 w-full sm:w-fit mx-auto sm:mx-0">
+      <div className="flex overflow-x-auto scrollbar-hide bg-stone-100/50 p-1.5 rounded-2xl border border-stone-200 w-full sm:w-fit mx-auto sm:mx-0">
         <button
           onClick={() => setActiveTab("store")}
           className={cn(
@@ -47,6 +48,19 @@ export function SettingsTabs({ tenant }: SettingsTabsProps) {
           <CalendarDays className="w-4 h-4" />
           <span className="hidden sm:inline">Jadwal</span>
           <span className="sm:hidden">Jadwal</span>
+        </button>
+        <button
+          onClick={() => setActiveTab("portfolio")}
+          className={cn(
+            "flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300",
+            activeTab === "portfolio"
+              ? "bg-white text-teal-700 shadow-sm border border-stone-200/50 scale-[1.02]"
+              : "text-stone-500 hover:text-stone-700 hover:bg-stone-100 border border-transparent"
+          )}
+        >
+          <ImageIcon className="w-4 h-4" />
+          <span className="hidden sm:inline">Portofolio</span>
+          <span className="sm:hidden">Foto</span>
         </button>
         <button
           onClick={() => setActiveTab("wa")}
@@ -92,6 +106,7 @@ export function SettingsTabs({ tenant }: SettingsTabsProps) {
       <div className="animate-in fade-in zoom-in-95 duration-200">
         {activeTab === "store" && <SettingsForm tenant={tenant} />}
         {activeTab === "calendar" && <CalendarSettings tenant={tenant} />}
+        {activeTab === "portfolio" && <PortfolioSettings tenant={tenant} />}
         {activeTab === "wa" && <WaSettings tenant={tenant} />}
         {activeTab === "payment" && <PaymentSettings tenant={tenant} />}
         {activeTab === "site" && <SiteSettings tenant={tenant} />}

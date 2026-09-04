@@ -84,18 +84,18 @@ export function CalendarSettings({ tenant }: { tenant: Tenant }) {
   };
 
   return (
-    <div className="space-y-6">
-      <Card className="border-none shadow-md shadow-stone-200/50 rounded-[2rem] bg-white overflow-hidden">
-        <CardHeader className="pb-4 border-b border-stone-100">
-          <CardTitle className="text-lg font-bold flex items-center gap-2 text-stone-900">
+    <div className="w-full max-w-xl mx-auto space-y-6">
+      <div className="bg-white rounded-[2rem] shadow-md shadow-stone-200/50 border-none overflow-hidden p-6 sm:p-8 animate-in fade-in zoom-in-95 duration-200">
+        <div className="pb-4 border-b border-stone-100">
+          <h3 className="text-lg font-bold flex items-center gap-2 text-stone-900">
             <CalendarDays className="w-5 h-5 text-teal-600" />
             Jadwal Buka (Mingguan)
-          </CardTitle>
-          <CardDescription>
+          </h3>
+          <p className="text-sm text-stone-500 mt-1">
             Atur hari apa saja kamu buka dan jam operasionalnya. Pelanggan nggak bisa booking di hari kamu tutup.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="pt-6">
+          </p>
+        </div>
+        <div className="pt-6">
           <div className="space-y-4">
             {DAYS.map((day) => {
               const schedule = weeklySchedule[day.id] || { isOpen: false, openTime: "09:00", closeTime: "21:00" };
@@ -141,20 +141,20 @@ export function CalendarSettings({ tenant }: { tenant: Tenant }) {
               );
             })}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
-      <Card className="border-none shadow-md shadow-stone-200/50 rounded-[2rem] bg-white overflow-hidden">
-        <CardHeader className="pb-4 border-b border-stone-100">
-          <CardTitle className="text-lg font-bold flex items-center gap-2 text-stone-900">
+      <div className="bg-white rounded-[2rem] shadow-md shadow-stone-200/50 border-none overflow-hidden p-6 sm:p-8 animate-in fade-in zoom-in-95 duration-200">
+        <div className="pb-4 border-b border-stone-100">
+          <h3 className="text-lg font-bold flex items-center gap-2 text-stone-900">
             <Clock className="w-5 h-5 text-teal-600" />
             Aturan Pemesanan
-          </CardTitle>
-          <CardDescription>
+          </h3>
+          <p className="text-sm text-stone-500 mt-1">
             Cegah pesanan mendadak biar kamu nggak kelabakan.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="pt-6">
+          </p>
+        </div>
+        <div className="pt-6">
           <div className="space-y-2">
             <label className="text-sm font-semibold text-stone-700">
               Batas Waktu Minimum (Minimum Notice)
@@ -182,8 +182,8 @@ export function CalendarSettings({ tenant }: { tenant: Tenant }) {
               {successMsg}
             </div>
           )}
-        </CardContent>
-        <CardFooter className="bg-stone-50/50 border-t border-stone-100 p-4 sm:px-6 flex justify-end">
+        </div>
+        <div className="pt-5 border-t border-stone-100 mt-6 flex justify-end">
           <Button 
             onClick={handleSave} 
             disabled={isPending}
@@ -192,27 +192,27 @@ export function CalendarSettings({ tenant }: { tenant: Tenant }) {
             {isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
             Simpan Kalender
           </Button>
-        </CardFooter>
-      </Card>
+        </div>
+      </div>
 
-      <Card className="border-none shadow-md shadow-stone-200/50 rounded-[2rem] bg-white overflow-hidden opacity-75">
-        <CardHeader className="pb-4 border-b border-stone-100">
+      <div className="bg-white rounded-[2rem] shadow-md shadow-stone-200/50 border-none overflow-hidden p-6 sm:p-8 opacity-75 animate-in fade-in zoom-in-95 duration-200">
+        <div className="pb-4 border-b border-stone-100">
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-lg font-bold flex items-center gap-2 text-stone-900">
+              <h3 className="text-lg font-bold flex items-center gap-2 text-stone-900">
                 <Calendar className="w-5 h-5 text-blue-600" />
                 Google Calendar Sync
-              </CardTitle>
-              <CardDescription className="mt-1">
+              </h3>
+              <p className="text-sm text-stone-500 mt-1">
                 Sinkronkan jadwal pribadi kamu biar pelanggan nggak bisa booking di jam kamu sibuk.
-              </CardDescription>
+              </p>
             </div>
             {tenant.google_refresh_token && (
               <span className="text-[10px] font-black uppercase tracking-wider bg-teal-100 text-teal-700 px-2 py-1 rounded-md">Terhubung</span>
             )}
           </div>
-        </CardHeader>
-        <CardContent className="pt-6">
+        </div>
+        <div className="pt-6">
           <div className="flex flex-col items-center justify-center text-center p-6 bg-stone-50 rounded-2xl border border-stone-200 border-dashed">
             {tenant.google_refresh_token ? (
               <>
@@ -247,8 +247,8 @@ export function CalendarSettings({ tenant }: { tenant: Tenant }) {
               </>
             )}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }

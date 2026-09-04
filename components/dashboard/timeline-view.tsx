@@ -1,49 +1,63 @@
 "use client";
 
-import React, { useTransition } from "react";
-import { CheckCircle2, XCircle, Clock, Phone, Loader2, User, Send, Check } from "lucide-react";
+import React, { useState, useTransition } from "react";
+import { CheckCircle2, XCircle, Clock, Phone, Loader2, User, Send, Check, Calendar, AlertCircle } from "lucide-react";
 import { updateBookingStatus, markReminderSent } from "@/lib/actions/dashboard.actions";
+import { proposeReschedule, markNoShow, respondToReschedule } from "@/lib/actions/booking.actions";
 import type { Booking } from "@/types/database.types";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { toast } from "sonner";
 
-// Tipe kustom karena kueri join menambahkan field service_name
 export type BookingWithService = Booking & {
- service_name?: string;
+  service_name?: string;
+  staff_name?: string | null;
 };
 
 interface TimelineViewProps {
  bookings: BookingWithService[];
+ isPendingColumn?: boolean;
 }
 
 function StatusBadge({ status }: { status: Booking["payment_status"] }) {
  switch (status) {
  case "approved":
  return (
- <Badge className="bg-teal-100 text-teal-800 hover:bg-teal-200 border-teal-200">
+ <Badge className="bg-teal-50 text-teal-700 hover:bg-teal-100 border border-teal-200/50 shadow-none">
  Disetujui
+ </Badge>
+ );
+ case "completed":
+ return (
+ <Badge className="bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200/50 shadow-none">
+ Lunas
  </Badge>
  );
  case "rejected":
  return (
- <Badge className="bg-rose-100 text-rose-800 hover:bg-rose-200 border-rose-200">
+ <Badge className="bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200/50 shadow-none">
  Ditolak
  </Badge>
  );
  default:
  return (
- <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-200 border-amber-200">
+ <Badge className="bg-orange-50 text-orange-700 hover:bg-orange-100 border border-orange-200/50 shadow-none">
  Pending
  </Badge>
  );
  }
 }
 
-function BookingCard({ booking }: { booking: BookingWithService }) {
+function BookingCard({ booking, isPendingColumn }: { booking: BookingWithService, isPendingColumn?: boolean }) {
  const [isPending, startTransition] = useTransition();
+ const [isRescheduleOpen, setIsRescheduleOpen] = useState(false);
+ const [rescheduleDate, setRescheduleDate] = useState("");
+ const [rescheduleStartTime, setRescheduleStartTime] = useState("");
+ const [rescheduleEndTime, setRescheduleEndTime] = useState("");
 
- const handleAction = (status: "approved" | "rejected") => {
+ const handleAction = (status: "approved" | "rejected" | "completed") => {
  startTransition(async () => {
  const res = await updateBookingStatus(booking.id, status);
  if (!res.success) {
@@ -55,135 +69,248 @@ function BookingCard({ booking }: { booking: BookingWithService }) {
  };
 
  return (
- <Card className="overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 border-none shadow-md shadow-stone-200/50 rounded-3xl bg-white">
- <CardContent className="p-0">
- <div className="flex flex-col sm:flex-row">
- {/* Bagian Kiri: Jam & Info Layanan */}
- <div className="bg-stone-50/50 p-5 sm:w-1/3 flex flex-col justify-center border-b sm:border-b-0 sm:border-r border-stone-100 ">
- <div className="flex items-center gap-2 mb-1.5 text-teal-700 ">
- <Clock className="w-4 h-4" />
- <span className="font-bold text-lg">
- {booking.start_time.slice(0, 5)} - {booking.end_time.slice(0, 5)}
- </span>
- </div>
- <p className="text-sm font-semibold text-stone-900 ">
- {booking.service_name}
- </p>
- </div>
+  <Card className="overflow-hidden transition-all duration-200 active:scale-[0.99] border border-stone-100 shadow-sm shadow-stone-200/50 rounded-2xl bg-white">
+  <CardContent className="p-0">
+    {/* Header: Jam & Layanan */}
+    <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-stone-100">
+      <div className="flex items-center gap-2 text-teal-700">
+        <Clock className="w-4 h-4 flex-shrink-0" />
+        <span className="font-bold text-base leading-none">
+          {booking.start_time.slice(0, 5)} – {booking.end_time.slice(0, 5)}
+        </span>
+      </div>
+      <StatusBadge status={booking.payment_status} />
+    </div>
 
- {/* Bagian Kanan: Data Pelanggan & Aksi */}
- <div className="p-4 sm:w-2/3 flex flex-col justify-between gap-4">
- <div className="flex justify-between items-start gap-4">
- <div className="space-y-1">
- <div className="flex items-center gap-1.5 text-stone-900 ">
- <User className="w-4 h-4 text-stone-400" />
- <span className="font-semibold text-sm">{booking.customer_name}</span>
- </div>
- <div className="flex items-center gap-1.5 text-stone-500">
- <Phone className="w-4 h-4 text-stone-400" />
- <span className="text-xs">{booking.customer_wa}</span>
- </div>
- </div>
- <StatusBadge status={booking.payment_status} />
- </div>
+    {/* Body: Info Pelanggan */}
+    <div className="px-4 py-3 space-y-1.5">
+      <p className="text-xs font-bold text-stone-500 uppercase tracking-wider truncate">{booking.service_name}</p>
+      <div className="flex items-center gap-2 text-stone-800">
+        <User className="w-4 h-4 text-stone-400 flex-shrink-0" />
+        <span className="font-semibold text-sm truncate">{booking.customer_name}</span>
+      </div>
+      <div className="flex items-center gap-2 text-stone-500">
+        <Phone className="w-4 h-4 text-stone-400 flex-shrink-0" />
+        <span className="text-sm">{booking.customer_wa}</span>
+      </div>
+      {booking.staff_name && (
+        <div className="flex items-center gap-2 text-stone-500 pt-1 border-t border-stone-50 mt-1">
+          <span className="text-xs font-medium text-stone-400 w-12 flex-shrink-0">STAF</span>
+          <span className="text-sm font-semibold text-stone-700 truncate">{booking.staff_name}</span>
+        </div>
+      )}
+    </div>
 
- {booking.payment_status === "pending" && (
- <div className="flex gap-2 justify-end">
- <Button
- size="sm"
- variant="outline"
- className="border-none bg-rose-50 text-rose-600 hover:bg-rose-100 hover:text-rose-700 rounded-xl"
- onClick={() => handleAction("rejected")}
- disabled={isPending}
- >
- {isPending ? (
- <Loader2 className="w-4 h-4 animate-spin" />
- ) : (
- <XCircle className="w-4 h-4 mr-1.5" />
- )}
- Tolak
- </Button>
- <Button
- size="sm"
- className="bg-orange-500 hover:bg-orange-600 text-white shadow-md shadow-orange-500/20 rounded-xl"
- onClick={() => handleAction("approved")}
- disabled={isPending}
- >
- {isPending ? (
- <Loader2 className="w-4 h-4 animate-spin" />
- ) : (
- <CheckCircle2 className="w-4 h-4 mr-1.5" />
- )}
- {isPending ? "Memproses..." : "Terima"}
- </Button>
- </div>
- )}
-  {booking.payment_status === "approved" && (
-    <div className="flex justify-end mt-2">
-      {booking.is_reminder_sent ? (
-        <Badge variant="outline" className="text-stone-500 border-stone-200 bg-stone-50 flex items-center gap-1">
-          <Check className="w-3 h-3" />
-          Pengingat Terkirim
-        </Badge>
-      ) : (
+    {/* Reschedule Notification */}
+    {booking.reschedule_request && (booking.reschedule_request as any).proposedBy === "customer" && (
+      <div className="px-4 pb-2">
+        <div className="bg-amber-50 rounded-xl p-3 border border-amber-200">
+          <div className="flex items-start gap-2 text-amber-800">
+            <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+            <div>
+              <h4 className="font-bold text-xs mb-1">Permintaan Reschedule</h4>
+              <p className="text-[11px] text-amber-700 leading-relaxed mb-2">
+                Pelanggan meminta pindah jadwal menjadi: <span className="font-semibold">{new Date((booking.reschedule_request as any).date).toLocaleDateString("id-ID")}</span> jam <span className="font-semibold">{(booking.reschedule_request as any).startTime.slice(0,5)}</span>.
+              </p>
+              <div className="flex gap-2">
+                <Button 
+                  size="sm" 
+                  className="bg-amber-600 hover:bg-amber-700 text-white rounded-lg h-7 text-[10px] px-3"
+                  onClick={async () => {
+                    const res = await respondToReschedule(booking.id, "accepted");
+                    if (res.success) toast.success("Jadwal diubah!");
+                    else toast.error(res.error || "Gagal menyetujui.");
+                  }}
+                >Setuju</Button>
+                <Button 
+                  size="sm" 
+                  variant="outline"
+                  className="border-amber-300 text-amber-800 hover:bg-amber-100 rounded-lg h-7 text-[10px] px-3"
+                  onClick={async () => {
+                    const res = await respondToReschedule(booking.id, "rejected");
+                    if (res.success) toast.success("Perubahan ditolak.");
+                    else toast.error(res.error || "Gagal menolak.");
+                  }}
+                >Tolak</Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )}
+
+    {/* Footer: Aksi — SELALU tampil (penting untuk touch device) */}
+    {booking.payment_status === "pending" && (
+      <div className="px-4 pb-4 pt-1 flex gap-2">
         <Button
           size="sm"
           variant="outline"
-          className="border-green-200 bg-green-50 text-green-700 hover:bg-green-100 hover:text-green-800 rounded-xl transition-all"
-          onClick={() => {
-            // Teks Template
-            const waNumber = booking.customer_wa.replace(/^0/, "62");
-            const text = `Halo ${booking.customer_name},\n\nMengingatkan jadwal booking Anda untuk layanan *${booking.service_name}* pada tanggal *${booking.booking_date}* jam *${booking.start_time.slice(0, 5)}*.\n\nMohon hadir tepat waktu ya! Terima kasih.`;
-            const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(text)}`;
-            
-            // Buka tab WA
-            window.open(waUrl, "_blank", "noopener,noreferrer");
-            
-            // Tandai sudah dikirim
-            startTransition(async () => {
-              await markReminderSent(booking.id);
-            });
-          }}
+          className="flex-1 border-none bg-rose-50 text-rose-600 hover:bg-rose-100 hover:text-rose-700 rounded-xl h-10 text-sm font-bold"
+          onClick={() => handleAction("rejected")}
           disabled={isPending}
         >
-          {isPending ? (
-            <Loader2 className="w-4 h-4 animate-spin" />
-          ) : (
-            <Send className="w-3.5 h-3.5 mr-1.5" />
-          )}
-          Kirim Pengingat WA
+          {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <XCircle className="w-4 h-4 mr-1.5" />}
+          Tolak
         </Button>
-      )}
-    </div>
-  )}
-  </div>
- </div>
- </CardContent>
- </Card>
+        <Button
+          size="sm"
+          className="flex-1 bg-teal-600 hover:bg-teal-700 text-white shadow-sm shadow-teal-600/20 rounded-xl h-10 text-sm font-bold"
+          onClick={() => handleAction("approved")}
+          disabled={isPending}
+        >
+          {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4 mr-1.5" />}
+          {isPending ? "Memproses..." : "Terima DP"}
+        </Button>
+      </div>
+    )}
+
+    {booking.payment_status === "approved" && (
+      <div className="px-4 pb-4 pt-1 flex flex-col gap-2">
+        <div className="flex gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            className="flex-1 h-9 rounded-xl text-xs font-bold border-stone-200 text-stone-700 hover:bg-stone-50"
+            onClick={() => setIsRescheduleOpen(true)}
+          >
+            <Calendar className="w-3.5 h-3.5 mr-1.5 text-stone-400" />
+            Ubah Jadwal
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            className="flex-1 h-9 rounded-xl text-xs font-bold border-rose-100 bg-rose-50 text-rose-600 hover:bg-rose-100 hover:text-rose-700"
+            onClick={() => {
+              if (confirm("Tandai pelanggan tidak hadir? Slot ini akan dikosongkan.")) {
+                startTransition(async () => {
+                  const res = await markNoShow(booking.id);
+                  if (res.success) toast.success("Ditandai Tidak Hadir");
+                  else toast.error(res.error || "Gagal mengubah");
+                });
+              }
+            }}
+            disabled={isPending}
+          >
+            <XCircle className="w-3.5 h-3.5 mr-1.5" />
+            Tidak Hadir
+          </Button>
+        </div>
+        {booking.is_reminder_sent ? (
+          <div className="flex items-center justify-center gap-1.5 h-10 bg-stone-50 rounded-xl border border-stone-100">
+            <Check className="w-4 h-4 text-stone-400" />
+            <span className="text-xs font-bold text-stone-500">Pengingat Terkirim</span>
+          </div>
+        ) : (
+          <Button
+            size="sm"
+            variant="outline"
+            className="w-full h-10 border-green-200 bg-green-50 text-green-700 hover:bg-green-100 hover:text-green-800 rounded-xl text-sm font-bold"
+            onClick={() => {
+              const waNumber = booking.customer_wa.replace(/^0/, "62");
+              const text = `Halo ${booking.customer_name},\n\nMengingatkan jadwal booking Anda untuk layanan *${booking.service_name}* pada tanggal *${booking.booking_date}* jam *${booking.start_time.slice(0, 5)}*.\n\nMohon hadir tepat waktu ya! Terima kasih.`;
+              const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(text)}`;
+              window.open(waUrl, "_blank", "noopener,noreferrer");
+              startTransition(async () => {
+                await markReminderSent(booking.id);
+              });
+            }}
+            disabled={isPending}
+          >
+            {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-3.5 h-3.5 mr-1.5" />}
+            Kirim Pengingat WA
+          </Button>
+        )}
+        
+        <Button
+          size="sm"
+          className="w-full h-10 bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm shadow-indigo-600/20 rounded-xl text-sm font-bold"
+          onClick={() => handleAction("completed")}
+          disabled={isPending}
+        >
+          {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4 mr-1.5" />}
+          Lunas & Selesai
+        </Button>
+      </div>
+    )}
+
+    <Dialog open={isRescheduleOpen} onOpenChange={setIsRescheduleOpen}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Ajukan Perubahan Jadwal</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4 pt-4 text-sm">
+          <div className="space-y-1.5">
+            <label className="font-semibold text-stone-700">Tanggal Baru</label>
+            <input 
+              type="date" 
+              className="w-full border border-stone-200 rounded-lg p-2"
+              value={rescheduleDate}
+              onChange={(e) => setRescheduleDate(e.target.value)}
+            />
+          </div>
+          <div className="flex gap-4">
+            <div className="space-y-1.5 flex-1">
+              <label className="font-semibold text-stone-700">Jam Mulai</label>
+              <input 
+                type="time" 
+                className="w-full border border-stone-200 rounded-lg p-2"
+                value={rescheduleStartTime}
+                onChange={(e) => setRescheduleStartTime(e.target.value)}
+              />
+            </div>
+            <div className="space-y-1.5 flex-1">
+              <label className="font-semibold text-stone-700">Jam Selesai</label>
+              <input 
+                type="time" 
+                className="w-full border border-stone-200 rounded-lg p-2"
+                value={rescheduleEndTime}
+                onChange={(e) => setRescheduleEndTime(e.target.value)}
+              />
+            </div>
+          </div>
+          <Button 
+            className="w-full bg-teal-600 hover:bg-teal-700 text-white rounded-xl h-12 mt-2"
+            disabled={!rescheduleDate || !rescheduleStartTime || !rescheduleEndTime || isPending}
+            onClick={() => {
+              startTransition(async () => {
+                const res = await proposeReschedule(
+                  booking.id, 
+                  "tenant", 
+                  rescheduleDate, 
+                  rescheduleStartTime.length === 5 ? rescheduleStartTime + ":00" : rescheduleStartTime, 
+                  rescheduleEndTime.length === 5 ? rescheduleEndTime + ":00" : rescheduleEndTime
+                );
+                if (res.success) {
+                  toast.success("Pengajuan reschedule berhasil disimpan.");
+                  setIsRescheduleOpen(false);
+                  if (res.data?.type === "manual" && res.data.url) {
+                    window.open(res.data.url, "_blank");
+                  }
+                } else {
+                  toast.error(res.error || "Gagal mengajukan.");
+                }
+              });
+            }}
+          >
+            {isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : "Simpan & Kirim Pesan"}
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  </CardContent>
+  </Card>
  );
 }
 
-export function TimelineView({ bookings }: TimelineViewProps) {
+export function TimelineView({ bookings, isPendingColumn }: TimelineViewProps) {
  if (!bookings || bookings.length === 0) {
- return (
- <div className="py-12 px-6 rounded-[2rem] border border-stone-100 bg-stone-50/50 text-center shadow-sm mt-4">
- <div className="w-16 h-16 bg-white rounded-3xl flex items-center justify-center mx-auto mb-4 shadow-sm border border-stone-100 -rotate-3 transition-transform hover:rotate-0">
- <CheckCircle2 className="w-8 h-8 text-stone-300" />
- </div>
- <h3 className="text-lg font-bold text-stone-800 mb-1">
- Belum Ada Jadwal
- </h3>
- <p className="text-sm text-stone-500 max-w-xs mx-auto">
- Waktu luang nih! Belum ada pelanggan yang menjadwalkan booking untuk hari ini.
- </p>
- </div>
- );
+ return null;
  }
 
  return (
  <div className="space-y-4">
  {bookings.map((booking) => (
- <BookingCard key={booking.id} booking={booking} />
+ <BookingCard key={booking.id} booking={booking} isPendingColumn={isPendingColumn} />
  ))}
  </div>
  );

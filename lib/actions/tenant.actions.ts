@@ -91,25 +91,12 @@ export async function getServicesByTenant(
 const updateTenantSettingsSchema = z.object({
   id: z.string().uuid("ID Tenant-nya kurang pas nih."),
   business_name: z.string().min(2, "Nama toko minimal 2 huruf dong.").max(100, "Nama toko kepanjangan nih.").trim(),
-  business_type: z.enum([
-    "salon",
-    "klinik",
-    "konsultasi",
-    "studio_foto",
-    "cuci_kendaraan",
-    "olahraga",
-    "servis",
-    "lainnya",
-  ]),
   whatsapp_number: z
     .string()
     .min(10, "Nomor WA kependekan, minimal 10 angka ya.")
     .max(16, "Nomor WA kepanjangan, maksimal 16 angka ya.")
     .regex(/^(\+62|62|0)8[1-9][0-9]{6,11}$/, "Format WA kurang pas. Pakai awalan 08 atau 628 ya."),
   telegram_chat_id: z.string().nullable().optional(),
-  open_time: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Format jam buka harus HH:MM (contoh: 09:00)").default("09:00"),
-  close_time: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Format jam tutup harus HH:MM (contoh: 21:00)").default("21:00"),
-  timezone: z.string().default("Asia/Jakarta"),
 });
 
 type UpdateTenantSettingsInput = z.infer<typeof updateTenantSettingsSchema>;
@@ -135,12 +122,8 @@ export async function updateTenantSettings(
       .from("tenants")
       .update({
         business_name: parsed.data.business_name,
-        business_type: parsed.data.business_type,
         whatsapp_number: parsed.data.whatsapp_number,
         telegram_chat_id: parsed.data.telegram_chat_id || null,
-        open_time: parsed.data.open_time,
-        close_time: parsed.data.close_time,
-        timezone: parsed.data.timezone,
       })
       .eq("id", parsed.data.id) // Aman karena user.id sudah divalidasi sama dengan parsed.data.id
       .select()
@@ -312,6 +295,7 @@ export async function updateCalendarSettings(
 const updateSiteSettingsSchema = z.object({
   id: z.string().uuid("ID Tenant-nya kurang pas nih."),
   hero_image_url: z.string().url("Link gambarnya nggak valid nih. Pastikan pakai http/https.").nullable().optional().or(z.literal("")),
+  logo_url: z.string().url("Link logonya nggak valid.").nullable().optional().or(z.literal("")),
   welcome_message: z.string().max(300, "Pesan sambutannya kepanjangan, maksimal 300 huruf aja ya.").nullable().optional(),
   address: z.string().max(250, "Alamat kepanjangan nih.").nullable().optional(),
   instagram_handle: z.string().max(50, "Username IG kepanjangan.").nullable().optional(),
@@ -338,6 +322,7 @@ export async function updateSiteSettings(
 
     // Format fields
     const finalHero = parsed.data.hero_image_url === "" ? null : parsed.data.hero_image_url;
+    const finalLogo = parsed.data.logo_url === "" ? null : parsed.data.logo_url;
     let finalIg = parsed.data.instagram_handle?.trim() || null;
     if (finalIg && !finalIg.startsWith('@') && !finalIg.includes('instagram.com')) {
       finalIg = '@' + finalIg;
@@ -349,6 +334,7 @@ export async function updateSiteSettings(
       .from("tenants")
       .update({
         hero_image_url: finalHero,
+        logo_url: finalLogo,
         welcome_message: parsed.data.welcome_message?.trim() || null,
         address: parsed.data.address?.trim() || null,
         instagram_handle: finalIg,

@@ -11,6 +11,7 @@ import type { ActionResponse } from "./tenant.actions";
 const staffSchema = z.object({
   id: z.string().uuid().optional(),
   name: z.string().min(2, "Nama pegawai minimal 2 huruf.").max(100, "Nama kepanjangan, maksimal 100 huruf."),
+  role: z.string().max(50, "Peran/Jabatan kepanjangan.").optional().nullable(),
   description: z.string().max(500, "Deskripsi kepanjangan, maksimal 500 huruf.").optional().nullable(),
   image_url: z.string().url("Wah, link foto-nya nggak valid nih.").nullable().optional().or(z.literal("")),
 });
@@ -35,6 +36,40 @@ export async function getStaffByTenant(tenantId: string): Promise<ActionResponse
     return { success: true, data: data as Staff[] };
   } catch {
     return { success: false, error: "Terjadi kesalahan internal pada server" };
+  }
+}
+
+export async function getSuggestedRoles(businessType: string): Promise<ActionResponse<string[]>> {
+  try {
+    const supabase = await createClient();
+    
+    // Untuk mendapatkan distinct roles dari staff yang dimiliki oleh tenant dengan business_type sama
+    // kita akan mengambil semua role yang tidak null, membatasi hasilnya, dan menghapus duplikasi di sisi memori
+    // Supabase RPC adalah cara terbaik untuk distinct, namun untuk kemudahan, kita query terbatas dan map.
+    const { data, error } = await supabase
+      .from("tenants")
+      .select(`
+        staff ( role )
+      `)
+      .eq("business_type", businessType)
+      .limit(20);
+
+    if (error || !data) {
+      return { success: true, data: [] };
+    }
+
+    const rolesSet = new Set<string>();
+    data.forEach((tenant: any) => {
+      tenant.staff?.forEach((s: any) => {
+        if (s.role && s.role.trim() !== "") {
+          rolesSet.add(s.role.trim());
+        }
+      });
+    });
+
+    return { success: true, data: Array.from(rolesSet) };
+  } catch {
+    return { success: true, data: [] }; // silent fail, ini hanya saran
   }
 }
 
@@ -66,6 +101,7 @@ export async function createStaff(payload: StaffPayload): Promise<ActionResponse
       .insert({
         tenant_id: tenantData.id,
         name: parsed.data.name,
+        role: parsed.data.role,
         description: parsed.data.description,
         image_url: parsed.data.image_url,
       })
@@ -107,6 +143,7 @@ export async function updateStaff(payload: StaffPayload): Promise<ActionResponse
       .from("staff")
       .update({
         name: parsed.data.name,
+        role: parsed.data.role,
         description: parsed.data.description,
         image_url: parsed.data.image_url,
       })

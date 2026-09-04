@@ -10,9 +10,10 @@ export const metadata: Metadata = {
 export default async function BookingManagePage({
   params,
 }: {
-  params: { token: string };
+  params: Promise<{ slug: string; token: string }>;
 }) {
-  const { data, success, error } = await getCustomerPortalData(params.token);
+  const resolvedParams = await params;
+  const { data, success, error } = await getCustomerPortalData(resolvedParams.token);
 
   if (!success || !data) {
     return (

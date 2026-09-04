@@ -6,7 +6,7 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[];
 
-export type PaymentStatus = "pending" | "pending_verification" | "approved" | "rejected";
+export type PaymentStatus = "pending" | "pending_verification" | "approved" | "rejected" | "completed";
 
 export interface Database {
   public: {
@@ -33,6 +33,7 @@ export interface Database {
           wa_method: "manual" | "api";
           wa_api_key: string | null;
           hero_image_url: string | null;
+          logo_url: string | null;
           welcome_message: string | null;
           address: string | null;
           instagram_handle: string | null;
@@ -65,6 +66,7 @@ export interface Database {
           wa_method?: "manual" | "api";
           wa_api_key?: string | null;
           hero_image_url?: string | null;
+          logo_url?: string | null;
           welcome_message?: string | null;
           address?: string | null;
           instagram_handle?: string | null;
@@ -98,6 +100,7 @@ export interface Database {
           wa_method?: "manual" | "api";
           wa_api_key?: string | null;
           hero_image_url?: string | null;
+          logo_url?: string | null;
           welcome_message?: string | null;
           address?: string | null;
           instagram_handle?: string | null;
@@ -160,6 +163,7 @@ export interface Database {
           id: string;
           tenant_id: string;
           name: string;
+          role: string | null;
           description: string | null;
           image_url: string | null;
           google_refresh_token: string | null;
@@ -169,6 +173,7 @@ export interface Database {
           id?: string;
           tenant_id: string;
           name: string;
+          role?: string | null;
           description?: string | null;
           image_url?: string | null;
           google_refresh_token?: string | null;
@@ -178,6 +183,7 @@ export interface Database {
           id?: string;
           tenant_id?: string;
           name?: string;
+          role?: string | null;
           description?: string | null;
           image_url?: string | null;
           google_refresh_token?: string | null;
@@ -186,6 +192,38 @@ export interface Database {
         Relationships: [
           {
             foreignKeyName: "staff_tenant_id_fkey";
+            columns: ["tenant_id"];
+            isOneToOne: false;
+            referencedRelation: "tenants";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      portfolios: {
+        Row: {
+          id: string;
+          tenant_id: string;
+          image_url: string;
+          title: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          tenant_id: string;
+          image_url: string;
+          title?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          tenant_id?: string;
+          image_url?: string;
+          title?: string | null;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "portfolios_tenant_id_fkey";
             columns: ["tenant_id"];
             isOneToOne: false;
             referencedRelation: "tenants";
@@ -246,6 +284,8 @@ export interface Database {
           payment_status: PaymentStatus;
           proof_url: string | null;
           is_reminder_sent: boolean;
+          reschedule_request: Json | null;
+          is_no_show: boolean;
           created_at: string;
         };
         Insert: {
@@ -262,6 +302,8 @@ export interface Database {
           payment_status?: PaymentStatus;
           proof_url?: string | null;
           is_reminder_sent?: boolean;
+          reschedule_request?: Json | null;
+          is_no_show?: boolean;
           created_at?: string;
         };
         Update: {
@@ -278,6 +320,8 @@ export interface Database {
           payment_status?: PaymentStatus;
           proof_url?: string | null;
           is_reminder_sent?: boolean;
+          reschedule_request?: Json | null;
+          is_no_show?: boolean;
           created_at?: string;
         };
         Relationships: [
@@ -333,8 +377,10 @@ export type Service = Database["public"]["Tables"]["services"]["Row"];
 export type Staff = Database["public"]["Tables"]["staff"]["Row"];
 export type Booking = Database["public"]["Tables"]["bookings"]["Row"];
 export type Customer = Database["public"]["Tables"]["customers"]["Row"];
+export type Portfolio = Database["public"]["Tables"]["portfolios"]["Row"];
 export type TenantInsert = Database["public"]["Tables"]["tenants"]["Insert"];
 export type ServiceInsert = Database["public"]["Tables"]["services"]["Insert"];
 export type StaffInsert = Database["public"]["Tables"]["staff"]["Insert"];
 export type BookingInsert = Database["public"]["Tables"]["bookings"]["Insert"];
 export type CustomerInsert = Database["public"]["Tables"]["customers"]["Insert"];
+export type PortfolioInsert = Database["public"]["Tables"]["portfolios"]["Insert"];

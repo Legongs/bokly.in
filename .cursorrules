@@ -1,0 +1,40 @@
+# .cursorrules - Master Rules for maubooking.in
+
+## 1. Project Context & Philosophy
+- **Product**: `maubooking.in` — Micro-SaaS platform reservasi slot otomatis untuk UMKM jasa lokal (Nail Art, Barbershop, Salon, Studio Foto, Personal Trainer, dll).
+- **Core Value**: Mobile-first, serba cepat, tanpa bloat, cegah *double-booking* & *no-show* via DP QRIS dan notifikasi Telegram instant.
+- **Development Style**: Vibe Coding with **Impeccable, Secure & Lightweight Standards** — Kode modular, bersih, simpel, efisien, fungsional penuh, berkinerja tinggi, dan terproteksi ketat dari celah keamanan.
+- **Zero Stub Policy**: Dilarang keras menyisakan `// TODO`, fungsi dummy, atau komponen setengah jadi. Setiap fungsi harus berjalan *end-to-end* secara sempurna.
+- **File Size Limit**: Jaga komponen dan berkas tetap kecil. Jika berkas melebihi batas 150-200 baris, lakukan refaktor dan pecah menjadi sub-komponen atau *helper* (*Single Responsibility Principle*).
+- **Semantic State Variables**: Penamaan variabel state/boolean WAJIB menggunakan kata kerja bantu (contoh: `isLoading`, `hasError`, `isAvailable`).
+
+## 2. Tech Stack
+- **Framework**: Next.js 16 (App Router, Server Actions/API Routes, TypeScript).
+- **Styling**: Tailwind CSS v4 + Shadcn UI / Lucide React Icons.
+- **Database & Auth**: Supabase (PostgreSQL, Supabase Auth, Row Level Security / RLS).
+- **State & Data Fetching**: React State, Server Components, `@supabase/ssr`, Zustand (untuk state kompleks lintas komponen).
+- **Validation**: Zod Schema Validation.
+
+## 3. High-Level Security Standards (Master)
+- **RLS Enforcement**: Row Level Security (RLS) di Supabase WAJIB diaktifkan pada seluruh tabel.
+- **Multi-Tenant Data Isolation**: Setiap kueri, mutasi, atau Server Action WAJIB melakukan verifikasi kepemilikan data (`where tenant_id = current_user_tenant_id`). Dilarang mengandalkan input `tenant_id` mentah dari klien tanpa validasi server.
+- **Strict Zod Validation**: Semua payload dari Form, API Route, dan Server Action wajib divalidasi menggunakan Zod.
+- **Route Protection**: Halaman `/dashboard` dan rute internal wajib dilindungi melalui Next.js Middleware berbasis sesi Supabase Auth.
+- **Zero Hardcoded Secrets**: DILARANG keras menaruh secret key, token, kredensial di dalam kode maupun mencetaknya ke *console/log*. Gunakan selalu *environment variables*.
+- **No Dynamic Execution**: Dilarang menggunakan fungsi berbahaya seperti `eval()`, `exec()`, atau metode eksekusi string dinamis lainnya demi mencegah *Remote Code Execution* (RCE).
+
+## 4. AI Behavior, Token Efficiency & Communication Protocol
+- **To-The-Point & Zero Filler**: Hasilkan kode secara langsung. Dilarang menggunakan kalimat pembuka basa-basi atau penjelasan teori yang tidak diperlukan.
+- **Handling Uncertainty / Anti-Hallucination**: Jika perintah ambigu, kurang detail, atau instruksi dapat berpotensi merusak arsitektur, AI WAJIB **berhenti dan bertanya** untuk mendapatkan persetujuan pengguna sebelum mengeksekusi kode.
+- **Strict Architecture Adherence**: AI dilarang menambahkan dependensi (NPM package) baru tanpa izin eksplisit dari pengguna.
+- **Contextual Code Output**: Saat memberikan output kode, AI wajib menyertakan komentar path file di baris pertama (contoh: `// app/page.tsx`) dan sedikit kode sebelum/sesudah perubahan.
+- **Code Protection Markers**: Jika AI menemukan komentar seperti `// DO NOT TOUCH THIS LINE AI` atau `// CORE LOGIC - NO EDIT`, AI dilarang keras memodifikasi atau menghapus blok kode tersebut.
+- **Comment Preservation**: Dilarang menghapus komentar lama yang relevan dan wajib tambahkan JSDoc pada fungsi kompleks.
+- **Build Notes Tracking**: Untuk fitur berskala besar/tugas multi-tahap, AI WAJIB membuat berkas catatan pelacakan (misal: `.agents/tasks/[fitur].md`) yang berisi *Objective*, *Implementation Plan* (Checklist), dan statusnya.
+- **Conventional Commits**: Saat membuat pesan *commit* atau rancangan Pull Request, AI WAJIB mematuhi format *Conventional Commits* (`feat:`, `fix:`, `refactor:`, `chore:`).
+
+## 5. Domain-Specific Guidelines
+Saat menerima tugas spesifik, AI diinstruksikan untuk WAJIB merujuk dan membaca berkas-berkas di folder `docs/` berikut sesuai konteks tugasnya:
+- Untuk struktur tabel dan spesifikasi Basis Data: **BACA `docs/db_schema.md`**
+- Untuk antarmuka visual, desain Anti-AI, struktur tata letak (layout), dan Copywriting: **BACA `docs/ui_ux.md`**
+- Untuk penanganan slot atomik, Server Actions, validasi waktu (Timezone), dan pencegahan eksploitasi server: **BACA `docs/backend.md`**

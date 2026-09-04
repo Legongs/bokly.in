@@ -22,6 +22,7 @@ const THEME_OPTIONS = [
 export function SiteSettings({ tenant }: SiteSettingsProps) {
   const [siteData, setSiteData] = useState({
     hero_image_url: tenant.hero_image_url || "",
+    logo_url: tenant.logo_url || "",
     welcome_message: tenant.welcome_message || "",
     address: tenant.address || "",
     instagram_handle: tenant.instagram_handle || "",
@@ -60,8 +61,8 @@ export function SiteSettings({ tenant }: SiteSettingsProps) {
   };
 
   return (
-    <div className="bg-white rounded-[2rem] shadow-sm border border-stone-200 overflow-hidden p-6 animate-in fade-in zoom-in-95 duration-200">
-      <h3 className="text-xl font-extrabold text-stone-900 mb-1">Pengaturan Tampilan & Situs</h3>
+    <div className="w-full max-w-xl mx-auto bg-white rounded-[2rem] shadow-md shadow-stone-200/50 border-none overflow-hidden p-6 sm:p-8 animate-in fade-in zoom-in-95 duration-200">
+      <h3 className="text-xl font-extrabold text-stone-900 mb-1">Tampilan & Situs Publik</h3>
       <p className="text-sm text-stone-500 mb-6">
         Sesuaikan tema warna, banner, dan informasi publik di halaman booking Anda.
       </p>
@@ -110,6 +111,19 @@ export function SiteSettings({ tenant }: SiteSettingsProps) {
               );
             })}
           </div>
+        </div>
+
+        <div>
+          <label className="flex items-center gap-2 text-sm font-semibold text-stone-900 mb-2">
+            <ImageIcon className="w-4 h-4 text-stone-500" />
+            Logo Toko / Ikon
+          </label>
+          <ImageUploader 
+            value={siteData.logo_url || ""}
+            onChange={(url) => setSiteData((prev) => ({ ...prev, logo_url: url }))}
+            disabled={isPendingSite}
+            label="Upload Logo Toko"
+          />
         </div>
 
         {/* Hero Image */}

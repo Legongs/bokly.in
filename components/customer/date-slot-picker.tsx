@@ -90,7 +90,7 @@ export function DateSlotPicker({
      const h = Math.floor(currentMinutes / 60);
      const m = currentMinutes % 60;
      slots.push(`${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`);
-     currentMinutes += 60; // Step 1 jam
+     currentMinutes += 30; // Step 30 menit
    }
    return slots;
  }, [openTime, closeTime, activeDate, weeklySchedule]);

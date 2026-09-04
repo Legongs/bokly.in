@@ -76,17 +76,17 @@ export function PaymentSettings({ tenant }: PaymentSettingsProps) {
   };
 
   return (
-    <Card className="w-full max-w-xl mx-auto rounded-[2rem] border-none bg-white shadow-md shadow-stone-200/50 overflow-hidden">
-      <CardHeader className="space-y-1 pb-4">
-        <CardTitle className="text-xl font-extrabold text-stone-900 flex items-center gap-2">
+    <div className="w-full max-w-xl mx-auto bg-white rounded-[2rem] shadow-md shadow-stone-200/50 border-none overflow-hidden p-6 sm:p-8 animate-in fade-in zoom-in-95 duration-200">
+      <div className="space-y-1 pb-4">
+        <h3 className="text-xl font-extrabold text-stone-900 flex items-center gap-2">
           Pengaturan Pembayaran
-        </CardTitle>
-        <CardDescription className="text-stone-500">
+        </h3>
+        <p className="text-sm text-stone-500">
           Ubah metode pembayaran, link QRIS, dan integrasi payment gateway.
-        </CardDescription>
-      </CardHeader>
+        </p>
+      </div>
       
-      <CardContent>
+      <div>
         <form onSubmit={handleSubmit} className="space-y-5">
           {serverStatus && (
             <div
@@ -197,7 +197,7 @@ export function PaymentSettings({ tenant }: PaymentSettingsProps) {
             )}
           </Button>
         </form>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
