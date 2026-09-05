@@ -1,12 +1,13 @@
 import React from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { getAuthTenantId } from "@/lib/auth";
 import { getTenantAnalytics } from "@/lib/actions/analytics.actions";
 import { AnalyticsView } from "@/components/dashboard/analytics-view";
 import { getBusinessDictionary } from "@/lib/business-dictionary";
 
 export const metadata = {
-  title: "Analisis Usaha | maubooking.in",
+  title: "Analisis Usaha | bukly.in",
   description: "Pantau performa bisnis dan cari tahu apa yang paling disukai pelangganmu.",
 };
 
@@ -14,9 +15,7 @@ export default async function AnalyticsPage() {
   const supabase = await createClient();
 
   // 1. Ambil sesi user aktif
-  const DEMO_TENANT_ID = "d290f1ee-6c54-4b01-90e6-d701748f0851";
-  const { data: authData } = await supabase.auth.getUser();
-  const tenantId = authData.user?.id || DEMO_TENANT_ID;
+  const tenantId = await getAuthTenantId();
 
   // 2. Ambil data analitik dan profil tenant
   const analyticsRes = await getTenantAnalytics(tenantId);

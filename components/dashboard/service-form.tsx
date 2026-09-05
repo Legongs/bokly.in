@@ -274,7 +274,7 @@ export function ServiceForm({ initialData, onSuccess, onCancel, dictionary }: Se
  )}
  <Button type="submit" disabled={isPending || !form.name} className="bg-teal-600 hover:bg-teal-700 text-white rounded-full px-6 h-10 shadow-md shadow-teal-600/20 hover:shadow-lg transition-all">
  {isPending ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <Save className="w-4 h-4 mr-1.5" />}
- {isEdit ? "Simpan Perubahan" : `Tambah ${dictionary?.serviceLabel || "Layanan"}`}
+ {isEdit ? "Terapkan Perubahan Layanan" : `Tambah ${dictionary?.serviceLabel || "Layanan"}`}
  </Button>
  </div>
  </form>

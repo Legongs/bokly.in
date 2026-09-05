@@ -1,20 +1,18 @@
 import React from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { getAuthTenantId } from "@/lib/auth";
 import { SettingsTabs } from "@/components/dashboard/settings-tabs";
 import type { Tenant } from "@/types/database.types";
 
 export const metadata = {
-  title: "Pengaturan Toko | Dashboard maubooking.in",
+  title: "Pengaturan Toko | Dashboard bukly.in",
   description: "Kelola profil toko, WhatsApp, dan notifikasi Telegram Anda.",
 };
 
 export default async function SettingsPage() {
   const supabase = await createClient();
-
-  const DEMO_TENANT_ID = "d290f1ee-6c54-4b01-90e6-d701748f0851";
-  const { data: authData } = await supabase.auth.getUser();
-  const tenantId = authData.user?.id || DEMO_TENANT_ID;
+  const tenantId = await getAuthTenantId();
 
   // Ambil data tenant
   const { data: tenantData, error: tenantError } = await supabase

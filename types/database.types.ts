@@ -208,6 +208,49 @@ export interface Database {
           }
         ];
       };
+      staff_services: {
+        Row: {
+          staff_id: string;
+          service_id: string;
+          tenant_id: string;
+          created_at: string;
+        };
+        Insert: {
+          staff_id: string;
+          service_id: string;
+          tenant_id: string;
+          created_at?: string;
+        };
+        Update: {
+          staff_id?: string;
+          service_id?: string;
+          tenant_id?: string;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "staff_services_staff_id_fkey";
+            columns: ["staff_id"];
+            isOneToOne: false;
+            referencedRelation: "staff";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "staff_services_service_id_fkey";
+            columns: ["service_id"];
+            isOneToOne: false;
+            referencedRelation: "services";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "staff_services_tenant_id_fkey";
+            columns: ["tenant_id"];
+            isOneToOne: false;
+            referencedRelation: "tenants";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
       portfolios: {
         Row: {
           id: string;
@@ -390,6 +433,8 @@ export interface Database {
 export type Tenant = Database["public"]["Tables"]["tenants"]["Row"];
 export type Service = Database["public"]["Tables"]["services"]["Row"];
 export type Staff = Database["public"]["Tables"]["staff"]["Row"];
+export type StaffService = Database["public"]["Tables"]["staff_services"]["Row"];
+export type StaffWithServices = Staff & { staff_services?: { service_id: string }[] };
 export type Booking = Database["public"]["Tables"]["bookings"]["Row"];
 export type Customer = Database["public"]["Tables"]["customers"]["Row"];
 export type Portfolio = Database["public"]["Tables"]["portfolios"]["Row"];

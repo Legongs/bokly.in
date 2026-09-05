@@ -91,7 +91,7 @@ export function AnalyticsView({ analytics, dictionary }: AnalyticsViewProps) {
             {recentTrend.map((t, idx) => {
               const heightPercent = (t.value / maxTrendValue) * 100;
               return (
-                <div key={idx} className="relative flex flex-col justify-end items-center flex-1 group" style={{ minWidth: "12px" }}>
+                <div key={idx} className="relative h-full flex flex-col justify-end items-center flex-1 group" style={{ minWidth: "12px" }}>
                   <div
                     className="w-full bg-teal-500 rounded-sm transition-all duration-300 hover:bg-teal-400"
                     style={{ height: `${heightPercent}%`, minHeight: "2px" }}
@@ -99,7 +99,7 @@ export function AnalyticsView({ analytics, dictionary }: AnalyticsViewProps) {
                   </div>
                   {/* Tooltip pada hover */}
                   <div className="absolute bottom-full mb-2 hidden group-hover:block z-10 bg-stone-900 text-white text-[10px] py-1 px-2 rounded-lg whitespace-nowrap shadow-xl">
-                    <p className="font-bold">{new Date(t.date).toLocaleDateString("id-ID", { day: 'numeric', month: 'short' })}</p>
+                    <p className="font-bold">{new Date(t.date + "T00:00:00").toLocaleDateString("id-ID", { day: 'numeric', month: 'short' })}</p>
                     <p>{formatCurrency(t.value)}</p>
                   </div>
                 </div>

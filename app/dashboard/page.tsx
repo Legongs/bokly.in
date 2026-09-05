@@ -67,7 +67,7 @@ export default function DashboardPage() {
               </div>
               <div className="flex flex-wrap items-center gap-3 mt-1 mb-1">
                 <p className="text-sm text-stone-500 truncate font-medium">
-                  maubooking.in/<span className="text-stone-700 font-bold">{tenant.slug}</span>
+                  bukly.in/<span className="text-stone-700 font-bold">{tenant.slug}</span>
                 </p>
                 <div className="flex-shrink-0">
                   <ShareButton tenantSlug={tenant.slug} showLabel />

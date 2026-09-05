@@ -52,7 +52,7 @@ export function SiteSettings({ tenant }: SiteSettingsProps) {
         theme_color: siteData.theme_color as "teal" | "rose" | "orange" | "violet" | "blue"
       });
       if (res.success) {
-        setSiteMessage({ type: "success", text: "Pengaturan situs berhasil diperbarui!" });
+        setSiteMessage({ type: "success", text: "Sip! Tampilan situs kamu udah diperbarui." });
         setTimeout(() => setSiteMessage(null), 5000);
       } else {
         setSiteMessage({ type: "error", text: res.error || "Gagal menyimpan pengaturan." });
@@ -221,7 +221,7 @@ export function SiteSettings({ tenant }: SiteSettingsProps) {
             {isPendingSite ? (
               <Loader2 className="w-5 h-5 animate-spin" />
             ) : (
-              "Simpan Tampilan Situs"
+              "Terapkan Tema Tampilan"
             )}
           </Button>
         </div>

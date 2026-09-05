@@ -19,6 +19,7 @@ import { logout } from "@/lib/actions/auth.actions";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
+import { Logo } from "@/components/ui/logo";
 interface DashboardNavProps {
   children: React.ReactNode;
   serviceLabel: string;
@@ -65,7 +66,7 @@ export function DashboardNav({ children, serviceLabel, staffLabel }: DashboardNa
     setIsLoggingOut(true);
     const res = await logout();
     if (res.success) {
-      toast.success("Berhasil keluar.");
+      toast.success("Sampai jumpa lagi!");
       router.push("/login");
     } else {
       toast.error(res.error);
@@ -79,7 +80,7 @@ export function DashboardNav({ children, serviceLabel, staffLabel }: DashboardNa
       {/* ── Mobile Top Header ── */}
       <div className="sm:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b border-stone-200 z-40 flex items-center px-4">
         <h2 className="text-lg font-extrabold tracking-tight text-stone-900">
-          maubooking<span className="text-teal-600">.in</span>
+          <Logo />
         </h2>
       </div>
 
@@ -89,7 +90,7 @@ export function DashboardNav({ children, serviceLabel, staffLabel }: DashboardNa
         <aside className="hidden sm:flex flex-col w-64 bg-white border-r border-stone-200 h-screen sticky top-0 p-4">
           <div className="mb-8 px-4">
             <h2 className="text-xl font-extrabold tracking-tight text-stone-900">
-              maubooking<span className="text-teal-600">.in</span>
+              <Logo />
             </h2>
           </div>
           <nav className="flex-1 space-y-1">

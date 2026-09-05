@@ -35,9 +35,9 @@ export function CalendarSettings({ tenant }: { tenant: Tenant }) {
 
   useEffect(() => {
     if (searchParams.get("success") === "google_connected") {
-      setSuccessMsg("Google Calendar berhasil dihubungkan!");
+      setSuccessMsg("Sip! Kalender Google kamu udah terhubung.");
     } else if (searchParams.get("success") === "google_disconnected") {
-      setSuccessMsg("Koneksi Google Calendar berhasil diputus.");
+      setSuccessMsg("Oke, koneksi Kalender Google udah dicabut ya.");
     } else if (searchParams.get("error")) {
       setErrorMsg("Gagal memproses otorisasi Google. Coba lagi.");
     }
@@ -76,7 +76,7 @@ export function CalendarSettings({ tenant }: { tenant: Tenant }) {
       });
 
       if (res.success) {
-        setSuccessMsg("Pengaturan kalender berhasil disimpan!");
+        setSuccessMsg("Mantap, pengaturan kalender kamu udah di-update!");
       } else {
         setErrorMsg(res.error || "Gagal menyimpan pengaturan.");
       }
@@ -190,7 +190,7 @@ export function CalendarSettings({ tenant }: { tenant: Tenant }) {
             className="bg-teal-600 hover:bg-teal-700 text-white rounded-full px-6 h-11 shadow-md shadow-teal-600/20 hover:shadow-lg transition-all w-full sm:w-auto"
           >
             {isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
-            Simpan Kalender
+            Kunci Pengaturan Kalender
           </Button>
         </div>
       </div>

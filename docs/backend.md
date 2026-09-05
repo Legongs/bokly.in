@@ -1,4 +1,4 @@
-# Server Logic & Security Guidelines (maubooking.in)
+# Server Logic & Security Guidelines (bukly.in)
 
 ## 1. RSC-First Approach
 - Utamakan penggunaan **React Server Components (RSC)** dan **Server Actions**.

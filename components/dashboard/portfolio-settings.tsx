@@ -81,7 +81,7 @@ export function PortfolioSettings({ tenant }: PortfolioSettingsProps) {
         setPortfolios([res.data, ...portfolios]);
         setIsAdding(false);
         setFormData({ image_url: "", title: "" });
-        setMessage({ type: "success", text: "Portofolio berhasil ditambahkan!" });
+        setMessage({ type: "success", text: "Keren! Portofolio baru udah ditambahkan." });
         setTimeout(() => setMessage(null), 3000);
       } else {
         setMessage({ type: "error", text: res.error || "Gagal menambah portofolio" });
@@ -97,7 +97,7 @@ export function PortfolioSettings({ tenant }: PortfolioSettingsProps) {
       const res = await deletePortfolio(id);
       if (res.success) {
         setPortfolios(portfolios.filter(p => p.id !== id));
-        setMessage({ type: "success", text: "Portofolio berhasil dihapus" });
+        setMessage({ type: "success", text: "Oke, portofolio udah dihapus ya." });
         setTimeout(() => setMessage(null), 3000);
       } else {
         setMessage({ type: "error", text: res.error || "Gagal menghapus portofolio" });
@@ -191,7 +191,7 @@ export function PortfolioSettings({ tenant }: PortfolioSettingsProps) {
               disabled={!formData.image_url || isPending}
               className="bg-teal-600 hover:bg-teal-700 text-white rounded-full shadow-md shadow-teal-600/20"
             >
-              {isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : "Simpan Foto"}
+              {isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : "Unggah & Pasang Foto"}
             </Button>
           </div>
         </div>

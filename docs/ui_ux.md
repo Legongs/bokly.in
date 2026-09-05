@@ -1,4 +1,4 @@
-# UI/UX & Visual Guidelines (maubooking.in)
+# UI/UX & Visual Guidelines (bukly.in)
 
 ## 1. Anti-AI Visual Standards
 Desain harus terasa organik dan dibuat oleh manusia (bukan *template* AI generik).

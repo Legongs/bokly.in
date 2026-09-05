@@ -208,10 +208,11 @@ export function SettingsForm({ tenant }: SettingsFormProps) {
  }
  >
  {isPending ? (
- <Loader2 className="w-5 h-5 animate-spin" />
+ <Loader2 className="w-4 h-4 mr-2 animate-spin" />
  ) : (
- "Simpan Perubahan Toko"
+ <Save className="w-4 h-4 mr-2" />
  )}
+ Terapkan Perubahan Toko
  </Button>
  </form>
       </div>

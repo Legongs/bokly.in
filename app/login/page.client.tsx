@@ -8,6 +8,7 @@ import { Loader2, Store, Mail, Lock, AlertCircle, Coffee, CheckCircle2 } from "l
 import { Button } from "@/components/ui/button";
 import { login } from "@/lib/actions/auth.actions";
 
+import { Logo } from "@/components/ui/logo";
 // Client-side schema mirroring server
 const loginSchema = z.object({
   email: z.string().email("Ups, format email-nya kayaknya belum pas nih."),
@@ -28,7 +29,7 @@ export default function LoginPage() {
     if (typeof window !== "undefined") {
       const urlParams = new URLSearchParams(window.location.search);
       if (urlParams.get("demo") === "true") {
-        setEmail("demo@maubooking.in");
+        setEmail("demo@bukly.in");
         setPassword("Demo123456!");
         setIsDemoMode(true);
       }
@@ -82,7 +83,7 @@ export default function LoginPage() {
                 <Store className="w-4 h-4" />
               </div>
               <span className="font-extrabold text-lg tracking-tight text-stone-900">
-                maubooking<span className="text-teal-600">.in</span>
+                <Logo />
               </span>
             </Link>
             <h1 className="text-3xl font-extrabold text-stone-900 tracking-tight">

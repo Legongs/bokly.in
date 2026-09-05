@@ -8,6 +8,7 @@ import { Loader2, Store, Lock, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { resetPassword } from "@/lib/actions/auth.actions";
 
+import { Logo } from "@/components/ui/logo";
 const resetPasswordSchema = z.object({
   password: z.string().min(6, "Password-nya kurang panjang, minimal 6 karakter ya."),
   confirmPassword: z.string(),
@@ -60,7 +61,7 @@ export default function ResetPasswordPage() {
             <Store className="w-4 h-4" />
           </div>
           <span className="font-extrabold text-lg tracking-tight text-stone-900">
-            maubooking<span className="text-teal-600">.in</span>
+            <Logo />
           </span>
         </Link>
         

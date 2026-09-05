@@ -4,16 +4,17 @@ import React, { useState, useTransition } from "react";
 import { Loader2, Trash2, PlusCircle, User, Edit3, X, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { createStaff, updateStaff, deleteStaff } from "@/lib/actions/staff.actions";
-import type { Staff } from "@/types/database.types";
+import { createStaff, updateStaff, deleteStaff, updateStaffServices } from "@/lib/actions/staff.actions";
+import type { Staff, Service, StaffWithServices } from "@/types/database.types";
 
 interface StaffListProps {
-  initialStaff: Staff[];
+  initialStaff: StaffWithServices[];
   businessType: string;
   suggestedRoles?: string[];
+  services?: Service[];
 }
 
-export function StaffList({ initialStaff, businessType, suggestedRoles = [] }: StaffListProps) {
+export function StaffList({ initialStaff, businessType, suggestedRoles = [], services = [] }: StaffListProps) {
   const getStaffTerm = (type: string) => {
     switch (type) {
       case "salon": return "Terapis / Kapster";
@@ -28,11 +29,11 @@ export function StaffList({ initialStaff, businessType, suggestedRoles = [] }: S
   };
   const staffTerm = getStaffTerm(businessType);
   const [isPending, startTransition] = useTransition();
-  const [staff, setStaff] = useState<Staff[]>(initialStaff);
+  const [staff, setStaff] = useState<StaffWithServices[]>(initialStaff);
   
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [formData, setFormData] = useState({ name: "", role: "", description: "", image_url: "" });
+  const [formData, setFormData] = useState({ name: "", role: "", description: "", image_url: "", serviceIds: [] as string[] });
 
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,9 +42,12 @@ export function StaffList({ initialStaff, businessType, suggestedRoles = [] }: S
     startTransition(async () => {
       const res = await createStaff({ name: formData.name, role: formData.role, description: formData.description, image_url: formData.image_url });
       if (res.success && res.data) {
-        setStaff([...staff, res.data]);
+        if (formData.serviceIds.length > 0) {
+          await updateStaffServices(res.data.id, formData.serviceIds);
+        }
+        setStaff([...staff, { ...res.data, staff_services: formData.serviceIds.map(id => ({ service_id: id })) }]);
         setIsAdding(false);
-        setFormData({ name: "", role: "", description: "", image_url: "" });
+        setFormData({ name: "", role: "", description: "", image_url: "", serviceIds: [] });
       } else {
         alert(res.error || "Gagal menambah pegawai");
       }
@@ -57,9 +61,10 @@ export function StaffList({ initialStaff, businessType, suggestedRoles = [] }: S
     startTransition(async () => {
       const res = await updateStaff({ id, name: formData.name, role: formData.role, description: formData.description, image_url: formData.image_url });
       if (res.success && res.data) {
-        setStaff(staff.map((s) => (s.id === id ? res.data! : s)));
+        await updateStaffServices(id, formData.serviceIds);
+        setStaff(staff.map((s) => (s.id === id ? { ...res.data!, staff_services: formData.serviceIds.map(sid => ({ service_id: sid })) } : s)));
         setEditingId(null);
-        setFormData({ name: "", role: "", description: "", image_url: "" });
+        setFormData({ name: "", role: "", description: "", image_url: "", serviceIds: [] });
       } else {
         alert(res.error || "Gagal memperbarui pegawai");
       }
@@ -90,7 +95,7 @@ export function StaffList({ initialStaff, businessType, suggestedRoles = [] }: S
           <Button
             onClick={() => {
               setIsAdding(true);
-              setFormData({ name: "", role: "", description: "", image_url: "" });
+              setFormData({ name: "", role: "", description: "", image_url: "", serviceIds: [] });
             }}
             className="bg-teal-600 hover:bg-teal-700 text-white rounded-full shadow-md shadow-teal-600/20"
           >
@@ -160,13 +165,40 @@ export function StaffList({ initialStaff, businessType, suggestedRoles = [] }: S
                   disabled={isPending}
                 />
               </div>
+
+              {services.length > 0 && (
+                <div className="space-y-2 mt-4 bg-stone-50 p-4 rounded-2xl border border-stone-100">
+                  <label className="text-sm font-semibold text-stone-700">Layanan Spesialis (Opsional)</label>
+                  <p className="text-xs text-stone-500 mb-2">Jika tidak ada yang dicentang, pegawai ini dianggap bisa melayani semua layanan.</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {services.map(service => (
+                      <label key={service.id} className="flex items-center gap-2 p-2 bg-white border border-stone-100 rounded-xl cursor-pointer hover:border-teal-300 transition-colors">
+                        <input
+                          type="checkbox"
+                          className="accent-teal-600 w-4 h-4"
+                          checked={formData.serviceIds.includes(service.id)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setFormData({ ...formData, serviceIds: [...formData.serviceIds, service.id] });
+                            } else {
+                              setFormData({ ...formData, serviceIds: formData.serviceIds.filter(id => id !== service.id) });
+                            }
+                          }}
+                        />
+                        <span className="text-sm text-stone-700 font-medium">{service.name}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               <div className="pt-4 flex justify-end gap-3">
                 <Button type="button" variant="ghost" onClick={() => setIsAdding(false)} disabled={isPending} className="rounded-full px-5">
                   <X className="w-4 h-4 mr-1.5" /> Batal
                 </Button>
                 <Button type="submit" disabled={isPending || !formData.name} className="bg-teal-600 hover:bg-teal-700 text-white rounded-full px-6 shadow-md shadow-teal-600/20">
                   {isPending ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <Save className="w-4 h-4 mr-1.5" />}
-                  Simpan Pegawai
+                  Terapkan Perubahan Pegawai
                 </Button>
               </div>
             </form>
@@ -238,12 +270,39 @@ export function StaffList({ initialStaff, businessType, suggestedRoles = [] }: S
                         disabled={isPending}
                       />
                     </div>
+
+                    {services.length > 0 && (
+                      <div className="space-y-2 mt-4 bg-stone-50 p-4 rounded-2xl border border-stone-100">
+                        <label className="text-sm font-semibold text-stone-700">Layanan Spesialis (Opsional)</label>
+                        <p className="text-xs text-stone-500 mb-2">Jika tidak ada yang dicentang, pegawai ini dianggap bisa melayani semua layanan.</p>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                          {services.map(service => (
+                            <label key={service.id} className="flex items-center gap-2 p-2 bg-white border border-stone-100 rounded-xl cursor-pointer hover:border-teal-300 transition-colors">
+                              <input
+                                type="checkbox"
+                                className="accent-teal-600 w-4 h-4"
+                                checked={formData.serviceIds.includes(service.id)}
+                                onChange={(e) => {
+                                  if (e.target.checked) {
+                                    setFormData({ ...formData, serviceIds: [...formData.serviceIds, service.id] });
+                                  } else {
+                                    setFormData({ ...formData, serviceIds: formData.serviceIds.filter(id => id !== service.id) });
+                                  }
+                                }}
+                              />
+                              <span className="text-sm text-stone-700 font-medium">{service.name}</span>
+                            </label>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
                     <div className="flex justify-end gap-3">
                       <Button type="button" variant="ghost" onClick={() => setEditingId(null)} disabled={isPending} className="rounded-full px-5 h-9 text-sm">
                         Batal
                       </Button>
                       <Button type="submit" disabled={isPending || !formData.name} className="bg-teal-600 text-white rounded-full px-5 h-9 text-sm shadow-md shadow-teal-600/20">
-                        {isPending ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : "Simpan"}
+                        {isPending ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : "Kunci Penugasan Layanan"}
                       </Button>
                     </div>
                   </form>
@@ -266,6 +325,14 @@ export function StaffList({ initialStaff, businessType, suggestedRoles = [] }: S
                         {s.description && (
                           <p className="text-sm text-stone-600 mt-1 line-clamp-2">{s.description}</p>
                         )}
+                        {s.staff_services && s.staff_services.length > 0 && (
+                          <div className="mt-2 flex flex-wrap gap-1">
+                            {s.staff_services.map(ss => {
+                              const sv = services.find(srv => srv.id === ss.service_id);
+                              return sv ? <span key={sv.id} className="text-[10px] font-bold px-2 py-0.5 bg-stone-100 text-stone-600 rounded-md">{sv.name}</span> : null;
+                            })}
+                          </div>
+                        )}
                       </div>
                     </div>
                     <div className="flex gap-2">
@@ -274,7 +341,13 @@ export function StaffList({ initialStaff, businessType, suggestedRoles = [] }: S
                         size="sm"
                         onClick={() => {
                           setEditingId(s.id);
-                          setFormData({ name: s.name, role: s.role || "", description: s.description || "", image_url: s.image_url || "" });
+                          setFormData({ 
+                            name: s.name, 
+                            role: s.role || "", 
+                            description: s.description || "", 
+                            image_url: s.image_url || "",
+                            serviceIds: s.staff_services?.map(ss => ss.service_id) || []
+                          });
                         }}
                         disabled={isPending}
                         className="border-stone-200 text-stone-600 hover:text-teal-600 hover:border-teal-200 rounded-xl bg-white"

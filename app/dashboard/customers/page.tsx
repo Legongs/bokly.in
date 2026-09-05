@@ -7,7 +7,7 @@ import { CustomerTable } from "@/components/dashboard/customer-table";
 export const dynamic = 'force-dynamic';
 
 export const metadata = {
-  title: "Pelanggan | maubooking.in",
+  title: "Pelanggan | bukly.in",
 };
 
 export default async function CustomersPage() {

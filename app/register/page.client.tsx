@@ -8,6 +8,7 @@ import { Loader2, Store, Mail, Lock, AlertCircle, Type, Phone, Link as LinkIcon,
 import { Button } from "@/components/ui/button";
 import { register, checkSlugAvailability } from "@/lib/actions/auth.actions";
 
+import { Logo } from "@/components/ui/logo";
 const registerSchema = z.object({
   email: z.string().email("Ups, format email-nya kayaknya belum pas nih."),
   password: z.string().min(6, "Password-nya kurang panjang, minimal 6 karakter ya."),
@@ -172,7 +173,7 @@ export default function RegisterPageClient() {
                 <Store className="w-4 h-4" />
               </div>
               <span className="font-extrabold text-lg tracking-tight text-stone-900">
-                maubooking<span className="text-teal-600">.in</span>
+                <Logo />
               </span>
             </Link>
             
@@ -302,7 +303,7 @@ export default function RegisterPageClient() {
                 ) : (
                   <div className="mt-2 p-3 bg-stone-50 border border-stone-200 rounded-xl flex flex-col gap-1">
                     <p className="text-[11px] font-medium text-stone-500">🔗 Toko kamu akan bisa diakses di:</p>
-                    <p className="text-sm font-bold text-teal-700 break-all">maubooking.in/{form.slug || "url-toko-kamu"}</p>
+                    <p className="text-sm font-bold text-teal-700 break-all">bukly.in/{form.slug || "url-toko-kamu"}</p>
                   </div>
                 )}
               </div>
@@ -417,7 +418,7 @@ export default function RegisterPageClient() {
               balas chat satu-satu.
             </h2>
             <p className="text-stone-600 leading-relaxed font-medium">
-              Ribuan usaha jasa udah pakai maubooking.in buat ngunci jadwal tanpa bentrok. Tinggal share link, beres!
+              Ribuan usaha jasa udah pakai bukly.in buat ngunci jadwal tanpa bentrok. Tinggal share link, beres!
             </p>
           </div>
           

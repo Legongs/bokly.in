@@ -3,7 +3,7 @@
 // Komponen visual TIDAK boleh memegang state di luar hook ini.
 "use client";
 
-import { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { z } from "zod";
 import { calcEndTime } from "@/lib/booking-utils";
 import { submitBooking } from "@/lib/actions/booking.actions";
@@ -36,7 +36,7 @@ export interface BookingResult {
   name: string;
 }
 
-const LS_KEY = "maubookingin_pending_booking";
+const LS_KEY = "buklyin_pending_booking";
 
 /** useBookingFlow — mengelola seluruh state dan logika alur pemesanan. */
 export function useBookingFlow({
@@ -65,6 +65,14 @@ export function useBookingFlow({
   const [activeStep, setActiveStep]       = useState(1);
   const [selectedCategory, setSelectedCategory] = useState("Semua");
 
+  const filteredStaffList = useMemo(() => {
+    if (!selectedService) return staffList;
+    return staffList.filter((staff: any) => {
+      if (!staff.staff_services || staff.staff_services.length === 0) return true;
+      return staff.staff_services.some((ss: any) => ss.service_id === selectedService.id);
+    });
+  }, [staffList, selectedService]);
+
   /** Format nomor WA dengan spasi setiap 4 digit */
   const formatWaNumber = (val: string): string => {
     const digits = val.replace(/\D/g, "");
@@ -88,7 +96,7 @@ export function useBookingFlow({
     setSelectedDate(date);
     setSelectedTime(time);
     setServerError(null);
-    setActiveStep(staffList.length > 1 ? 4 : 3);
+    setActiveStep(filteredStaffList.length > 1 ? 4 : 3);
   };
 
   /** Callback saat service dipilih */
@@ -96,7 +104,22 @@ export function useBookingFlow({
     setSelectedService(svc);
     setSelectedDate("");
     setSelectedTime("");
-    setActiveStep(staffList.length > 1 ? 2 : 3);
+
+    // Calculate how many staff can do this service
+    const capableStaff = staffList.filter((staff: any) => {
+      if (!staff.staff_services || staff.staff_services.length === 0) return true;
+      return staff.staff_services.some((ss: any) => ss.service_id === svc.id);
+    });
+
+    if (capableStaff.length === 1) {
+      setSelectedStaff(capableStaff[0]);
+    } else if (capableStaff.length === 0) {
+      setSelectedStaff(null);
+    } else if (selectedStaff && selectedStaff.id !== "any" && !capableStaff.find(s => s.id === selectedStaff.id)) {
+      setSelectedStaff(null);
+    }
+
+    setActiveStep(capableStaff.length > 1 ? 2 : 3);
   };
 
   /** Callback saat staff dipilih */
@@ -130,7 +153,7 @@ export function useBookingFlow({
       setServerError("Pilih layanan yang kamu mau dulu ya.");
       return;
     }
-    if (staffList.length > 1 && !selectedStaff) {
+    if (filteredStaffList.length > 1 && !selectedStaff) {
       setServerError("Pilih pegawainya dulu ya.");
       return;
     }
@@ -189,7 +212,7 @@ export function useBookingFlow({
     // State
     selectedService, selectedStaff, selectedDate, selectedTime,
     customerName, customerWa, fieldErrors, serverError, submitStatus,
-    bookingResult, activeStep, selectedCategory,
+    bookingResult, activeStep, selectedCategory, filteredStaffList,
     // Setters
     setActiveStep, setSelectedCategory,
     setCustomerName, setCustomerWa,

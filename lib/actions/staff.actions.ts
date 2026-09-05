@@ -25,7 +25,7 @@ export async function getStaffByTenant(tenantId: string): Promise<ActionResponse
     const supabase = await createClient();
     const { data, error } = await supabase
       .from("staff")
-      .select("*")
+      .select("*, staff_services(service_id)")
       .eq("tenant_id", tenantId)
       .order("created_at", { ascending: true });
 
@@ -182,6 +182,52 @@ export async function deleteStaff(id: string): Promise<ActionResponse<boolean>> 
 
     if (error) {
       return { success: false, error: "Gagal menghapus pegawai (Akses ditolak)" };
+    }
+
+    revalidatePath("/dashboard/staff");
+    revalidatePath("/[tenant]", "page");
+
+    return { success: true, data: true };
+  } catch {
+    return { success: false, error: "Terjadi kesalahan internal pada server" };
+  }
+}
+
+export async function updateStaffServices(staffId: string, serviceIds: string[]): Promise<ActionResponse<boolean>> {
+  try {
+    const supabase = await createClient();
+    
+    const { data: authData, error: authError } = await supabase.auth.getUser();
+    if (authError || !authData.user) {
+      return { success: false, error: "Tidak memiliki akses (Unauthenticated)" };
+    }
+
+    // Pertama, hapus semua relasi layanan yang ada untuk pegawai ini
+    const { error: deleteError } = await supabase
+      .from("staff_services")
+      .delete()
+      .eq("staff_id", staffId)
+      .eq("tenant_id", authData.user.id);
+
+    if (deleteError) {
+      return { success: false, error: "Gagal menghapus layanan sebelumnya" };
+    }
+
+    // Jika ada layanan baru yang dipilih, tambahkan
+    if (serviceIds.length > 0) {
+      const inserts = serviceIds.map(serviceId => ({
+        staff_id: staffId,
+        service_id: serviceId,
+        tenant_id: authData.user.id
+      }));
+
+      const { error: insertError } = await supabase
+        .from("staff_services")
+        .insert(inserts);
+
+      if (insertError) {
+        return { success: false, error: "Gagal menyimpan layanan baru" };
+      }
     }
 
     revalidatePath("/dashboard/staff");

@@ -281,7 +281,7 @@ function BookingCard({ booking, isPendingColumn }: { booking: BookingWithService
                   rescheduleEndTime.length === 5 ? rescheduleEndTime + ":00" : rescheduleEndTime
                 );
                 if (res.success) {
-                  toast.success("Pengajuan reschedule berhasil disimpan.");
+                  toast.success("Mantap, pengajuan reschedule udah dikirim ke pelanggan.");
                   setIsRescheduleOpen(false);
                   if (res.data?.type === "manual" && res.data.url) {
                     window.open(res.data.url, "_blank");
@@ -292,7 +292,7 @@ function BookingCard({ booking, isPendingColumn }: { booking: BookingWithService
               });
             }}
           >
-            {isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : "Simpan & Kirim Pesan"}
+            {isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : "Ajukan Jadwal Baru & Kirim Pesan"}
           </Button>
         </div>
       </DialogContent>

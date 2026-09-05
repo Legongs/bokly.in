@@ -259,7 +259,7 @@ export function PaymentSettings({ tenant }: PaymentSettingsProps) {
             {isPending ? (
               <Loader2 className="w-5 h-5 animate-spin" />
             ) : (
-              "Simpan Pengaturan Pembayaran"
+              "Terapkan Aturan Pembayaran"
             )}
           </Button>
         </form>

@@ -2,11 +2,11 @@
 -- Migrasi keamanan untuk Supabase Storage
 -- Mencegah upload file raksasa (maks 2MB) dan tipe file berbahaya
 
--- 1. Konfigurasi Bucket 'maubookingin-media' (untuk Admin/Tenant)
+-- 1. Konfigurasi Bucket 'buklyin-media' (untuk Admin/Tenant)
 INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types) 
 VALUES (
-  'maubookingin-media', 
-  'maubookingin-media', 
+  'buklyin-media', 
+  'buklyin-media', 
   true, 
   2097152, -- 2MB in bytes
   ARRAY['image/jpeg', 'image/png', 'image/webp']
@@ -31,27 +31,27 @@ ON CONFLICT (id) DO UPDATE SET
   public = true;
 
 -- ==========================================
--- KEBIJAKAN STORAGE RLS: maubookingin-media
+-- KEBIJAKAN STORAGE RLS: buklyin-media
 -- ==========================================
 -- Publik bebas melihat/membaca gambar
 CREATE POLICY "Public Access Media" 
 ON storage.objects FOR SELECT 
-USING (bucket_id = 'maubookingin-media');
+USING (bucket_id = 'buklyin-media');
 
 -- HANYA pengguna yang sudah login (Tenant) yang bisa mengunggah
 CREATE POLICY "Tenant Upload Media" 
 ON storage.objects FOR INSERT 
-WITH CHECK (bucket_id = 'maubookingin-media' AND auth.role() = 'authenticated');
+WITH CHECK (bucket_id = 'buklyin-media' AND auth.role() = 'authenticated');
 
 -- HANYA pengguna yang sudah login (Tenant) yang bisa mengubah
 CREATE POLICY "Tenant Update Media" 
 ON storage.objects FOR UPDATE 
-USING (bucket_id = 'maubookingin-media' AND auth.role() = 'authenticated');
+USING (bucket_id = 'buklyin-media' AND auth.role() = 'authenticated');
 
 -- HANYA pengguna yang sudah login (Tenant) yang bisa menghapus
 CREATE POLICY "Tenant Delete Media" 
 ON storage.objects FOR DELETE 
-USING (bucket_id = 'maubookingin-media' AND auth.role() = 'authenticated');
+USING (bucket_id = 'buklyin-media' AND auth.role() = 'authenticated');
 
 
 -- ==========================================

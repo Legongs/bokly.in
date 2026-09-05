@@ -1,7 +1,7 @@
-# .cursorrules - Master Rules for maubooking.in
+# .cursorrules - Master Rules for bukly.in
 
 ## 1. Project Context & Philosophy
-- **Product**: `maubooking.in` — Micro-SaaS platform reservasi slot otomatis untuk UMKM jasa lokal (Nail Art, Barbershop, Salon, Studio Foto, Personal Trainer, dll).
+- **Product**: `bukly.in` — Micro-SaaS platform reservasi slot otomatis untuk UMKM jasa lokal (Nail Art, Barbershop, Salon, Studio Foto, Personal Trainer, dll).
 - **Core Value**: Mobile-first, serba cepat, tanpa bloat, cegah *double-booking* & *no-show* via DP QRIS dan notifikasi Telegram instant.
 - **Development Style**: Vibe Coding with **Impeccable, Secure & Lightweight Standards** — Kode modular, bersih, simpel, efisien, fungsional penuh, berkinerja tinggi, dan terproteksi ketat dari celah keamanan.
 - **Zero Stub Policy**: Dilarang keras menyisakan `// TODO`, fungsi dummy, atau komponen setengah jadi. Setiap fungsi harus berjalan *end-to-end* secara sempurna.

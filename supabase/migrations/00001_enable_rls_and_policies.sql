@@ -1,5 +1,5 @@
 -- 00001_enable_rls_and_policies.sql
--- Konfigurasi lengkap Row Level Security (RLS) untuk maubooking.in
+-- Konfigurasi lengkap Row Level Security (RLS) untuk bukly.in
 
 -- 1. Enable RLS pada semua tabel
 ALTER TABLE public.tenants ENABLE ROW LEVEL SECURITY;

@@ -103,7 +103,7 @@ export async function getBusySlotsFromGoogle(refreshToken: string, dateStr: stri
     const data = await response.json();
     const busyArray = data.calendars?.primary?.busy || [];
 
-    // Map ke format slot maubookingin (e.g., start_time, end_time)
+    // Map ke format slot buklyin (e.g., start_time, end_time)
     const busySlots = busyArray.map((b: any) => {
       const start = new Date(b.start);
       const end = new Date(b.end);

@@ -20,11 +20,11 @@ export async function uploadImage(file: File, oldImageUrl?: string | null): Prom
   if (oldImageUrl) {
     try {
       // Extract filename from URL
-      // Example URL: https://<project>.supabase.co/storage/v1/object/public/maubookingin-media/123-abc.jpg
+      // Example URL: https://<project>.supabase.co/storage/v1/object/public/buklyin-media/123-abc.jpg
       const urlParts = oldImageUrl.split("/");
       const oldFileName = urlParts[urlParts.length - 1];
       if (oldFileName) {
-        await supabase.storage.from("maubookingin-media").remove([oldFileName]);
+        await supabase.storage.from("buklyin-media").remove([oldFileName]);
       }
     } catch (e) {
       console.error("Gagal menghapus gambar lama", e);
@@ -33,7 +33,7 @@ export async function uploadImage(file: File, oldImageUrl?: string | null): Prom
 
   // 2. Upload new image
   const { data, error } = await supabase.storage
-    .from("maubookingin-media")
+    .from("buklyin-media")
     .upload(fileName, file, {
       cacheControl: "3600",
       upsert: false,
@@ -45,7 +45,7 @@ export async function uploadImage(file: File, oldImageUrl?: string | null): Prom
 
   // 3. Get public URL
   const { data: publicUrlData } = supabase.storage
-    .from("maubookingin-media")
+    .from("buklyin-media")
     .getPublicUrl(data.path);
 
   return publicUrlData.publicUrl;

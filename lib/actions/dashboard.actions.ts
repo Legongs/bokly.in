@@ -3,6 +3,7 @@
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { getAuthUser, getAuthTenantId } from "@/lib/auth";
 import type { Booking, PaymentStatus } from "@/types/database.types";
 import type { ActionResponse } from "./tenant.actions";
 
@@ -28,8 +29,8 @@ export async function getTodayBookings(
 
     const DEMO_TENANT_ID = "d290f1ee-6c54-4b01-90e6-d701748f0851";
     // Verifikasi keamanan ganda (Mencegah Data Bleeding / Bypassing RLS)
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    if (parsed.data !== DEMO_TENANT_ID && (authError || !user || user.id !== parsed.data)) {
+    const user = await getAuthUser();
+    if (parsed.data !== DEMO_TENANT_ID && (!user || user.id !== parsed.data)) {
       return { success: false, error: "Akses ditolak: Anda tidak memiliki akses ke tenant ini." };
     }
 
@@ -90,8 +91,8 @@ export async function updateBookingStatus(
     const supabase = await createClient();
 
     // Verifikasi keamanan ganda (Mencegah Data Bleeding / Bypassing RLS)
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    if (authError || !user) {
+    const user = await getAuthUser();
+    if (!user) {
       return { success: false, error: "Akses ditolak: Anda tidak memiliki akses untuk tindakan ini." };
     }
 
@@ -131,8 +132,8 @@ export async function markReminderSent(
     const supabase = await createClient();
 
     // Verifikasi keamanan ganda (Mencegah Data Bleeding / Bypassing RLS)
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    if (authError || !user) {
+    const user = await getAuthUser();
+    if (!user) {
       return { success: false, error: "Akses ditolak" };
     }
 
@@ -160,11 +161,7 @@ export async function markReminderSent(
 export async function getDashboardOverview(): Promise<ActionResponse<any>> {
   try {
     const supabase = await createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    
-    // For demo purposes or real login
-    const DEMO_TENANT_ID = "d290f1ee-6c54-4b01-90e6-d701748f0851";
-    const tenantId = user?.id || DEMO_TENANT_ID;
+    const tenantId = await getAuthTenantId();
 
     if (!tenantId) {
       return { success: false, error: "Akses ditolak" };
@@ -222,10 +219,7 @@ export async function getDashboardOverview(): Promise<ActionResponse<any>> {
 export async function getPaymentBookings(): Promise<ActionResponse<any>> {
   try {
     const supabase = await createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    
-    const DEMO_TENANT_ID = "d290f1ee-6c54-4b01-90e6-d701748f0851";
-    const tenantId = user?.id || DEMO_TENANT_ID;
+    const tenantId = await getAuthTenantId();
 
     if (!tenantId) {
       return { success: false, error: "Akses ditolak" };

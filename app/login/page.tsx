@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import LoginPageClient from "./page.client";
 
 export const metadata: Metadata = {
-  title: "Masuk ke Dasbor | maubooking.in",
+  title: "Masuk ke Dasbor | bukly.in",
   description: "Masuk ke akun tenant Anda untuk mengelola jadwal reservasi.",
 };
 

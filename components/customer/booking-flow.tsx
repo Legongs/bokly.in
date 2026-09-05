@@ -59,15 +59,15 @@ export function BookingFlow({ tenant, services, staffList = [], dictionary }: Bo
 
   // ── Susun steps dinamis berdasarkan jumlah staff ────────────────────────
   const steps = [
-    { label: "Layanan" },
-    ...(staffList.length > 1 ? [{ label: "Pegawai" }] : []),
+    { label: dictionary?.serviceLabel || "Layanan" },
+    ...(flow.filteredStaffList.length > 1 ? [{ label: dictionary?.staffLabel || "Pegawai" }] : []),
     { label: "Jadwal" },
     { label: "Data" },
   ];
 
-  const augmentedStaffList = staffList.length > 1 
-    ? [{ id: "any", name: "Siapa saja (Bebas)", tenant_id: tenant.id, is_active: true } as unknown as Staff, ...staffList]
-    : staffList;
+  const augmentedStaffList = flow.filteredStaffList.length > 1 
+    ? [{ id: "any", name: "Siapa saja (Bebas)", tenant_id: tenant.id, is_active: true } as unknown as Staff, ...flow.filteredStaffList]
+    : flow.filteredStaffList;
 
   // ── Form utama multi-step ────────────────────────────────────────────────
   return (
@@ -100,7 +100,7 @@ export function BookingFlow({ tenant, services, staffList = [], dictionary }: Bo
       />
 
       {/* Step 2 (Opsional): Pilih Staff */}
-      {staffList.length > 1 && (
+      {flow.filteredStaffList.length > 1 && (
         <StepStaffSelect
           staffList={augmentedStaffList}
           selectedStaff={flow.selectedStaff}
@@ -112,14 +112,14 @@ export function BookingFlow({ tenant, services, staffList = [], dictionary }: Bo
         />
       )}
 
-      {/* Step 3/2: Pilih Tanggal & Jam */}
+      {/* Step 3: Pilih Tanggal & Jam */}
       <StepDateTime
         tenant={tenant}
         selectedService={flow.selectedService}
         selectedStaff={flow.selectedStaff}
         selectedDate={flow.selectedDate}
         selectedTime={flow.selectedTime}
-        staffList={staffList}
+        staffList={flow.filteredStaffList}
         activeStep={flow.activeStep}
         t={t}
         dictionary={dictionary}

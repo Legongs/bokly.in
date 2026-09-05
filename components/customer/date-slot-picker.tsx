@@ -7,7 +7,6 @@ import { getBookedSlotsForDate } from "@/lib/actions/booking.actions";
 
 interface DateSlotPickerProps {
  tenantId: string;
- /** Duration of selected service in minutes */
  serviceDurationMinutes: number;
  openTime: string;
  closeTime: string;
@@ -18,6 +17,7 @@ interface DateSlotPickerProps {
  maxCapacity?: number;
  weeklySchedule?: any;
  minimumNoticeHours?: number;
+ themeColor?: "teal" | "rose" | "orange" | "violet" | "blue";
 }
 
 type BookedSlot = { start_time: string; end_time: string; buffer_minutes: number; staff_id: string | null };
@@ -34,6 +34,7 @@ export function DateSlotPicker({
  maxCapacity = 1,
  weeklySchedule,
  minimumNoticeHours = 1,
+ themeColor = "teal",
 }: DateSlotPickerProps) {
  // Generate 14 days from today
  const availableDays = React.useMemo(() => {
@@ -172,6 +173,74 @@ export function DateSlotPicker({
    return false;
  };
 
+ const tc = {
+  teal: {
+    icon: "text-teal-500",
+    dateSelected: "border-teal-500 bg-teal-500 text-white shadow-teal-500/30",
+    dateHover: "hover:border-teal-200 hover:bg-teal-50/50",
+    todayBadgeSelected: "text-teal-600",
+    dayNameSelected: "text-teal-50",
+    dayNameHover: "group-hover:text-teal-600",
+    monthNameSelected: "text-teal-100",
+    timeLoading: "text-teal-600 bg-teal-50",
+    timeSelected: "border-teal-500 bg-teal-500 text-white shadow-teal-500/25",
+    timeHover: "hover:border-teal-300 hover:bg-teal-50 hover:text-teal-700",
+    legendSelected: "border-teal-500 bg-teal-500",
+  },
+  rose: {
+    icon: "text-rose-500",
+    dateSelected: "border-rose-500 bg-rose-500 text-white shadow-rose-500/30",
+    dateHover: "hover:border-rose-200 hover:bg-rose-50/50",
+    todayBadgeSelected: "text-rose-600",
+    dayNameSelected: "text-rose-50",
+    dayNameHover: "group-hover:text-rose-600",
+    monthNameSelected: "text-rose-100",
+    timeLoading: "text-rose-600 bg-rose-50",
+    timeSelected: "border-rose-500 bg-rose-500 text-white shadow-rose-500/25",
+    timeHover: "hover:border-rose-300 hover:bg-rose-50 hover:text-rose-700",
+    legendSelected: "border-rose-500 bg-rose-500",
+  },
+  orange: {
+    icon: "text-orange-500",
+    dateSelected: "border-orange-500 bg-orange-500 text-white shadow-orange-500/30",
+    dateHover: "hover:border-orange-200 hover:bg-orange-50/50",
+    todayBadgeSelected: "text-orange-600",
+    dayNameSelected: "text-orange-50",
+    dayNameHover: "group-hover:text-orange-600",
+    monthNameSelected: "text-orange-100",
+    timeLoading: "text-orange-600 bg-orange-50",
+    timeSelected: "border-orange-500 bg-orange-500 text-white shadow-orange-500/25",
+    timeHover: "hover:border-orange-300 hover:bg-orange-50 hover:text-orange-700",
+    legendSelected: "border-orange-500 bg-orange-500",
+  },
+  violet: {
+    icon: "text-violet-500",
+    dateSelected: "border-violet-500 bg-violet-500 text-white shadow-violet-500/30",
+    dateHover: "hover:border-violet-200 hover:bg-violet-50/50",
+    todayBadgeSelected: "text-violet-600",
+    dayNameSelected: "text-violet-50",
+    dayNameHover: "group-hover:text-violet-600",
+    monthNameSelected: "text-violet-100",
+    timeLoading: "text-violet-600 bg-violet-50",
+    timeSelected: "border-violet-500 bg-violet-500 text-white shadow-violet-500/25",
+    timeHover: "hover:border-violet-300 hover:bg-violet-50 hover:text-violet-700",
+    legendSelected: "border-violet-500 bg-violet-500",
+  },
+  blue: {
+    icon: "text-blue-500",
+    dateSelected: "border-blue-500 bg-blue-500 text-white shadow-blue-500/30",
+    dateHover: "hover:border-blue-200 hover:bg-blue-50/50",
+    todayBadgeSelected: "text-blue-600",
+    dayNameSelected: "text-blue-50",
+    dayNameHover: "group-hover:text-blue-600",
+    monthNameSelected: "text-blue-100",
+    timeLoading: "text-blue-600 bg-blue-50",
+    timeSelected: "border-blue-500 bg-blue-500 text-white shadow-blue-500/25",
+    timeHover: "hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700",
+    legendSelected: "border-blue-500 bg-blue-500",
+  },
+ }[themeColor] || tc.teal;
+
   return (
     <div className="space-y-8">
       {/* ── Horizontal Scroll Date Picker ── */}
@@ -179,7 +248,7 @@ export function DateSlotPicker({
         <div className="flex items-end justify-between mb-4">
           <div>
             <label className="text-base font-extrabold text-stone-900 flex items-center gap-2">
-              <CalendarIcon className="w-5 h-5 text-teal-500" />
+              <CalendarIcon className={cn("w-5 h-5", tc.icon)} />
               Pilih Tanggal
             </label>
             <p className="text-xs text-stone-500 mt-1">Geser untuk melihat hingga 14 hari ke depan</p>
@@ -187,7 +256,7 @@ export function DateSlotPicker({
         </div>
 
         {/* Scroll Container with soft edges */}
-        <div className="flex gap-3 overflow-x-auto pb-4 pt-2 no-scrollbar touch-pan-x -mx-1 px-1">
+        <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-4 pt-2 touch-pan-x -mx-1 px-1">
           {availableDays.map((day) => {
             const isSelected = activeDate === day.dateString;
             const isClosed = day.isClosed;
@@ -201,8 +270,8 @@ export function DateSlotPicker({
                   "flex flex-col items-center justify-center min-w-[72px] h-[96px] rounded-[2.5rem] border transition-all duration-300 cursor-pointer select-none flex-shrink-0 relative group",
                   isClosed ? "opacity-50 cursor-not-allowed bg-stone-100 border-stone-200" :
                   isSelected
-                    ? "border-teal-500 bg-teal-500 text-white shadow-xl shadow-teal-500/30 scale-105 z-10"
-                    : "border-stone-100 bg-white hover:border-teal-200 hover:bg-teal-50/50 text-stone-600 shadow-sm"
+                    ? cn(tc.dateSelected, "scale-105 z-10")
+                    : cn("border-stone-100 bg-white shadow-sm text-stone-600", tc.dateHover)
                 )}
               >
                 {day.isToday && !isClosed && (
@@ -210,7 +279,7 @@ export function DateSlotPicker({
                     className={cn(
                       "absolute -top-2 -right-1 text-[9px] font-bold px-2 py-0.5 rounded-full shadow-sm z-20 transition-colors",
                       isSelected
-                        ? "bg-white text-teal-600"
+                        ? cn("bg-white", tc.todayBadgeSelected)
                         : "bg-rose-500 text-white"
                     )}
                   >
@@ -220,7 +289,7 @@ export function DateSlotPicker({
                 <span
                   className={cn(
                     "text-[11px] uppercase font-semibold tracking-wider mb-0.5",
-                    isSelected ? "text-teal-50" : "text-stone-400 group-hover:text-teal-600"
+                    isSelected ? tc.dayNameSelected : cn("text-stone-400", tc.dayNameHover)
                   )}
                 >
                   {day.dayName}
@@ -231,7 +300,7 @@ export function DateSlotPicker({
                 <span
                   className={cn(
                     "text-[10px] font-medium",
-                    isSelected ? "text-teal-100" : "text-stone-500"
+                    isSelected ? tc.monthNameSelected : "text-stone-500"
                   )}
                 >
                   {day.monthName}
@@ -251,11 +320,11 @@ export function DateSlotPicker({
       <div>
         <div className="flex items-center justify-between mb-4">
           <label className="text-base font-extrabold text-stone-900 flex items-center gap-2">
-            <Clock className="w-5 h-5 text-teal-500" />
+            <Clock className={cn("w-5 h-5", tc.icon)} />
             Pilih Jam Kosong
           </label>
           {isPending && (
-            <span className="flex items-center gap-1.5 text-xs font-medium text-teal-600 bg-teal-50 px-2 py-1 rounded-full animate-pulse">
+            <span className={cn("flex items-center gap-1.5 text-xs font-medium px-2 py-1 rounded-full animate-pulse", tc.timeLoading)}>
               <Loader2 className="w-3.5 h-3.5 animate-spin" />
               Tunggu...
             </span>
@@ -286,8 +355,8 @@ export function DateSlotPicker({
                     unavailable
                       ? "bg-stone-50/50 text-stone-300 border-stone-200 border-dashed cursor-not-allowed"
                       : isSelected
-                      ? "border-teal-500 bg-teal-500 text-white shadow-lg shadow-teal-500/25 scale-[1.03]"
-                      : "border-stone-100 bg-white shadow-sm hover:border-teal-300 hover:bg-teal-50 hover:text-teal-700 text-stone-700 active:scale-95"
+                      ? cn(tc.timeSelected, "scale-[1.03]")
+                      : cn("border-stone-100 bg-white shadow-sm text-stone-700 active:scale-95", tc.timeHover)
                   )}
                 >
                   {unavailable && (
@@ -305,7 +374,7 @@ export function DateSlotPicker({
         {/* Legend */}
         <div className="flex flex-wrap items-center gap-4 mt-6 text-xs font-medium text-stone-500 bg-stone-50/50 p-3 rounded-2xl border border-stone-100">
           <span className="flex items-center gap-1.5">
-            <span className="w-3.5 h-3.5 rounded-full border border-teal-500 bg-teal-500 shadow-sm" />
+            <span className={cn("w-3.5 h-3.5 rounded-full border shadow-sm", tc.legendSelected)} />
             Pilihanmu
           </span>
           <span className="flex items-center gap-1.5">

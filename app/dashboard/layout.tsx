@@ -1,22 +1,20 @@
 import React from "react";
 import { createClient } from "@/lib/supabase/server";
+import { getAuthTenantId } from "@/lib/auth";
 import { getBusinessDictionary } from "@/lib/business-dictionary";
 import { DashboardNav } from "@/components/dashboard/dashboard-nav";
-import { redirect } from "next/navigation";
 
 export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  // getAuthTenantId() di-memoize dengan React.cache() — auth call ini
+  // akan di-share dengan child pages yang memanggil helper yang sama,
+  // sehingga Supabase hanya di-hit sekali per request.
+  const tenantId = await getAuthTenantId();
+
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  const DEMO_TENANT_ID = "d290f1ee-6c54-4b01-90e6-d701748f0851";
-  const tenantId = user?.id || DEMO_TENANT_ID;
-
   const { data: tenant } = await supabase
     .from("tenants")
     .select("business_type, slug")

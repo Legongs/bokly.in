@@ -1,21 +1,18 @@
 import React from "react";
-import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { getAuthTenantId } from "@/lib/auth";
 import { getServicesByTenant } from "@/lib/actions/tenant.actions";
 import { ServiceList } from "@/components/dashboard/service-list";
 import { getBusinessDictionary } from "@/lib/business-dictionary";
 
 export const metadata = {
- title: "Daftar Layanan | Dashboard maubooking.in",
+ title: "Daftar Layanan | Dashboard bukly.in",
  description: "Kelola harga, durasi pengerjaan, dan detail layanan tokomu.",
 };
 
 export default async function ServicesPage() {
+ const tenantId = await getAuthTenantId();
  const supabase = await createClient();
-
-  const DEMO_TENANT_ID = "d290f1ee-6c54-4b01-90e6-d701748f0851";
-  const { data: authData } = await supabase.auth.getUser();
-  const tenantId = authData.user?.id || DEMO_TENANT_ID;
 
   const { data: tenant } = await supabase
     .from("tenants")

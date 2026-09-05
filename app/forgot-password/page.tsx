@@ -7,6 +7,7 @@ import { Loader2, Store, Mail, AlertCircle, CheckCircle2, KeyRound } from "lucid
 import { Button } from "@/components/ui/button";
 import { sendPasswordResetEmail } from "@/lib/actions/auth.actions";
 
+import { Logo } from "@/components/ui/logo";
 const forgotPasswordSchema = z.object({
   email: z.string().email("Ups, format email-nya kayaknya belum pas nih."),
 });
@@ -49,7 +50,7 @@ export default function ForgotPasswordPage() {
             <Store className="w-4 h-4" />
           </div>
           <span className="font-extrabold text-lg tracking-tight text-stone-900">
-            maubooking<span className="text-teal-600">.in</span>
+            <Logo />
           </span>
         </Link>
         

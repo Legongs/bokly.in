@@ -239,7 +239,7 @@ export function StepCustomerForm({
             ) : (
               <>
                 {submitStatus !== "loading" && <ChevronRight className="w-4 h-4" />}
-                Amankan Slot Sekarang
+                Booking Sekarang
               </>
             )}
           </Button>

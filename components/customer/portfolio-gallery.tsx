@@ -35,18 +35,20 @@ export function PortfolioGallery({ portfolios }: { portfolios: any[] }) {
 
   return (
     <div className="mb-6">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        type="button"
-        className="w-full text-sm font-bold text-stone-900 mb-3 px-1 cursor-pointer flex items-center justify-between select-none hover:opacity-80 transition-opacity"
-      >
-        Galeri Portofolio
-        <ChevronDown
-          className={`w-4 h-4 text-stone-400 transition-transform duration-300 ${
-            isOpen ? "rotate-180" : "rotate-0"
-          }`}
-        />
-      </button>
+      <div className="flex justify-center w-full mb-4">
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          type="button"
+          className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-stone-500 bg-stone-100 hover:bg-stone-200/80 px-4 py-2 rounded-full transition-all duration-200 active:scale-95 shadow-sm border border-stone-200"
+        >
+          {isOpen ? "Sembunyikan Galeri" : "Lihat Galeri Portofolio"}
+          <ChevronDown
+            className={`w-4 h-4 text-stone-500 transition-transform duration-300 ${
+              isOpen ? "rotate-180" : "rotate-0"
+            }`}
+          />
+        </button>
+      </div>
 
       <div
         className={`grid transition-all duration-300 ease-in-out ${

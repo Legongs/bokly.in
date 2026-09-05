@@ -1,18 +1,18 @@
 import React from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { getAuthTenantId } from "@/lib/auth";
 import { getStaffByTenant, getSuggestedRoles } from "@/lib/actions/staff.actions";
+import { getServicesByTenant } from "@/lib/actions/tenant.actions";
 import { StaffList } from "@/components/dashboard/staff-list";
 
 export const metadata = {
-  title: "Kelola Tim & Pegawai | maubooking.in",
+  title: "Kelola Tim & Pegawai | bukly.in",
 };
 
 export default async function StaffPage() {
   const supabase = await createClient();
-  const DEMO_TENANT_ID = "d290f1ee-6c54-4b01-90e6-d701748f0851";
-  const { data: authData } = await supabase.auth.getUser();
-  const tenantId = authData.user?.id || DEMO_TENANT_ID;
+  const tenantId = await getAuthTenantId();
 
   const { data: tenant } = await supabase
     .from("tenants")
@@ -29,6 +29,9 @@ export default async function StaffPage() {
 
   const suggestedRolesRes = await getSuggestedRoles(tenant.business_type);
   const suggestedRoles = suggestedRolesRes.success && suggestedRolesRes.data ? suggestedRolesRes.data : [];
+
+  const servicesRes = await getServicesByTenant(tenant.id);
+  const services = servicesRes.success && servicesRes.data ? servicesRes.data : [];
 
   return (
     <main className="min-h-screen bg-stone-50 pb-20">
@@ -52,9 +55,10 @@ export default async function StaffPage() {
 
       <div className="max-w-4xl mx-auto px-4 py-8 sm:px-8">
         <StaffList 
-          initialStaff={initialStaff} 
+          initialStaff={initialStaff as any} 
           businessType={tenant.business_type} 
           suggestedRoles={suggestedRoles}
+          services={services}
         />
       </div>
     </main>

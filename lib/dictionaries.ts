@@ -11,8 +11,19 @@ export interface BusinessDictionary {
   iconName: "Scissors" | "Building" | "Car" | "Stethoscope" | "Store";
 }
 
-export function getSectorDictionary(sector: BusinessSector | null | undefined): BusinessDictionary {
+export function getSectorDictionary(sector: BusinessSector | "barber" | null | undefined | string): BusinessDictionary {
   switch (sector) {
+    case "barber":
+      return {
+        serviceLabel: "Potong / Treatment",
+        bookingLabel: "Reservasi",
+        emptyStateTitle: "Belum ada menu pangkas nih",
+        emptyStateDesc: "Yuk, tambah menu layanan sekarang biar pelanggan bisa mulai reservasi!",
+        selectServicePrompt: "Pilih Menu Potong / Treatment",
+        staffLabel: "Barberman / Kapster",
+        themeColor: "orange",
+        iconName: "Scissors",
+      };
     case "beauty":
       return {
         serviceLabel: "Perawatan",

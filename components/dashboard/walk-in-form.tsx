@@ -182,7 +182,7 @@ export function WalkInForm({
               className="w-full bg-teal-600 hover:bg-teal-700 text-white rounded-xl h-11 text-base font-bold shadow-sm"
             >
               {isPending ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : null}
-              {isPending ? "Menyimpan..." : "Simpan & Konfirmasi"}
+              {isPending ? "Memasukkan jadwal..." : "Kunci Jadwal Walk-in"}
             </Button>
           </div>
         </form>

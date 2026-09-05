@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { getAuthUser } from "@/lib/auth";
 import type { Customer } from "@/types/database.types";
 import type { ActionResponse } from "./tenant.actions";
 
@@ -21,8 +22,8 @@ export async function getTenantCustomers(): Promise<ActionResponse<CustomerWithB
   try {
     const supabase = await createClient();
 
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    if (authError || !user) {
+    const user = await getAuthUser();
+    if (!user) {
       return { success: false, error: "Akses ditolak. Silakan login." };
     }
 

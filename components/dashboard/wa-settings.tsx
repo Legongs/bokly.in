@@ -26,7 +26,7 @@ export function WaSettings({ tenant }: WaSettingsProps) {
         wa_api_key: waMethod === "api" ? waApiKey : null,
       });
       if (res.success) {
-        setWaMessage({ type: "success", text: "Pengaturan WhatsApp berhasil disimpan!" });
+        setWaMessage({ type: "success", text: "Mantap! Pengaturan WhatsApp udah di-update." });
         setTimeout(() => setWaMessage(null), 5000);
       } else {
         setWaMessage({ type: "error", text: res.error || "Gagal menyimpan pengaturan." });
@@ -103,7 +103,7 @@ export function WaSettings({ tenant }: WaSettingsProps) {
                 </span>
 
                 <p className="text-sm text-stone-600 leading-relaxed mb-4">
-                  Sistem maubooking.in akan otomatis mengirimkan pesan konfirmasi tagihan ke nomor WhatsApp pelanggan di latar belakang menggunakan layanan Fonnte sesaat setelah booking sukses.
+                  Sistem bukly.in akan otomatis mengirimkan pesan konfirmasi tagihan ke nomor WhatsApp pelanggan di latar belakang menggunakan layanan Fonnte sesaat setelah booking sukses.
                 </p>
 
                 <div className="space-y-3 mt-auto">
@@ -155,7 +155,7 @@ export function WaSettings({ tenant }: WaSettingsProps) {
             {isPendingWa ? (
               <Loader2 className="w-5 h-5 animate-spin" />
             ) : (
-              "Simpan Pengaturan WA"
+              "Terapkan Konfigurasi WA"
             )}
           </Button>
         </div>

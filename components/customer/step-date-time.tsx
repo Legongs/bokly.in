@@ -66,13 +66,14 @@ export function StepDateTime({
             serviceDurationMinutes={selectedService.duration_minutes}
             openTime={(tenant as any).open_time || "09:00"}
             closeTime={(tenant as any).close_time || "21:00"}
-            staffId={selectedStaff?.id}
-            maxCapacity={selectedService.max_capacity || 1}
+            staffId={selectedStaff?.id === "any" ? undefined : selectedStaff?.id}
+            maxCapacity={(selectedStaff?.id === "any" || !selectedStaff) ? Math.max(1, staffList.length) * (selectedService.max_capacity || 1) : (selectedService.max_capacity || 1)}
             weeklySchedule={(tenant as any).weekly_schedule}
             minimumNoticeHours={(tenant as any).minimum_notice_hours}
             onSelectSlot={onSelectSlot}
             selectedDate={selectedDate}
             selectedTime={selectedTime}
+            themeColor={dictionary?.themeColor}
           />
         ) : (
           <p className="text-sm text-stone-400 text-center py-4">

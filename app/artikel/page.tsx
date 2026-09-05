@@ -3,11 +3,12 @@ import { Calendar, ArrowRight, CalendarCheck2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Metadata } from "next";
 
+import { Logo } from "@/components/ui/logo";
 export const metadata: Metadata = {
   title: "Artikel & Tips Bisnis Jasa UMKM",
   description: "Kumpulan artikel, tips, dan strategi untuk meningkatkan pelanggan dan mengelola bisnis Barbershop, Salon, Klinik, dan Bengkel Anda.",
   openGraph: {
-    title: "Artikel & Tips Bisnis Jasa UMKM | maubooking.in",
+    title: "Artikel & Tips Bisnis Jasa UMKM | bukly.in",
     description: "Kumpulan artikel, tips, dan strategi untuk meningkatkan pelanggan dan mengelola bisnis Jasa.",
   },
 };
@@ -51,12 +52,12 @@ export default function ArticleIndexPage() {
       {/* Navigation */}
       <header className="border-b border-stone-200 bg-stone-50/80 backdrop-blur-md sticky top-0 z-50">
         <nav className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between" aria-label="Main Navigation">
-          <Link href="/" className="flex items-center gap-2" aria-label="Beranda maubooking.in">
+          <Link href="/" className="flex items-center gap-2" aria-label="Beranda bukly.in">
             <div className="w-8 h-8 rounded-xl bg-teal-600 flex items-center justify-center text-white shadow-sm shadow-teal-600/20">
               <Calendar className="w-4 h-4" />
             </div>
             <span className="font-extrabold text-lg tracking-tight text-stone-900">
-              maubooking<span className="text-teal-600">.in</span>
+              <Logo />
             </span>
           </Link>
 
@@ -141,7 +142,7 @@ export default function ArticleIndexPage() {
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <Calendar className="w-5 h-5 text-teal-600" />
-            <span className="font-extrabold text-stone-900">maubooking.in</span>
+            <span className="font-extrabold text-stone-900">bukly.in</span>
           </div>
           <p className="text-xs text-stone-500 font-medium text-center md:text-right">
             © {new Date().getFullYear()} Dibuat untuk memajukan UMKM Jasa Indonesia.

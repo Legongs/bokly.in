@@ -1,4 +1,4 @@
-# Database Schema & Rules (maubooking.in)
+# Database Schema & Rules (bukly.in)
 
 Selalu patuhi aturan skema pangkalan data dan praktik keamanan Supabase di bawah ini saat memodifikasi entitas basis data.
 

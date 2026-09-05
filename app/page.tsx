@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+import { Logo } from "@/components/ui/logo";
 export default function HomePage() {
   // ── JSON-LD Structured Data for SEO & AIO ──
   const jsonLd = {
@@ -25,7 +26,7 @@ export default function HomePage() {
     "@graph": [
       {
         "@type": "SoftwareApplication",
-        "name": "maubooking.in",
+        "name": "bukly.in",
         "applicationCategory": "BusinessApplication",
         "operatingSystem": "All",
         "offers": {
@@ -40,10 +41,10 @@ export default function HomePage() {
         "mainEntity": [
           {
             "@type": "Question",
-            "name": "Apakah maubooking.in gratis?",
+            "name": "Apakah bukly.in gratis?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Ya, fitur dasar maubooking.in gratis untuk digunakan oleh UMKM. Anda bisa membuat halaman booking, mengatur layanan, dan menerima reservasi tanpa biaya langganan bulanan."
+              "text": "Ya, fitur dasar bukly.in gratis untuk digunakan oleh UMKM. Anda bisa membuat halaman booking, mengatur layanan, dan menerima reservasi tanpa biaya langganan bulanan."
             }
           },
           {
@@ -59,7 +60,7 @@ export default function HomePage() {
             "name": "Apakah pelanggan perlu install aplikasi?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Tidak perlu. Pelanggan cukup membuka link unik toko Anda (contoh: maubooking.in/salon-siska) melalui browser di HP mereka."
+              "text": "Tidak perlu. Pelanggan cukup membuka link unik toko Anda (contoh: bukly.in/salon-siska) melalui browser di HP mereka."
             }
           },
           {
@@ -85,12 +86,12 @@ export default function HomePage() {
       {/* Navigation */}
       <header className="border-b border-stone-200 bg-stone-50/80 backdrop-blur-md sticky top-0 z-50">
         <nav className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between" aria-label="Main Navigation">
-          <Link href="/" className="flex items-center gap-2" aria-label="Beranda maubooking.in">
+          <Link href="/" className="flex items-center gap-2" aria-label="Beranda bukly.in">
             <div className="w-8 h-8 rounded-xl bg-teal-600 flex items-center justify-center text-white shadow-sm shadow-teal-600/20">
               <Calendar className="w-4 h-4" />
             </div>
             <span className="font-extrabold text-lg tracking-tight text-stone-900">
-              maubooking<span className="text-teal-600">.in</span>
+              <Logo />
             </span>
           </Link>
 
@@ -269,7 +270,7 @@ export default function HomePage() {
             <div className="bg-white p-6 rounded-3xl border border-stone-200 text-center relative z-10 shadow-sm">
               <div className="w-12 h-12 bg-teal-600 text-white rounded-full flex items-center justify-center text-xl font-black mx-auto mb-5 shadow-lg shadow-teal-600/30">2</div>
               <h3 className="text-xl font-bold text-stone-900 mb-2">Tinggal Bagikan Link</h3>
-              <p className="text-stone-600 text-sm">Taruh link khusus (maubooking.in/toko-anda) di bio Instagram atau tinggal share via WhatsApp.</p>
+              <p className="text-stone-600 text-sm">Taruh link khusus (bukly.in/toko-anda) di bio Instagram atau tinggal share via WhatsApp.</p>
             </div>
             
             <div className="bg-white p-6 rounded-3xl border border-stone-200 text-center relative z-10 shadow-sm">
@@ -284,7 +285,7 @@ export default function HomePage() {
         <section id="fitur" className="bg-white py-16 sm:py-24 border-t border-stone-200 scroll-mt-16">
           <div className="max-w-6xl mx-auto px-4">
             <div className="text-center max-w-2xl mx-auto mb-12">
-              <h2 className="text-3xl font-extrabold text-stone-900">Kenapa harus pakai maubooking.in?</h2>
+              <h2 className="text-3xl font-extrabold text-stone-900">Kenapa harus pakai bukly.in?</h2>
               <p className="text-stone-600 mt-4">Desainnya gampang dipakai, fiturnya lengkap. Anda fokus kerja, biar sistem yang ngurusin jadwal pelanggan.</p>
             </div>
 
@@ -348,7 +349,7 @@ export default function HomePage() {
               <article className="bg-stone-800 p-8 rounded-3xl border border-stone-700">
                 <Quote className="w-10 h-10 text-teal-500/50 mb-4" />
                 <p className="text-stone-200 leading-relaxed mb-6">
-                  "Semenjak pakai maubooking.in, DM Instagram saya jauh lebih rapi. Dulu pusing banget kalau ada jadwal double karena kelupaan catat manual. Sekarang pelanggan tinggal klik link di bio, pilih jam sendiri. Saya cuma tinggal nunggu notif."
+                  "Semenjak pakai bukly.in, DM Instagram saya jauh lebih rapi. Dulu pusing banget kalau ada jadwal double karena kelupaan catat manual. Sekarang pelanggan tinggal klik link di bio, pilih jam sendiri. Saya cuma tinggal nunggu notif."
                 </p>
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-full bg-teal-600 flex items-center justify-center text-xl font-bold text-white">T</div>
@@ -392,7 +393,7 @@ export default function HomePage() {
                 },
                 {
                   q: "Pelanggan harus install aplikasi dulu ngga?",
-                  a: "Nggak usah repot-repot. Pelanggan cukup klik link yang Anda kasih (kayak maubooking.in/salon), terus halamannya langsung kebuka di browser HP mereka masing-masing."
+                  a: "Nggak usah repot-repot. Pelanggan cukup klik link yang Anda kasih (kayak bukly.in/salon), terus halamannya langsung kebuka di browser HP mereka masing-masing."
                 },
                 {
                   q: "Cocok buat usaha apa aja nih?",
@@ -417,7 +418,7 @@ export default function HomePage() {
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <Calendar className="w-5 h-5 text-teal-600" />
-            <span className="font-extrabold text-stone-900">maubooking.in</span>
+            <span className="font-extrabold text-stone-900">bukly.in</span>
           </div>
           <p className="text-xs text-stone-500 font-medium text-center md:text-right">
             © {new Date().getFullYear()} Dibuat untuk memajukan UMKM Jasa Indonesia.<br/>
