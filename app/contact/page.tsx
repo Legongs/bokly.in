@@ -30,7 +30,7 @@ export default function ContactPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <a 
-              href="mailto:hello@bukly.id"
+              href="mailto:tuntasapp.id@gmail.com"
               className="flex flex-col items-center text-center p-6 sm:p-8 rounded-2xl border border-stone-100 bg-stone-50 hover:bg-teal-50 hover:border-teal-100 transition-colors group"
             >
               <div className="w-12 h-12 bg-white rounded-full shadow-sm flex items-center justify-center text-stone-400 group-hover:text-teal-600 mb-4 transition-colors">
@@ -38,7 +38,7 @@ export default function ContactPage() {
               </div>
               <h3 className="font-bold text-stone-900 mb-1">Email</h3>
               <p className="text-stone-500 text-sm mb-4">Untuk pertanyaan bisnis & kerjasama</p>
-              <span className="text-teal-600 font-semibold group-hover:underline">hello@bukly.id</span>
+              <span className="text-teal-600 font-semibold group-hover:underline">tuntasapp.id@gmail.com</span>
             </a>
 
             <div className="flex flex-col items-center text-center p-6 sm:p-8 rounded-2xl border border-stone-100 bg-stone-50">

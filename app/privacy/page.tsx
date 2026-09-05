@@ -66,8 +66,8 @@ export default function PrivacyPage() {
 
             <div className="mt-12 p-6 bg-stone-50 rounded-2xl text-center border border-stone-100">
               <p className="text-stone-600 mb-2">Punya pertanyaan seputar kebijakan ini?</p>
-              <a href="mailto:hello@bukly.id" className="text-teal-600 font-bold hover:underline">
-                Hubungi Kami di hello@bukly.id
+              <a href="mailto:tuntasapp.id@gmail.com" className="text-teal-600 font-bold hover:underline">
+                Hubungi Kami di tuntasapp.id@gmail.com
               </a>
             </div>
           </div>
