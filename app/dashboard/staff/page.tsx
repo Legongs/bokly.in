@@ -38,7 +38,7 @@ export default async function StaffPage() {
       <div className="bg-white border-b border-stone-200">
         <div className="max-w-4xl mx-auto px-4 py-8 sm:px-8">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-teal-100 text-teal-600 flex items-center justify-center font-bold text-xl shadow-inner">
+            <div className="w-12 h-12 rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-xl shadow-inner">
               {tenant.business_name.charAt(0).toUpperCase()}
             </div>
             <div>

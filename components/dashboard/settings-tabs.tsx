@@ -27,7 +27,7 @@ export function SettingsTabs({ tenant }: SettingsTabsProps) {
           className={cn(
             "flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-300",
             activeTab === "general"
-              ? "bg-white text-teal-700 shadow-sm border border-stone-200/50 scale-[1.02]"
+              ? "bg-white text-indigo-700 shadow-sm border border-stone-200/50 scale-[1.02]"
               : "text-stone-500 hover:text-stone-700 hover:bg-stone-100 border border-transparent"
           )}
         >
@@ -40,7 +40,7 @@ export function SettingsTabs({ tenant }: SettingsTabsProps) {
           className={cn(
             "flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-300",
             activeTab === "operational"
-              ? "bg-white text-teal-700 shadow-sm border border-stone-200/50 scale-[1.02]"
+              ? "bg-white text-indigo-700 shadow-sm border border-stone-200/50 scale-[1.02]"
               : "text-stone-500 hover:text-stone-700 hover:bg-stone-100 border border-transparent"
           )}
         >
@@ -53,7 +53,7 @@ export function SettingsTabs({ tenant }: SettingsTabsProps) {
           className={cn(
             "flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-300",
             activeTab === "integrations"
-              ? "bg-white text-teal-700 shadow-sm border border-stone-200/50 scale-[1.02]"
+              ? "bg-white text-indigo-700 shadow-sm border border-stone-200/50 scale-[1.02]"
               : "text-stone-500 hover:text-stone-700 hover:bg-stone-100 border border-transparent"
           )}
         >

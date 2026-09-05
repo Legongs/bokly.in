@@ -144,7 +144,7 @@ const jsonLd = {
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-[#FAFAF7] text-stone-800 flex flex-col font-sans selection:bg-teal-600 selection:text-white">
+    <div className="min-h-screen bg-[#FAFAF7] text-stone-800 flex flex-col font-sans selection:bg-indigo-600 selection:text-white">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -207,12 +207,12 @@ export default function HomePage() {
           </Link>
 
           <ul className="hidden md:flex items-center gap-7 text-sm font-semibold text-stone-500">
-            <li><Link href="#storefront" className="hover:text-teal-600 transition-colors duration-200">Aplikasi Booking</Link></li>
-            <li><Link href="#demo" className="hover:text-teal-600 transition-colors duration-200">Demo</Link></li>
-            <li><Link href="#cara-kerja" className="hover:text-teal-600 transition-colors duration-200">Cara Kerja</Link></li>
-            <li><Link href="#fitur" className="hover:text-teal-600 transition-colors duration-200">Fitur</Link></li>
-            <li><Link href="#testimoni" className="hover:text-teal-600 transition-colors duration-200">Cerita Pengguna</Link></li>
-            <li><Link href="/artikel" className="hover:text-teal-600 transition-colors duration-200">Artikel</Link></li>
+            <li><Link href="#storefront" className="hover:text-indigo-600 transition-colors duration-200">Aplikasi Booking</Link></li>
+            <li><Link href="#demo" className="hover:text-indigo-600 transition-colors duration-200">Demo</Link></li>
+            <li><Link href="#cara-kerja" className="hover:text-indigo-600 transition-colors duration-200">Cara Kerja</Link></li>
+            <li><Link href="#fitur" className="hover:text-indigo-600 transition-colors duration-200">Fitur</Link></li>
+            <li><Link href="#testimoni" className="hover:text-indigo-600 transition-colors duration-200">Cerita Pengguna</Link></li>
+            <li><Link href="/artikel" className="hover:text-indigo-600 transition-colors duration-200">Artikel</Link></li>
           </ul>
 
           <div className="flex items-center gap-2">
@@ -222,7 +222,7 @@ export default function HomePage() {
               </Button>
             </Link>
             <Link href="/register">
-              <Button size="sm" className="bg-teal-600 text-white font-bold hover:bg-teal-700 shadow-sm shadow-teal-600/20 transition-all duration-200" aria-label="Daftar gratis bukly.id">
+              <Button size="sm" className="bg-indigo-600 text-white font-bold hover:bg-indigo-700 shadow-sm shadow-indigo-600/20 transition-all duration-200" aria-label="Daftar gratis bukly.id">
                 Coba Gratis
                 <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
               </Button>
@@ -241,8 +241,8 @@ export default function HomePage() {
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.15fr] gap-12 items-center">
             {/* Kolom Kiri — Copy */}
             <div className="flex flex-col items-start">
-              <div className="anim-float-up inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-teal-50 border border-teal-200 text-teal-700 text-xs font-bold mb-5">
-                <span className="w-2 h-2 rounded-full bg-teal-500 pulse-dot" />
+              <div className="anim-float-up inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs font-bold mb-5">
+                <span className="w-2 h-2 rounded-full bg-indigo-500 pulse-dot" />
                 Udah dipakai 500+ UMKM Jasa Indonesia
               </div>
 
@@ -252,8 +252,8 @@ export default function HomePage() {
               >
                 Begini tampilan{" "}
                 <span className="relative inline-block">
-                  <span className="relative z-10 text-teal-700">halaman booking</span>
-                  <span className="absolute -bottom-1 left-0 w-full h-3 bg-teal-100 -z-0 rounded" aria-hidden="true" />
+                  <span className="relative z-10 text-indigo-700">halaman booking</span>
+                  <span className="absolute -bottom-1 left-0 w-full h-3 bg-indigo-100 -z-0 rounded" aria-hidden="true" />
                 </span>{" "}
                 usahamu di mata pelanggan.
               </h1>
@@ -269,7 +269,7 @@ export default function HomePage() {
                   "Link unik usahamu: bukly.id/nama-usahamu",
                 ].map((item) => (
                   <li key={item} className="flex items-center gap-2.5">
-                    <CheckCircle2 className="w-4 h-4 text-teal-600 flex-shrink-0" />
+                    <CheckCircle2 className="w-4 h-4 text-indigo-600 flex-shrink-0" />
                     {item}
                   </li>
                 ))}
@@ -277,7 +277,7 @@ export default function HomePage() {
 
               <div className="anim-float-up-delay-3 mt-8 flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
                 <Link href="/register" className="w-full sm:w-auto">
-                  <Button id="cta-hero-daftar" size="lg" className="w-full sm:w-auto bg-teal-600 text-white font-bold hover:bg-teal-700 shadow-md shadow-teal-600/15 hover:shadow-lg hover:shadow-teal-600/25 hover:-translate-y-0.5 transition-all duration-200">
+                  <Button id="cta-hero-daftar" size="lg" className="w-full sm:w-auto bg-indigo-600 text-white font-bold hover:bg-indigo-700 shadow-md shadow-indigo-600/15 hover:shadow-lg hover:shadow-indigo-600/25 hover:-translate-y-0.5 transition-all duration-200">
                     Bikin Halaman Booking Sekarang
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
@@ -292,7 +292,7 @@ export default function HomePage() {
 
             {/* Kolom Kanan — Storefront Mockup */}
             <div className="relative w-full max-w-lg mx-auto lg:mx-0" aria-hidden="true">
-              <div className="absolute -inset-6 bg-gradient-to-br from-teal-50 via-stone-50 to-orange-50 rounded-[40px] -z-10" />
+              <div className="absolute -inset-6 bg-gradient-to-br from-indigo-50 via-stone-50 to-orange-50 rounded-[40px] -z-10" />
 
               {/* Browser chrome */}
               <div className="bg-white rounded-2xl shadow-2xl shadow-stone-300/40 border border-stone-200 overflow-hidden">
@@ -303,7 +303,7 @@ export default function HomePage() {
                     <div className="w-3 h-3 rounded-full bg-green-400" />
                   </div>
                   <div className="flex-1 mx-3 bg-white rounded-md px-3 py-1 text-xs text-stone-400 font-mono border border-stone-200 flex items-center gap-1.5">
-                    <span className="text-teal-600">🔒</span>
+                    <span className="text-indigo-600">🔒</span>
                     bukly.id/salon-keren
                   </div>
                 </div>
@@ -311,7 +311,7 @@ export default function HomePage() {
                 <div className="p-5 bg-gradient-to-b from-stone-50 to-white">
                   {/* Toko header */}
                   <div className="flex items-center gap-3 mb-5">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center text-white font-black text-lg shadow-sm">S</div>
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-400 to-indigo-600 flex items-center justify-center text-white font-black text-lg shadow-sm">S</div>
                     <div>
                       <h3 className="font-bold text-stone-900 text-sm leading-tight">Salon Keren By Aurel</h3>
                       <p className="text-xs text-stone-400 mt-0.5">✨ Buka sekarang · Pulogadung, Jakarta</p>
@@ -330,12 +330,12 @@ export default function HomePage() {
                       { name: "Keriting Spiral", price: "Rp200.000", duration: "90 min", selected: false },
                       { name: "Nail Art Fullset", price: "Rp120.000", duration: "75 min", selected: false },
                     ].map((svc) => (
-                      <div key={svc.name} className={`flex items-center justify-between p-3 rounded-xl border text-xs transition-all ${svc.selected ? "border-teal-500 bg-teal-50" : "border-stone-200 bg-white"}`}>
+                      <div key={svc.name} className={`flex items-center justify-between p-3 rounded-xl border text-xs transition-all ${svc.selected ? "border-indigo-500 bg-indigo-50" : "border-stone-200 bg-white"}`}>
                         <div>
-                          <p className={`font-bold ${svc.selected ? "text-teal-800" : "text-stone-700"}`}>{svc.name}</p>
-                          <p className={`mt-0.5 ${svc.selected ? "text-teal-600" : "text-stone-400"}`}>{svc.duration}</p>
+                          <p className={`font-bold ${svc.selected ? "text-indigo-800" : "text-stone-700"}`}>{svc.name}</p>
+                          <p className={`mt-0.5 ${svc.selected ? "text-indigo-600" : "text-stone-400"}`}>{svc.duration}</p>
                         </div>
-                        <span className={`font-bold ${svc.selected ? "text-teal-700" : "text-stone-600"}`}>{svc.price}</span>
+                        <span className={`font-bold ${svc.selected ? "text-indigo-700" : "text-stone-600"}`}>{svc.price}</span>
                       </div>
                     ))}
                   </div>
@@ -349,13 +349,13 @@ export default function HomePage() {
                       { time: "11:00", ok: false },
                       { time: "13:00", ok: true },
                     ].map((slot) => (
-                      <div key={slot.time} className={`text-center py-2 rounded-lg text-xs font-bold border ${!slot.ok ? "bg-stone-100 border-stone-200 text-stone-400 line-through" : (slot as any).active ? "bg-teal-600 border-teal-600 text-white" : "bg-white border-stone-200 text-stone-700"}`}>
+                      <div key={slot.time} className={`text-center py-2 rounded-lg text-xs font-bold border ${!slot.ok ? "bg-stone-100 border-stone-200 text-stone-400 line-through" : (slot as any).active ? "bg-indigo-600 border-indigo-600 text-white" : "bg-white border-stone-200 text-stone-700"}`}>
                         {slot.time}
                       </div>
                     ))}
                   </div>
 
-                  <button className="w-full py-2.5 rounded-xl bg-teal-600 text-white text-sm font-bold shadow-sm shadow-teal-600/20 cursor-default">
+                  <button className="w-full py-2.5 rounded-xl bg-indigo-600 text-white text-sm font-bold shadow-sm shadow-indigo-600/20 cursor-default">
                     Amankan Slot Ini →
                   </button>
                 </div>
@@ -374,8 +374,8 @@ export default function HomePage() {
 
               {/* Floating: No app */}
               <div className="anim-notif-2 absolute -right-4 bottom-16 bg-white rounded-2xl shadow-lg shadow-stone-200/60 border border-stone-100 px-4 py-3 flex items-center gap-3 max-w-[200px]">
-                <div className="w-8 h-8 rounded-full bg-teal-100 flex items-center justify-center flex-shrink-0">
-                  <Smile className="w-4 h-4 text-teal-700" />
+                <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0">
+                  <Smile className="w-4 h-4 text-indigo-700" />
                 </div>
                 <div>
                   <p className="text-xs font-bold text-stone-900">Tanpa install app</p>
@@ -390,13 +390,13 @@ export default function HomePage() {
         <div className="border-y border-stone-200 bg-stone-100/60 py-5">
           <div className="max-w-6xl mx-auto px-4">
             <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-3 text-sm text-stone-500 font-medium">
-              <span className="flex items-center gap-2"><Users className="w-4 h-4 text-teal-600" />500+ usaha aktif</span>
+              <span className="flex items-center gap-2"><Users className="w-4 h-4 text-indigo-600" />500+ usaha aktif</span>
               <span className="hidden sm:block text-stone-300">·</span>
-              <span className="flex items-center gap-2"><CalendarCheck2 className="w-4 h-4 text-teal-600" />10.000+ booking diproses</span>
+              <span className="flex items-center gap-2"><CalendarCheck2 className="w-4 h-4 text-indigo-600" />10.000+ booking diproses</span>
               <span className="hidden sm:block text-stone-300">·</span>
               <span className="flex items-center gap-2"><Star className="w-4 h-4 fill-amber-400 text-amber-400" />Rating 4.9 dari pengguna</span>
               <span className="hidden sm:block text-stone-300">·</span>
-              <span className="flex items-center gap-2"><Shield className="w-4 h-4 text-teal-600" />100% gratis, tanpa kartu kredit</span>
+              <span className="flex items-center gap-2"><Shield className="w-4 h-4 text-indigo-600" />100% gratis, tanpa kartu kredit</span>
             </div>
           </div>
         </div>
@@ -416,13 +416,13 @@ export default function HomePage() {
               { id: "demo-kelas-yoga", name: "Kelas Yoga", desc: "Tema wellness, lembut & tenang", icon: User, color: "text-rose-700", bg: "bg-rose-100" },
             ].map((demo, i) => (
               <Link key={demo.id} href={`/${demo.id}`} target="_blank" className="block reveal group" style={{ transitionDelay: `${i * 100}ms` }}>
-                <div className="bg-white rounded-2xl p-6 border border-stone-200 hover:border-teal-400 hover:shadow-lg hover:shadow-teal-100 transition-all duration-300 h-full flex flex-col">
+                <div className="bg-white rounded-2xl p-6 border border-stone-200 hover:border-indigo-400 hover:shadow-lg hover:shadow-indigo-100 transition-all duration-300 h-full flex flex-col">
                   <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${demo.bg} mb-4 group-hover:scale-110 transition-transform`}>
                     <demo.icon className={`w-6 h-6 ${demo.color}`} />
                   </div>
                   <h3 className="font-bold text-lg text-stone-900 mb-1">{demo.name}</h3>
                   <p className="text-sm text-stone-500 flex-1">{demo.desc}</p>
-                  <div className="mt-4 flex items-center text-teal-600 font-semibold text-sm group-hover:text-teal-700">
+                  <div className="mt-4 flex items-center text-indigo-600 font-semibold text-sm group-hover:text-indigo-700">
                     Buka Demo <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
                   </div>
                 </div>
@@ -441,7 +441,7 @@ export default function HomePage() {
             {[
               { icon: Scissors, name: "Salon & Barbershop", desc: "Booking potong, cat, keriting", color: "text-rose-600", bg: "bg-rose-50", border: "border-rose-100" },
               { icon: Stethoscope, name: "Klinik & Dokter", desc: "Antrian pasien otomatis", color: "text-blue-600", bg: "bg-blue-50", border: "border-blue-100" },
-              { icon: Car, name: "Bengkel & Cuci Mobil", desc: "Atur slot servis & antrean", color: "text-orange-600", bg: "bg-orange-50", border: "border-orange-100" },
+              { icon: Car, name: "Bengkel & Cuci Mobil", desc: "Atur slot servis & antrean", color: "text-orange-600", bg: "bg-amber-50", border: "border-orange-100" },
               { icon: PenTool, name: "Studio & Kelas", desc: "Foto, musik, olahraga, dll", color: "text-violet-600", bg: "bg-violet-50", border: "border-violet-100" },
             ].map((item, i) => (
               <article key={i} className={`reveal bg-white p-6 rounded-2xl border ${item.border} text-center hover:shadow-md hover:-translate-y-1 transition-all duration-300`} style={{ transitionDelay: `${i * 80}ms` }}>
@@ -464,19 +464,19 @@ export default function HomePage() {
             </div>
 
             <div className="relative">
-              <div className="hidden md:block absolute top-10 left-[calc(16.6%+24px)] right-[calc(16.6%+24px)] h-0.5 bg-gradient-to-r from-teal-600/0 via-teal-500 to-teal-600/0" />
+              <div className="hidden md:block absolute top-10 left-[calc(16.6%+24px)] right-[calc(16.6%+24px)] h-0.5 bg-gradient-to-r from-indigo-600/0 via-indigo-500 to-indigo-600/0" />
               <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-6">
                 {[
-                  { step: "01", icon: Store, title: "Buat akun & atur profil usaha", desc: "Daftar gratis, tulis nama usahamu, jam buka, dan masukin daftar layanan beserta harganya. Selesai dalam hitungan menit.", color: "bg-teal-600" },
-                  { step: "02", icon: MessageCircle, title: "Bagikan link-mu ke pelanggan", desc: "Taruh bukly.id/nama-usahamu di bio Instagram, WhatsApp story, atau langsung chat ke pelanggan setia.", color: "bg-teal-500" },
-                  { step: "03", icon: Bell, title: "Duduk manis, notif masuk sendiri", desc: "Pelanggan booking kapan saja — tengah malam pun bisa. Kamu terima notifikasi di WA, jadwal masuk otomatis ke dashboard.", color: "bg-teal-400" },
+                  { step: "01", icon: Store, title: "Buat akun & atur profil usaha", desc: "Daftar gratis, tulis nama usahamu, jam buka, dan masukin daftar layanan beserta harganya. Selesai dalam hitungan menit.", color: "bg-indigo-600" },
+                  { step: "02", icon: MessageCircle, title: "Bagikan link-mu ke pelanggan", desc: "Taruh bukly.id/nama-usahamu di bio Instagram, WhatsApp story, atau langsung chat ke pelanggan setia.", color: "bg-indigo-500" },
+                  { step: "03", icon: Bell, title: "Duduk manis, notif masuk sendiri", desc: "Pelanggan booking kapan saja — tengah malam pun bisa. Kamu terima notifikasi di WA, jadwal masuk otomatis ke dashboard.", color: "bg-indigo-400" },
                 ].map((step, i) => (
                   <div key={i} className="reveal flex flex-col items-center md:items-start text-center md:text-left" style={{ transitionDelay: `${i * 120}ms` }}>
                     <div className="relative">
-                      <div className={`w-20 h-20 rounded-2xl ${step.color} flex items-center justify-center shadow-lg shadow-teal-900/30`}>
+                      <div className={`w-20 h-20 rounded-2xl ${step.color} flex items-center justify-center shadow-lg shadow-indigo-900/30`}>
                         <step.icon className="w-9 h-9 text-white" />
                       </div>
-                      <span className="absolute -top-2 -right-2 bg-stone-800 border border-stone-600 text-teal-400 text-xs font-black rounded-full w-7 h-7 flex items-center justify-center">{step.step}</span>
+                      <span className="absolute -top-2 -right-2 bg-stone-800 border border-stone-600 text-indigo-400 text-xs font-black rounded-full w-7 h-7 flex items-center justify-center">{step.step}</span>
                     </div>
                     <h3 className="mt-5 font-bold text-white text-lg leading-snug">{step.title}</h3>
                     <p className="mt-2 text-stone-400 text-sm leading-relaxed max-w-xs">{step.desc}</p>
@@ -487,7 +487,7 @@ export default function HomePage() {
 
             <div className="reveal mt-14 text-center">
               <Link href="/register">
-                <Button id="cta-cara-kerja" size="lg" className="bg-teal-500 hover:bg-teal-400 text-stone-900 font-bold shadow-lg shadow-teal-900/30 hover:-translate-y-0.5 transition-all duration-200">
+                <Button id="cta-cara-kerja" size="lg" className="bg-indigo-500 hover:bg-indigo-400 text-white font-bold shadow-lg shadow-indigo-900/30 hover:-translate-y-0.5 transition-all duration-200">
                   Mulai Sekarang — Gratis
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
@@ -508,7 +508,7 @@ export default function HomePage() {
               {/* Feature 1 — Anti-bentrok */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
                 <div className="reveal-left">
-                  <div className="inline-flex items-center gap-2 text-xs font-bold text-teal-700 bg-teal-50 border border-teal-200 px-3 py-1.5 rounded-full mb-5">
+                  <div className="inline-flex items-center gap-2 text-xs font-bold text-indigo-700 bg-indigo-50 border border-indigo-200 px-3 py-1.5 rounded-full mb-5">
                     <Calendar className="w-3.5 h-3.5" />Smart Scheduling
                   </div>
                   <h3 className="text-2xl font-extrabold text-stone-900 leading-snug">Jadwal bentrok?<br />Gak akan terjadi lagi.</h3>
@@ -516,7 +516,7 @@ export default function HomePage() {
                   <ul className="mt-6 space-y-3">
                     {["Real-time slot locking", "Atur durasi per layanan secara manual", "Tampil jelas: kosong, penuh, atau perlu konfirmasi"].map((f) => (
                       <li key={f} className="flex items-start gap-2.5 text-sm text-stone-600">
-                        <CheckCircle2 className="w-4 h-4 text-teal-600 flex-shrink-0 mt-0.5" />{f}
+                        <CheckCircle2 className="w-4 h-4 text-indigo-600 flex-shrink-0 mt-0.5" />{f}
                       </li>
                     ))}
                   </ul>
@@ -525,10 +525,10 @@ export default function HomePage() {
                   <div className="bg-stone-50 border border-stone-200 rounded-2xl p-6">
                     <p className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-4">Timeline Hari Ini · Selasa 5 Sep</p>
                     {[
-                      { time: "09:00", name: "Dina Rahayu", svc: "Creambath", label: "✓ Selesai", color: "bg-teal-100 text-teal-700 border-teal-200" },
+                      { time: "09:00", name: "Dina Rahayu", svc: "Creambath", label: "✓ Selesai", color: "bg-indigo-100 text-indigo-700 border-indigo-200" },
                       { time: "10:30", name: "Rina Susanti", svc: "Keriting", label: "● Berlangsung", color: "bg-blue-100 text-blue-700 border-blue-200" },
                       { time: "12:00", name: "–", svc: "Istirahat Siang", label: "⏸ Istirahat", color: "bg-stone-100 text-stone-400 border-stone-200" },
-                      { time: "13:00", name: "Maya Dewi", svc: "Nail Art", label: "◷ Akan datang", color: "bg-orange-50 text-orange-700 border-orange-200" },
+                      { time: "13:00", name: "Maya Dewi", svc: "Nail Art", label: "◷ Akan datang", color: "bg-amber-50 text-amber-700 border-amber-200" },
                     ].map((slot, i) => (
                       <div key={i} className={`flex items-center gap-3 p-3 rounded-xl border mb-2 text-xs ${slot.color}`}>
                         <span className="font-mono font-bold w-12 flex-shrink-0">{slot.time}</span>
@@ -551,7 +551,7 @@ export default function HomePage() {
                   <ul className="mt-6 space-y-3">
                     {["Reminder otomatis H-1 ke pelanggan via WA", "Notif instan ke admin setiap booking masuk", "Pesan konfirmasi langsung ke HP pelanggan"].map((f) => (
                       <li key={f} className="flex items-start gap-2.5 text-sm text-stone-600">
-                        <CheckCircle2 className="w-4 h-4 text-teal-600 flex-shrink-0 mt-0.5" />{f}
+                        <CheckCircle2 className="w-4 h-4 text-indigo-600 flex-shrink-0 mt-0.5" />{f}
                       </li>
                     ))}
                   </ul>
@@ -592,7 +592,7 @@ export default function HomePage() {
                   <ul className="mt-6 space-y-3">
                     {["Grafik booking mingguan & bulanan", "Layanan paling sering dipesan", "Retensi pelanggan lama vs pelanggan baru"].map((f) => (
                       <li key={f} className="flex items-start gap-2.5 text-sm text-stone-600">
-                        <CheckCircle2 className="w-4 h-4 text-teal-600 flex-shrink-0 mt-0.5" />{f}
+                        <CheckCircle2 className="w-4 h-4 text-indigo-600 flex-shrink-0 mt-0.5" />{f}
                       </li>
                     ))}
                   </ul>
@@ -603,7 +603,7 @@ export default function HomePage() {
                     <div className="flex items-end gap-1 h-28 mb-2">
                       {[40, 55, 45, 60, 80, 75, 50, 65, 85, 95, 70, 80, 100, 90, 60, 75, 85, 95].map((val, i) => (
                         <div key={i} className="flex-1 flex flex-col items-center justify-end h-full">
-                          <div className="w-full rounded-t-sm bg-teal-500" style={{ height: `${val}%` }} />
+                          <div className="w-full rounded-t-sm bg-indigo-500" style={{ height: `${val}%` }} />
                         </div>
                       ))}
                     </div>
@@ -633,12 +633,12 @@ export default function HomePage() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {[
-                { quote: "Dulu tiap pagi harus cek DM dulu, konfirmasi satu-satu, takut ada yang double. Sekarang? Buka mata langsung lihat dashboard, semua udah rapi sendiri. Stres berkurang banget.", name: "Tommy Hidayat", role: "Owner, The Classic Barbershop · Bandung", initial: "T", color: "bg-teal-600" },
+                { quote: "Dulu tiap pagi harus cek DM dulu, konfirmasi satu-satu, takut ada yang double. Sekarang? Buka mata langsung lihat dashboard, semua udah rapi sendiri. Stres berkurang banget.", name: "Tommy Hidayat", role: "Owner, The Classic Barbershop · Bandung", initial: "T", color: "bg-indigo-600" },
                 { quote: "Pasien saya banyak yang sudah sepuh, mereka gak gaptek karena gak perlu install apapun. Buka link, pilih jadwal, selesai. Antrean di klinik jauh lebih tertib sekarang.", name: "dr. Sinta Wulandari", role: "Dokter Umum, Klinik Sehat Sentosa · Surabaya", initial: "S", color: "bg-blue-600" },
                 { quote: "Paling suka fitur notif WA-nya. Pelanggan diingetin otomatis, jadi yang skip jadwal turun drastis. Dalam sebulan, no-show turun dari 30% ke hampir nol.", name: "Aurel Pratiwi", role: "Owner, Studio Nail Aurel · Jakarta", initial: "A", color: "bg-rose-500" },
               ].map((t, i) => (
                 <article key={i} className="reveal bg-white p-7 rounded-2xl border border-stone-200 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex flex-col" style={{ transitionDelay: `${i * 100}ms` }}>
-                  <Quote className="w-8 h-8 text-teal-200 mb-4 flex-shrink-0" />
+                  <Quote className="w-8 h-8 text-indigo-200 mb-4 flex-shrink-0" />
                   <p className="text-stone-600 leading-relaxed text-sm flex-1">&ldquo;{t.quote}&rdquo;</p>
                   <div className="flex items-center gap-3 mt-6 pt-5 border-t border-stone-100">
                     <div className={`w-10 h-10 rounded-full ${t.color} flex items-center justify-center text-white font-bold flex-shrink-0`}>{t.initial}</div>
@@ -661,7 +661,7 @@ export default function HomePage() {
               <p className="mt-4 text-stone-400 text-sm sm:text-base max-w-md mx-auto">Daftar gratis sekarang. Dalam 5 menit, halaman booking usahamu sudah aktif dan siap dibagikan.</p>
               <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
                 <Link href="/register">
-                  <Button id="cta-bottom-daftar" size="lg" className="bg-teal-500 hover:bg-teal-400 text-stone-900 font-bold shadow-lg shadow-teal-900/30 hover:-translate-y-0.5 transition-all duration-200">
+                  <Button id="cta-bottom-daftar" size="lg" className="bg-indigo-500 hover:bg-indigo-400 text-white font-bold shadow-lg shadow-indigo-900/30 hover:-translate-y-0.5 transition-all duration-200">
                     Buat Halaman Booking — Gratis
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
@@ -693,7 +693,7 @@ export default function HomePage() {
               ].map((faq, i) => (
                 <article key={i} className="reveal bg-stone-50 border border-stone-200 rounded-2xl p-6" style={{ transitionDelay: `${i * 60}ms` }}>
                   <h3 className="font-bold text-stone-900 flex items-start gap-2.5 text-sm sm:text-base">
-                    <ChevronRight className="w-5 h-5 text-teal-600 flex-shrink-0 mt-0.5" />
+                    <ChevronRight className="w-5 h-5 text-indigo-600 flex-shrink-0 mt-0.5" />
                     {faq.q}
                   </h3>
                   <p className="text-stone-500 mt-2.5 text-sm leading-relaxed ml-7">{faq.a}</p>
@@ -710,10 +710,10 @@ export default function HomePage() {
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
             <div>
               <div className="flex items-center gap-2 mb-2">
-                <div className="w-7 h-7 rounded-lg bg-teal-600 flex items-center justify-center">
+                <div className="w-7 h-7 rounded-lg bg-indigo-600 flex items-center justify-center">
                   <Calendar className="w-3.5 h-3.5 text-white" />
                 </div>
-                <span className="font-extrabold text-white tracking-tight">bukly<span className="text-teal-400">.id</span></span>
+                <span className="font-extrabold text-white tracking-tight">bukly<span className="text-indigo-400">.id</span></span>
               </div>
               <p className="text-stone-500 text-sm max-w-xs leading-relaxed">Platform reservasi online gratis untuk UMKM Jasa Indonesia. Biarkan pelanggan atur jadwal sendiri, 24 jam sehari.</p>
             </div>
@@ -721,19 +721,19 @@ export default function HomePage() {
               <div>
                 <p className="text-stone-400 font-bold mb-3">Produk</p>
                 <ul className="space-y-2 text-stone-500">
-                  <li><Link href="#fitur" className="hover:text-teal-400 transition-colors">Fitur</Link></li>
-                  <li><Link href="/demo-salon" className="hover:text-teal-400 transition-colors">Lihat Demo</Link></li>
-                  <li><Link href="/register" className="hover:text-teal-400 transition-colors">Daftar Gratis</Link></li>
+                  <li><Link href="#fitur" className="hover:text-indigo-400 transition-colors">Fitur</Link></li>
+                  <li><Link href="/demo-salon" className="hover:text-indigo-400 transition-colors">Lihat Demo</Link></li>
+                  <li><Link href="/register" className="hover:text-indigo-400 transition-colors">Daftar Gratis</Link></li>
                 </ul>
               </div>
               <div>
                 <p className="text-stone-400 font-bold mb-3">Informasi</p>
                 <ul className="space-y-2 text-stone-500">
-                  <li><Link href="/artikel" className="hover:text-teal-400 transition-colors">Artikel & Tips</Link></li>
-                  <li><Link href="#faq" className="hover:text-teal-400 transition-colors">FAQ</Link></li>
-                  <li><Link href="/contact" className="hover:text-teal-400 transition-colors">Kontak</Link></li>
-                  <li><Link href="/privacy" className="hover:text-teal-400 transition-colors">Kebijakan Privasi</Link></li>
-                  <li><Link href="/terms" className="hover:text-teal-400 transition-colors">Syarat & Ketentuan</Link></li>
+                  <li><Link href="/artikel" className="hover:text-indigo-400 transition-colors">Artikel & Tips</Link></li>
+                  <li><Link href="#faq" className="hover:text-indigo-400 transition-colors">FAQ</Link></li>
+                  <li><Link href="/contact" className="hover:text-indigo-400 transition-colors">Kontak</Link></li>
+                  <li><Link href="/privacy" className="hover:text-indigo-400 transition-colors">Kebijakan Privasi</Link></li>
+                  <li><Link href="/terms" className="hover:text-indigo-400 transition-colors">Syarat & Ketentuan</Link></li>
                 </ul>
               </div>
             </div>

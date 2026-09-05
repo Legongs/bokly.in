@@ -93,17 +93,17 @@ export function ImageUploader({ value, onChange, disabled, label = "Upload Gamba
           type="button"
           disabled={disabled || isUploading}
           onClick={() => fileInputRef.current?.click()}
-          className="w-full relative flex flex-col items-center justify-center py-10 px-6 rounded-2xl border-2 border-dashed border-stone-300 bg-stone-50 hover:bg-stone-100 hover:border-teal-400 transition-colors group cursor-pointer focus:outline-none focus:ring-4 focus:ring-teal-500/20"
+          className="w-full relative flex flex-col items-center justify-center py-10 px-6 rounded-2xl border-2 border-dashed border-stone-300 bg-stone-50 hover:bg-stone-100 hover:border-indigo-400 transition-colors group cursor-pointer focus:outline-none focus:ring-4 focus:ring-indigo-500/20"
         >
           {isUploading ? (
-            <div className="flex flex-col items-center text-teal-600">
+            <div className="flex flex-col items-center text-indigo-600">
               <Loader2 className="w-8 h-8 animate-spin mb-3" />
               <span className="text-sm font-bold">Mengunggah...</span>
             </div>
           ) : (
             <>
               <div className="w-12 h-12 bg-white rounded-full shadow-sm flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                <UploadCloud className="w-6 h-6 text-stone-400 group-hover:text-teal-500 transition-colors" />
+                <UploadCloud className="w-6 h-6 text-stone-400 group-hover:text-indigo-500 transition-colors" />
               </div>
               <span className="text-sm font-bold text-stone-700 mb-1">{label}</span>
               <span className="text-xs font-medium text-stone-500">

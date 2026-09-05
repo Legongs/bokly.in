@@ -30,7 +30,7 @@ export function CustomerTable({ customers }: CustomerTableProps) {
                 <td className="px-6 py-4 font-semibold text-stone-800">
                   <button 
                     onClick={() => setSelectedCustomer(cust)}
-                    className="hover:text-teal-600 transition-colors underline decoration-stone-300 underline-offset-4 decoration-dashed flex items-center gap-2"
+                    className="hover:text-indigo-600 transition-colors underline decoration-stone-300 underline-offset-4 decoration-dashed flex items-center gap-2"
                   >
                     {cust.name}
                   </button>
@@ -40,7 +40,7 @@ export function CustomerTable({ customers }: CustomerTableProps) {
                 </td>
                 <td className="px-6 py-4">
                   <div className="flex justify-center">
-                    <span className="flex items-center gap-1.5 bg-teal-50 text-teal-700 px-3 py-1 rounded-xl text-xs font-bold">
+                    <span className="flex items-center gap-1.5 bg-indigo-50 text-indigo-700 px-3 py-1 rounded-xl text-xs font-bold">
                       <TrendingUp className="w-3 h-3" />
                       {cust.total_bookings}x
                     </span>
@@ -63,7 +63,7 @@ export function CustomerTable({ customers }: CustomerTableProps) {
         <DialogContent className="sm:max-w-md p-6 rounded-[2rem]">
           <DialogHeader className="mb-4">
             <DialogTitle className="flex items-center gap-2 text-xl font-extrabold text-stone-900">
-              <Contact className="w-5 h-5 text-teal-600" />
+              <Contact className="w-5 h-5 text-indigo-600" />
               Detail Pelanggan
             </DialogTitle>
           </DialogHeader>
@@ -102,9 +102,9 @@ export function CustomerTable({ customers }: CustomerTableProps) {
                             {b.services?.name || "Layanan Dihapus"}
                           </span>
                           <span className={`px-2 py-0.5 rounded-lg text-[10px] font-bold ${
-                            b.payment_status === "approved" ? "bg-teal-50 text-teal-700" :
+                            b.payment_status === "approved" ? "bg-indigo-50 text-indigo-700" :
                             b.payment_status === "rejected" ? "bg-rose-50 text-rose-700" :
-                            "bg-orange-50 text-orange-700"
+                            "bg-amber-50 text-amber-700"
                           }`}>
                             {b.payment_status.toUpperCase()}
                           </span>

@@ -41,7 +41,7 @@ export function ServiceList({ services, dictionary }: ServiceListProps) {
  <div className="flex justify-end">
  <Button 
  onClick={() => setIsAdding(true)} 
- className="bg-teal-600 hover:bg-teal-700 text-white rounded-full px-6 h-11 shadow-md shadow-teal-600/20 hover:shadow-lg transition-all"
+ className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-full px-6 h-11 shadow-md shadow-indigo-600/20 hover:shadow-lg transition-all"
  >
  <PlusCircle className="w-5 h-5 mr-2" />
  Tambah {dictionary.serviceLabel} Baru
@@ -92,7 +92,7 @@ export function ServiceList({ services, dictionary }: ServiceListProps) {
  <Clock className="w-3.5 h-3.5" />
  {svc.duration_minutes} Menit
  </span>
- <span className="flex items-center gap-1 bg-teal-50 text-teal-700 px-2 py-0.5 rounded-md">
+ <span className="flex items-center gap-1 bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-md">
  <span className="text-xs font-extrabold mr-0.5">Rp</span>
  {formatCurrency(svc.price).replace("Rp", "").trim()}
  </span>

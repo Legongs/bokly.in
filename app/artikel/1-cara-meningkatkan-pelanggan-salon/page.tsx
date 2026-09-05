@@ -44,7 +44,7 @@ export default function ArticleDetailPage() {
       <header className="border-b border-stone-200 bg-white/80 backdrop-blur-md sticky top-0 z-50">
         <nav className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between" aria-label="Main Navigation">
           <Link href="/" className="flex items-center gap-2" aria-label="Beranda bukly.id">
-            <div className="w-8 h-8 rounded-xl bg-teal-600 flex items-center justify-center text-white shadow-sm shadow-teal-600/20">
+            <div className="w-8 h-8 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-sm shadow-indigo-600/20">
               <Calendar className="w-4 h-4" />
             </div>
             <span className="font-extrabold text-lg tracking-tight text-stone-900 hidden sm:block">
@@ -65,7 +65,7 @@ export default function ArticleDetailPage() {
 
       {/* Article Content */}
       <main className="flex-1 w-full max-w-3xl mx-auto px-4 py-12 sm:py-20">
-        <article className="prose prose-stone prose-teal md:prose-lg max-w-none">
+        <article className="prose prose-stone prose-indigo md:prose-lg max-w-none">
           <div className="mb-10 text-center sm:text-left">
             <div className="flex items-center justify-center sm:justify-start gap-4 mb-6 text-sm font-medium text-stone-500">
               <span className="bg-rose-100 text-rose-700 px-3 py-1 rounded-full font-bold text-xs uppercase tracking-wider">
@@ -133,13 +133,13 @@ export default function ArticleDetailPage() {
 
           <hr className="my-10 border-stone-200" />
 
-          <div className="bg-teal-50 border border-teal-100 rounded-3xl p-8 text-center sm:text-left flex flex-col sm:flex-row items-center justify-between gap-6">
+          <div className="bg-indigo-50 border border-indigo-100 rounded-3xl p-8 text-center sm:text-left flex flex-col sm:flex-row items-center justify-between gap-6">
             <div>
-              <h3 className="text-xl font-bold text-teal-900 m-0 mb-2">Siap mendigitalisasi salon Anda?</h3>
-              <p className="text-teal-700 m-0 text-sm">Gunakan bukly.id gratis dan buat halaman booking Anda sendiri dalam 1 menit.</p>
+              <h3 className="text-xl font-bold text-indigo-900 m-0 mb-2">Siap mendigitalisasi salon Anda?</h3>
+              <p className="text-indigo-700 m-0 text-sm">Gunakan bukly.id gratis dan buat halaman booking Anda sendiri dalam 1 menit.</p>
             </div>
             <Link href="/register" className="w-full sm:w-auto">
-              <Button className="bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl whitespace-nowrap w-full sm:w-auto">
+              <Button className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl whitespace-nowrap w-full sm:w-auto">
                 Daftar Sekarang
               </Button>
             </Link>
@@ -147,13 +147,13 @@ export default function ArticleDetailPage() {
           <div className="mt-12 pt-8 border-t border-stone-200">
             <h3 className="text-xl font-bold text-stone-900 mb-4">Baca Juga</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Link href="/artikel/2-pentingnya-sistem-booking-barbershop" className="p-4 rounded-2xl border border-stone-200 hover:border-teal-300 hover:bg-teal-50 transition-colors group">
-                <span className="text-xs font-bold text-teal-600 mb-1 block">Teknologi</span>
-                <h4 className="font-bold text-stone-800 group-hover:text-teal-700 leading-tight">Mengapa Barbershop Anda Wajib Menggunakan Sistem Booking Online?</h4>
+              <Link href="/artikel/2-pentingnya-sistem-booking-barbershop" className="p-4 rounded-2xl border border-stone-200 hover:border-indigo-300 hover:bg-indigo-50 transition-colors group">
+                <span className="text-xs font-bold text-indigo-600 mb-1 block">Teknologi</span>
+                <h4 className="font-bold text-stone-800 group-hover:text-indigo-700 leading-tight">Mengapa Barbershop Anda Wajib Menggunakan Sistem Booking Online?</h4>
               </Link>
-              <Link href="/artikel/3-menghindari-pelanggan-no-show" className="p-4 rounded-2xl border border-stone-200 hover:border-teal-300 hover:bg-teal-50 transition-colors group">
+              <Link href="/artikel/3-menghindari-pelanggan-no-show" className="p-4 rounded-2xl border border-stone-200 hover:border-indigo-300 hover:bg-indigo-50 transition-colors group">
                 <span className="text-xs font-bold text-orange-600 mb-1 block">Manajemen</span>
-                <h4 className="font-bold text-stone-800 group-hover:text-teal-700 leading-tight">Strategi Ampuh Menghadapi Pelanggan 'No-Show' (Hit & Run)</h4>
+                <h4 className="font-bold text-stone-800 group-hover:text-indigo-700 leading-tight">Strategi Ampuh Menghadapi Pelanggan 'No-Show' (Hit & Run)</h4>
               </Link>
             </div>
           </div>
@@ -165,7 +165,7 @@ export default function ArticleDetailPage() {
         <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex flex-col items-center md:items-start gap-2">
             <div className="flex items-center gap-2">
-              <Calendar className="w-5 h-5 text-teal-600" />
+              <Calendar className="w-5 h-5 text-indigo-600" />
               <span className="font-extrabold text-stone-900">bukly.id</span>
             </div>
             <p className="text-xs text-stone-500 font-medium">
@@ -174,9 +174,9 @@ export default function ArticleDetailPage() {
           </div>
           
           <div className="flex items-center gap-6 text-sm font-semibold text-stone-500">
-            <Link href="/contact" className="hover:text-teal-600 transition-colors">Kontak</Link>
-            <Link href="/privacy" className="hover:text-teal-600 transition-colors">Kebijakan Privasi</Link>
-            <Link href="/terms" className="hover:text-teal-600 transition-colors">Syarat & Ketentuan</Link>
+            <Link href="/contact" className="hover:text-indigo-600 transition-colors">Kontak</Link>
+            <Link href="/privacy" className="hover:text-indigo-600 transition-colors">Kebijakan Privasi</Link>
+            <Link href="/terms" className="hover:text-indigo-600 transition-colors">Syarat & Ketentuan</Link>
           </div>
         </div>
       </footer>

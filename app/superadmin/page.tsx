@@ -36,12 +36,12 @@ export default async function SuperAdminDashboard() {
           <p className="text-3xl font-extrabold text-stone-900">{stats.inactiveTenants}</p>
         </div>
 
-        <div className="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm ring-1 ring-teal-500/20">
-          <div className="flex items-center gap-3 text-teal-600 mb-2">
+        <div className="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm ring-1 ring-indigo-500/20">
+          <div className="flex items-center gap-3 text-indigo-600 mb-2">
             <TrendingUp className="w-5 h-5" />
             <h3 className="font-semibold text-sm">Est. MRR</h3>
           </div>
-          <p className="text-3xl font-extrabold text-teal-700">
+          <p className="text-3xl font-extrabold text-indigo-700">
             Rp {stats.totalMRR.toLocaleString("id-ID")}
           </p>
         </div>
@@ -81,7 +81,7 @@ export default async function SuperAdminDashboard() {
                     <td className="px-6 py-4">
                       <span className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-bold ${
                         sub.plan === 'bisnis' ? 'bg-indigo-100 text-indigo-700' :
-                        sub.plan === 'pro' ? 'bg-teal-100 text-teal-700' :
+                        sub.plan === 'pro' ? 'bg-indigo-100 text-indigo-700' :
                         'bg-stone-100 text-stone-600'
                       }`}>
                         {sub.plan.toUpperCase()}
@@ -100,7 +100,7 @@ export default async function SuperAdminDashboard() {
                       <Link 
                         href={`/${tenant.slug}`} 
                         target="_blank"
-                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-teal-600 hover:text-teal-700 bg-teal-50 hover:bg-teal-100 px-3 py-1.5 rounded-lg transition-colors"
+                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-lg transition-colors"
                       >
                         Kunjungi <ExternalLink className="w-3 h-3" />
                       </Link>

@@ -20,7 +20,7 @@ const PLAN_LABEL: Record<string, string> = {
 
 const PLAN_COLOR: Record<string, string> = {
   free: "bg-stone-100 text-stone-600 border-stone-200",
-  pro: "bg-teal-100 text-teal-700 border-teal-200",
+  pro: "bg-indigo-100 text-indigo-700 border-indigo-200",
   bisnis: "bg-amber-100 text-amber-700 border-amber-200",
 };
 
@@ -44,7 +44,7 @@ export default async function BillingPage() {
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center gap-2 mb-1">
-          <Crown className="w-5 h-5 text-teal-600" />
+          <Crown className="w-5 h-5 text-indigo-600" />
           <h1 className="text-2xl font-extrabold text-stone-900">Langganan</h1>
         </div>
         <p className="text-sm text-stone-500">Kelola paket dan upgrade fitur untuk usahamu.</p>
@@ -62,7 +62,7 @@ export default async function BillingPage() {
               {PLAN_LABEL[subscription.plan] ?? subscription.plan}
             </span>
             {isActive ? (
-              <span className="flex items-center gap-1 text-xs text-teal-600 font-semibold">
+              <span className="flex items-center gap-1 text-xs text-indigo-600 font-semibold">
                 <CheckCircle2 className="w-3.5 h-3.5" /> Aktif
               </span>
             ) : (
@@ -92,7 +92,7 @@ export default async function BillingPage() {
           <div className="mt-4 pt-4 border-t border-stone-100">
             <p className="text-xs text-stone-400">
               Untuk membatalkan atau mengelola metode pembayaran, hubungi{" "}
-              <Link href="https://wa.me/6281234567890" className="text-teal-600 hover:underline font-medium">
+              <Link href="https://wa.me/6281234567890" className="text-indigo-600 hover:underline font-medium">
                 support Bukly.id
               </Link>
               .
@@ -112,7 +112,7 @@ export default async function BillingPage() {
         Semua transaksi diproses secara aman melalui Midtrans. Batalkan kapan saja.
         <br />
         Ada pertanyaan?{" "}
-        <Link href="https://wa.me/6281234567890" className="text-teal-600 hover:underline">
+        <Link href="https://wa.me/6281234567890" className="text-indigo-600 hover:underline">
           Hubungi kami via WhatsApp
         </Link>
         .

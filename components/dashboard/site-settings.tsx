@@ -60,7 +60,7 @@ export function SiteSettings({ tenant }: SiteSettingsProps) {
       </p>
 
       {siteMessage && (
-        <div className={`p-4 rounded-xl text-sm font-semibold mb-6 flex items-center gap-2 ${siteMessage.type === "success" ? "bg-teal-50 text-teal-700 border border-teal-200" : "bg-rose-50 text-rose-700 border border-rose-200"}`}>
+        <div className={`p-4 rounded-xl text-sm font-semibold mb-6 flex items-center gap-2 ${siteMessage.type === "success" ? "bg-indigo-50 text-indigo-700 border border-indigo-200" : "bg-rose-50 text-rose-700 border border-rose-200"}`}>
           {siteMessage.type === "success" && <Check className="w-5 h-5" />}
           {siteMessage.text}
         </div>
@@ -108,7 +108,7 @@ export function SiteSettings({ tenant }: SiteSettingsProps) {
             value={siteData.welcome_message}
             onChange={handleSiteChange}
             rows={2}
-            className="w-full px-4 py-3 rounded-2xl border-none text-sm font-medium bg-stone-50 text-stone-900 placeholder:text-stone-400 caret-teal-600 focus:outline-none focus:ring-4 focus:ring-teal-500/20 transition-all shadow-inner resize-none"
+            className="w-full px-4 py-3 rounded-2xl border-none text-sm font-medium bg-stone-50 text-stone-900 placeholder:text-stone-400 caret-indigo-600 focus:outline-none focus:ring-4 focus:ring-indigo-500/20 transition-all shadow-inner resize-none"
             placeholder="Misal: Selamat datang di Salon Siska! Tampil cantik setiap hari tanpa antri."
             maxLength={300}
           />
@@ -127,7 +127,7 @@ export function SiteSettings({ tenant }: SiteSettingsProps) {
               name="address"
               value={siteData.address}
               onChange={handleSiteChange}
-              className="w-full px-4 py-3 rounded-2xl border-none text-sm font-medium bg-stone-50 text-stone-900 placeholder:text-stone-400 caret-teal-600 focus:outline-none focus:ring-4 focus:ring-teal-500/20 transition-all shadow-inner"
+              className="w-full px-4 py-3 rounded-2xl border-none text-sm font-medium bg-stone-50 text-stone-900 placeholder:text-stone-400 caret-indigo-600 focus:outline-none focus:ring-4 focus:ring-indigo-500/20 transition-all shadow-inner"
               placeholder="Jl. Raya Kuta No. 99, Bali"
             />
           </div>
@@ -144,7 +144,7 @@ export function SiteSettings({ tenant }: SiteSettingsProps) {
               name="instagram_handle"
               value={siteData.instagram_handle}
               onChange={handleSiteChange}
-              className="w-full px-4 py-3 rounded-2xl border-none text-sm font-medium bg-stone-50 text-stone-900 placeholder:text-stone-400 caret-teal-600 focus:outline-none focus:ring-4 focus:ring-teal-500/20 transition-all shadow-inner"
+              className="w-full px-4 py-3 rounded-2xl border-none text-sm font-medium bg-stone-50 text-stone-900 placeholder:text-stone-400 caret-indigo-600 focus:outline-none focus:ring-4 focus:ring-indigo-500/20 transition-all shadow-inner"
               placeholder="@salonsiska"
             />
           </div>
@@ -162,7 +162,7 @@ export function SiteSettings({ tenant }: SiteSettingsProps) {
             value={siteData.cancellation_policy}
             onChange={handleSiteChange}
             rows={2}
-            className="w-full px-4 py-3 rounded-2xl border-none text-sm font-medium bg-stone-50 text-stone-900 placeholder:text-stone-400 caret-teal-600 focus:outline-none focus:ring-4 focus:ring-teal-500/20 transition-all shadow-inner resize-none"
+            className="w-full px-4 py-3 rounded-2xl border-none text-sm font-medium bg-stone-50 text-stone-900 placeholder:text-stone-400 caret-indigo-600 focus:outline-none focus:ring-4 focus:ring-indigo-500/20 transition-all shadow-inner resize-none"
             placeholder="Misal: Keterlambatan lebih dari 15 menit, DP hangus ya Kak."
             maxLength={500}
           />
@@ -171,7 +171,7 @@ export function SiteSettings({ tenant }: SiteSettingsProps) {
         <div className="pt-5 border-t border-stone-100">
           <Button
             type="submit"
-            className="w-full h-12 bg-teal-600 hover:bg-teal-700 text-white rounded-full font-bold mt-4 shadow-md shadow-teal-600/20 transition-all hover:shadow-lg"
+            className="w-full h-12 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full font-bold mt-4 shadow-md shadow-indigo-600/20 transition-all hover:shadow-lg"
             disabled={isPendingSite}
           >
             {isPendingSite ? (

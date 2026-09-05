@@ -90,7 +90,7 @@ export function ServiceForm({ initialData, onSuccess, onCancel, dictionary }: Se
  <Card className="border-none shadow-md shadow-stone-200/50 rounded-[2rem] bg-white overflow-hidden mt-4">
  <CardHeader className="pb-4 border-b border-stone-100 ">
  <CardTitle className="text-lg font-bold flex items-center gap-2 text-stone-900 ">
- {isEdit ? <Edit3 className="w-5 h-5 text-teal-600" /> : <PlusCircle className="w-5 h-5 text-teal-600" />}
+ {isEdit ? <Edit3 className="w-5 h-5 text-indigo-600" /> : <PlusCircle className="w-5 h-5 text-indigo-600" />}
  {isEdit ? `Edit ${dictionary?.serviceLabel || "Layanan"} Kamu` : `Tambah ${dictionary?.serviceLabel || "Layanan"} Baru`}
  </CardTitle>
  <CardDescription>
@@ -116,7 +116,7 @@ export function ServiceForm({ initialData, onSuccess, onCancel, dictionary }: Se
  onChange={(e) => updateForm("name", e.target.value)}
  onBlur={(e) => validateField("name", e.target.value)}
  placeholder="Misal: Potong Rambut Pria"
- className={`w-full pl-10 pr-4 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 caret-teal-600 focus:outline-none focus:ring-4 focus:ring-teal-500/20 transition-all shadow-inner ${
+ className={`w-full pl-10 pr-4 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 caret-indigo-600 focus:outline-none focus:ring-4 focus:ring-indigo-500/20 transition-all shadow-inner ${
  fieldErrors.name ? "ring-2 ring-rose-400 bg-rose-50" : ""
  }`}
  disabled={isPending}
@@ -133,7 +133,7 @@ export function ServiceForm({ initialData, onSuccess, onCancel, dictionary }: Se
               onChange={(e) => updateForm("category", e.target.value)}
               onBlur={(e) => validateField("category", e.target.value)}
               placeholder="Misal: Perawatan Wajah"
-              className={`w-full px-4 py-3 rounded-2xl border border-stone-200 text-sm font-medium bg-stone-50 text-stone-900 caret-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-500/20 ${fieldErrors.category ? "border-rose-300 bg-rose-50 ring-2 ring-rose-500/20" : ""}`}
+              className={`w-full px-4 py-3 rounded-2xl border border-stone-200 text-sm font-medium bg-stone-50 text-stone-900 caret-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 ${fieldErrors.category ? "border-rose-300 bg-rose-50 ring-2 ring-rose-500/20" : ""}`}
               disabled={isPending}
             />
             {fieldErrors.category && <p className="text-xs text-rose-500 font-medium">{fieldErrors.category}</p>}
@@ -153,7 +153,7 @@ export function ServiceForm({ initialData, onSuccess, onCancel, dictionary }: Se
  onChange={(e) => updateForm("duration_minutes", Number(e.target.value))}
  onBlur={(e) => validateField("duration_minutes", Number(e.target.value))}
  placeholder="30"
- className={`w-full pl-10 pr-12 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 caret-teal-600 focus:outline-none focus:ring-4 focus:ring-teal-500/20 transition-all shadow-inner ${
+ className={`w-full pl-10 pr-12 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 caret-indigo-600 focus:outline-none focus:ring-4 focus:ring-indigo-500/20 transition-all shadow-inner ${
  fieldErrors.duration_minutes ? "ring-2 ring-rose-400 bg-rose-50" : ""
  }`}
  disabled={isPending}
@@ -176,7 +176,7 @@ export function ServiceForm({ initialData, onSuccess, onCancel, dictionary }: Se
  onChange={(e) => updateForm("buffer_minutes", Number(e.target.value))}
  onBlur={(e) => validateField("buffer_minutes", Number(e.target.value))}
  placeholder="0 (opsional)"
- className={`w-full pl-10 pr-12 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 caret-teal-600 focus:outline-none focus:ring-4 focus:ring-teal-500/20 transition-all shadow-inner ${
+ className={`w-full pl-10 pr-12 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 caret-indigo-600 focus:outline-none focus:ring-4 focus:ring-indigo-500/20 transition-all shadow-inner ${
  fieldErrors.buffer_minutes ? "ring-2 ring-rose-400 bg-rose-50" : ""
  }`}
  disabled={isPending}
@@ -199,7 +199,7 @@ export function ServiceForm({ initialData, onSuccess, onCancel, dictionary }: Se
  onChange={(e) => updateForm("max_capacity", Number(e.target.value) || 1)}
  onBlur={(e) => validateField("max_capacity", Number(e.target.value) || 1)}
  placeholder="1 (Satu sesi = 1 orang)"
- className={`w-full pl-10 pr-12 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 caret-teal-600 focus:outline-none focus:ring-4 focus:ring-teal-500/20 transition-all shadow-inner ${
+ className={`w-full pl-10 pr-12 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 caret-indigo-600 focus:outline-none focus:ring-4 focus:ring-indigo-500/20 transition-all shadow-inner ${
  fieldErrors.max_capacity ? "ring-2 ring-rose-400 bg-rose-50" : ""
  }`}
  disabled={isPending}
@@ -229,7 +229,7 @@ export function ServiceForm({ initialData, onSuccess, onCancel, dictionary }: Se
  validateField("price", rawValue ? Number(rawValue) : 0);
  }}
  placeholder="50.000"
- className={`w-full pl-11 pr-4 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 caret-teal-600 focus:outline-none focus:ring-4 focus:ring-teal-500/20 transition-all shadow-inner ${
+ className={`w-full pl-11 pr-4 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 caret-indigo-600 focus:outline-none focus:ring-4 focus:ring-indigo-500/20 transition-all shadow-inner ${
  fieldErrors.price ? "ring-2 ring-rose-400 bg-rose-50" : ""
  }`}
  disabled={isPending}
@@ -257,7 +257,7 @@ export function ServiceForm({ initialData, onSuccess, onCancel, dictionary }: Se
  validateField("dp_amount", rawValue ? Number(rawValue) : 0);
  }}
  placeholder="20.000"
- className={`w-full pl-11 pr-4 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 caret-teal-600 focus:outline-none focus:ring-4 focus:ring-teal-500/20 transition-all shadow-inner ${
+ className={`w-full pl-11 pr-4 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 caret-indigo-600 focus:outline-none focus:ring-4 focus:ring-indigo-500/20 transition-all shadow-inner ${
  fieldErrors.dp_amount ? "ring-2 ring-rose-400 bg-rose-50" : ""
  }`}
  disabled={isPending}
@@ -272,7 +272,7 @@ export function ServiceForm({ initialData, onSuccess, onCancel, dictionary }: Se
  <X className="w-4 h-4 mr-1.5" /> Batal Aja
  </Button>
  )}
- <Button type="submit" disabled={isPending || !form.name} className="bg-teal-600 hover:bg-teal-700 text-white rounded-full px-6 h-10 shadow-md shadow-teal-600/20 hover:shadow-lg transition-all">
+ <Button type="submit" disabled={isPending || !form.name} className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-full px-6 h-10 shadow-md shadow-indigo-600/20 hover:shadow-lg transition-all">
  {isPending ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <Save className="w-4 h-4 mr-1.5" />}
  {isEdit ? "Terapkan Perubahan Layanan" : `Tambah ${dictionary?.serviceLabel || "Layanan"}`}
  </Button>

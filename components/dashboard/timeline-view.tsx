@@ -26,7 +26,7 @@ function StatusBadge({ booking }: { booking: BookingWithService }) {
     return <Badge className="bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200/50 shadow-none">Ditolak</Badge>;
   }
   if (booking.payment_status === "pending") {
-    return <Badge className="bg-orange-50 text-orange-700 hover:bg-orange-100 border border-orange-200/50 shadow-none">Pending</Badge>;
+    return <Badge className="bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200/50 shadow-none">Pending</Badge>;
   }
 
   // Approved or Completed status -> Calculate time-based status
@@ -44,7 +44,7 @@ function StatusBadge({ booking }: { booking: BookingWithService }) {
 
   if (isPastDate || (isToday && currentMinutes > endMinutes)) {
     return (
-      <Badge className="bg-teal-100 text-teal-700 border border-teal-200 shadow-none gap-1 px-2.5">
+      <Badge className="bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-none gap-1 px-2.5">
         <CheckCircle2 className="w-3 h-3" /> Selesai
       </Badge>
     );
@@ -88,7 +88,7 @@ function BookingCard({ booking, isPendingColumn }: { booking: BookingWithService
   <CardContent className="p-0">
     {/* Header: Jam & Layanan */}
     <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-stone-100">
-      <div className="flex items-center gap-2 text-teal-700">
+      <div className="flex items-center gap-2 text-indigo-700">
         <Clock className="w-4 h-4 flex-shrink-0" />
         <span className="font-bold text-base leading-none">
           {booking.start_time.slice(0, 5)} – {booking.end_time.slice(0, 5)}
@@ -169,7 +169,7 @@ function BookingCard({ booking, isPendingColumn }: { booking: BookingWithService
         </Button>
         <Button
           size="sm"
-          className="flex-1 bg-teal-600 hover:bg-teal-700 text-white shadow-sm shadow-teal-600/20 rounded-xl h-10 text-sm font-bold"
+          className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm shadow-indigo-600/20 rounded-xl h-10 text-sm font-bold"
           onClick={() => handleAction("approved")}
           disabled={isPending}
         >
@@ -284,7 +284,7 @@ function BookingCard({ booking, isPendingColumn }: { booking: BookingWithService
             </div>
           </div>
           <Button 
-            className="w-full bg-teal-600 hover:bg-teal-700 text-white rounded-xl h-12 mt-2"
+            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl h-12 mt-2"
             disabled={!rescheduleDate || !rescheduleStartTime || !rescheduleEndTime || isPending}
             onClick={() => {
               startTransition(async () => {

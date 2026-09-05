@@ -39,7 +39,7 @@ export function AnalyticsView({ analytics, dictionary }: AnalyticsViewProps) {
       {/* ── Header ── */}
       <div>
         <h2 className="text-2xl font-extrabold text-stone-900 flex items-center gap-2">
-          <BarChart3 className="w-6 h-6 text-teal-600" />
+          <BarChart3 className="w-6 h-6 text-indigo-600" />
           Analisis Usaha
         </h2>
         <p className="text-stone-500 text-sm mt-1">
@@ -52,7 +52,7 @@ export function AnalyticsView({ analytics, dictionary }: AnalyticsViewProps) {
         <Card className="rounded-[2rem] border-none shadow-md shadow-stone-200/50 bg-white overflow-hidden p-0 sm:p-0">
           <CardContent className="p-5">
             <div className="flex items-center gap-2 text-stone-500 mb-3">
-              <Wallet className="w-4 h-4 text-teal-600" />
+              <Wallet className="w-4 h-4 text-indigo-600" />
               <span className="text-[11px] font-bold uppercase tracking-widest">
                 Pendapatan
               </span>
@@ -67,7 +67,7 @@ export function AnalyticsView({ analytics, dictionary }: AnalyticsViewProps) {
         <Card className="rounded-[2rem] border-none shadow-md shadow-stone-200/50 bg-white overflow-hidden p-0 sm:p-0">
           <CardContent className="p-5">
             <div className="flex items-center gap-2 text-stone-500 mb-3">
-              <CheckCircle2 className="w-4 h-4 text-teal-600" />
+              <CheckCircle2 className="w-4 h-4 text-indigo-600" />
               <span className="text-[11px] font-bold uppercase tracking-widest">
                 Total Sukses
               </span>
@@ -93,7 +93,7 @@ export function AnalyticsView({ analytics, dictionary }: AnalyticsViewProps) {
               return (
                 <div key={idx} className="relative h-full flex flex-col justify-end items-center flex-1 group" style={{ minWidth: "12px" }}>
                   <div
-                    className="w-full bg-teal-500 rounded-sm transition-all duration-300 hover:bg-teal-400"
+                    className="w-full bg-indigo-500 rounded-sm transition-all duration-300 hover:bg-indigo-400"
                     style={{ height: `${heightPercent}%`, minHeight: "2px" }}
                   >
                   </div>
@@ -131,7 +131,7 @@ export function AnalyticsView({ analytics, dictionary }: AnalyticsViewProps) {
                       </span>
                       <span className="font-semibold text-stone-800 text-sm">{service.name}</span>
                     </div>
-                    <div className="flex items-center gap-1.5 bg-teal-50 text-teal-700 px-2 py-1 rounded-lg text-xs font-bold">
+                    <div className="flex items-center gap-1.5 bg-indigo-50 text-indigo-700 px-2 py-1 rounded-lg text-xs font-bold">
                       <TrendingUp className="w-3 h-3" />
                       {service.bookings}x
                     </div>
@@ -148,7 +148,7 @@ export function AnalyticsView({ analytics, dictionary }: AnalyticsViewProps) {
             <Lightbulb className="w-4 h-4 text-orange-500" />
             Status Reservasi
           </h3>
-          <Card className="rounded-[2rem] border-none shadow-sm bg-orange-50/50 p-5">
+          <Card className="rounded-[2rem] border-none shadow-sm bg-amber-50/50 p-5">
             <div className="flex justify-between items-center mb-1">
               <span className="text-sm font-semibold text-stone-600">Diselesaikan</span>
               <span className="text-lg font-extrabold text-stone-900">{completedBookings}</span>

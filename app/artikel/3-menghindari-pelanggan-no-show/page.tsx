@@ -11,13 +11,13 @@ export default function Article3Page() {
   return (
     <div className="min-h-screen bg-stone-50 font-sans">
       <main className="max-w-3xl mx-auto px-4 py-12 sm:py-20">
-        <Link href="/artikel" className="inline-flex items-center gap-2 text-stone-500 hover:text-teal-600 font-semibold mb-8 transition-colors">
+        <Link href="/artikel" className="inline-flex items-center gap-2 text-stone-500 hover:text-indigo-600 font-semibold mb-8 transition-colors">
           <ArrowLeft className="w-4 h-4" /> Kembali ke Artikel
         </Link>
         
         <article className="bg-white rounded-3xl p-8 sm:p-12 shadow-sm border border-stone-200">
           <div className="flex items-center gap-3 mb-6">
-            <span className="text-xs font-bold px-3 py-1 rounded-full bg-orange-100 text-orange-700">Manajemen</span>
+            <span className="text-xs font-bold px-3 py-1 rounded-full bg-orange-100 text-amber-700">Manajemen</span>
             <span className="text-xs font-medium text-stone-500">05 Jul 2025 · 5 menit baca</span>
           </div>
           
@@ -64,13 +64,13 @@ export default function Article3Page() {
           <div className="mt-12 pt-8 border-t border-stone-200">
             <h3 className="text-xl font-bold text-stone-900 mb-4">Baca Juga</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Link href="/artikel/1-cara-meningkatkan-pelanggan-salon" className="p-4 rounded-2xl border border-stone-200 hover:border-teal-300 hover:bg-teal-50 transition-colors group">
-                <span className="text-xs font-bold text-teal-600 mb-1 block">Bisnis</span>
-                <h4 className="font-bold text-stone-800 group-hover:text-teal-700 leading-tight">5 Cara Meningkatkan Retensi Pelanggan Salon Kecantikan Anda</h4>
+              <Link href="/artikel/1-cara-meningkatkan-pelanggan-salon" className="p-4 rounded-2xl border border-stone-200 hover:border-indigo-300 hover:bg-indigo-50 transition-colors group">
+                <span className="text-xs font-bold text-indigo-600 mb-1 block">Bisnis</span>
+                <h4 className="font-bold text-stone-800 group-hover:text-indigo-700 leading-tight">5 Cara Meningkatkan Retensi Pelanggan Salon Kecantikan Anda</h4>
               </Link>
-              <Link href="/artikel/2-pentingnya-sistem-booking-barbershop" className="p-4 rounded-2xl border border-stone-200 hover:border-teal-300 hover:bg-teal-50 transition-colors group">
-                <span className="text-xs font-bold text-teal-600 mb-1 block">Teknologi</span>
-                <h4 className="font-bold text-stone-800 group-hover:text-teal-700 leading-tight">Mengapa Barbershop Anda Wajib Menggunakan Sistem Booking Online?</h4>
+              <Link href="/artikel/2-pentingnya-sistem-booking-barbershop" className="p-4 rounded-2xl border border-stone-200 hover:border-indigo-300 hover:bg-indigo-50 transition-colors group">
+                <span className="text-xs font-bold text-indigo-600 mb-1 block">Teknologi</span>
+                <h4 className="font-bold text-stone-800 group-hover:text-indigo-700 leading-tight">Mengapa Barbershop Anda Wajib Menggunakan Sistem Booking Online?</h4>
               </Link>
             </div>
           </div>

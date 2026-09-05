@@ -169,7 +169,7 @@ export default function RegisterPageClient() {
           
           <div className="mb-10">
             <Link href="/" className="inline-flex items-center gap-2 mb-8">
-              <div className="w-8 h-8 rounded-xl bg-teal-600 flex items-center justify-center text-white shadow-sm shadow-teal-600/20">
+              <div className="w-8 h-8 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-sm shadow-indigo-600/20">
                 <Store className="w-4 h-4" />
               </div>
               <span className="font-extrabold text-lg tracking-tight text-stone-900">
@@ -180,7 +180,7 @@ export default function RegisterPageClient() {
             {/* Stepper Progress */}
             <div className="flex items-center gap-2 mb-6">
               {[1, 2, 3].map((step) => (
-                <div key={step} className={`h-1.5 rounded-full flex-1 transition-all duration-300 ${activeStep >= step ? "bg-teal-600" : "bg-stone-100"}`} />
+                <div key={step} className={`h-1.5 rounded-full flex-1 transition-all duration-300 ${activeStep >= step ? "bg-indigo-600" : "bg-stone-100"}`} />
               ))}
             </div>
 
@@ -216,7 +216,7 @@ export default function RegisterPageClient() {
                     onChange={(e) => updateForm("business_name", e.target.value)}
                     onBlur={(e) => validateField("business_name", e.target.value)}
                     placeholder="Misal: Salon Siska"
-                    className={`w-full pl-9 pr-4 py-3 rounded-xl border text-sm font-medium text-stone-900 placeholder:text-stone-400 caret-teal-600 bg-white shadow-inner focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors ${fieldErrors.business_name ? "border-rose-400 focus:ring-rose-400" : "border-stone-200"}`}
+                    className={`w-full pl-9 pr-4 py-3 rounded-xl border text-sm font-medium text-stone-900 placeholder:text-stone-400 caret-indigo-600 bg-white shadow-inner focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors ${fieldErrors.business_name ? "border-rose-400 focus:ring-rose-400" : "border-stone-200"}`}
                   />
                 </div>
                 {fieldErrors.business_name && <p className="text-xs text-rose-500 font-medium">{fieldErrors.business_name}</p>}
@@ -234,9 +234,9 @@ export default function RegisterPageClient() {
                     <div
                       key={sector.id}
                       onClick={() => updateForm("business_sector", sector.id)}
-                      className={`cursor-pointer border rounded-xl p-3 flex flex-col items-start gap-1.5 transition-all ${form.business_sector === sector.id ? "border-teal-600 bg-teal-50 ring-1 ring-teal-600 shadow-sm" : "border-stone-200 bg-white hover:border-stone-300"}`}
+                      className={`cursor-pointer border rounded-xl p-3 flex flex-col items-start gap-1.5 transition-all ${form.business_sector === sector.id ? "border-indigo-600 bg-indigo-50 ring-1 ring-indigo-600 shadow-sm" : "border-stone-200 bg-white hover:border-stone-300"}`}
                     >
-                      <div className={`p-2 rounded-lg ${form.business_sector === sector.id ? "bg-teal-100 text-teal-700" : "bg-stone-100 text-stone-600"}`}>
+                      <div className={`p-2 rounded-lg ${form.business_sector === sector.id ? "bg-indigo-100 text-indigo-700" : "bg-stone-100 text-stone-600"}`}>
                         {sector.icon}
                       </div>
                       <span className="text-sm font-bold text-stone-900 mt-1">{sector.label}</span>
@@ -253,7 +253,7 @@ export default function RegisterPageClient() {
                         <div
                           key={sub}
                           onClick={() => updateForm("business_type", sub)}
-                          className={`cursor-pointer px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all ${form.business_type === sub ? "border-teal-600 bg-teal-600 text-white shadow-sm" : "border-stone-200 bg-white text-stone-600 hover:border-stone-300 hover:bg-stone-50"}`}
+                          className={`cursor-pointer px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all ${form.business_type === sub ? "border-indigo-600 bg-indigo-600 text-white shadow-sm" : "border-stone-200 bg-white text-stone-600 hover:border-stone-300 hover:bg-stone-50"}`}
                         >
                           {sub}
                         </div>
@@ -266,7 +266,7 @@ export default function RegisterPageClient() {
                           value={form.custom_business_type || ""}
                           onChange={(e) => updateForm("custom_business_type", e.target.value)}
                           placeholder="Ketik spesifik bisnis kamu..."
-                          className="w-full h-11 px-3 bg-white border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 text-sm text-stone-700"
+                          className="w-full h-11 px-3 bg-white border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-sm text-stone-700"
                         />
                       </div>
                     )}
@@ -287,7 +287,7 @@ export default function RegisterPageClient() {
                     onChange={(e) => updateForm("slug", e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""))}
                     onBlur={(e) => validateField("slug", e.target.value)}
                     placeholder="salon-siska"
-                    className={`w-full pl-9 pr-4 py-3 rounded-xl border text-sm font-medium text-stone-900 placeholder:text-stone-400 caret-teal-600 bg-white shadow-inner focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors ${fieldErrors.slug ? "border-rose-400 focus:ring-rose-400" : "border-stone-200"}`}
+                    className={`w-full pl-9 pr-4 py-3 rounded-xl border text-sm font-medium text-stone-900 placeholder:text-stone-400 caret-indigo-600 bg-white shadow-inner focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors ${fieldErrors.slug ? "border-rose-400 focus:ring-rose-400" : "border-stone-200"}`}
                   />
                 </div>
                 {fieldErrors.slug ? (
@@ -299,11 +299,11 @@ export default function RegisterPageClient() {
                 ) : slugStatus === "taken" ? (
                   <p className="text-xs text-rose-500 font-medium">URL ini sudah dipakai toko lain.</p>
                 ) : slugStatus === "available" ? (
-                  <p className="text-xs text-teal-600 font-medium">URL tersedia.</p>
+                  <p className="text-xs text-indigo-600 font-medium">URL tersedia.</p>
                 ) : (
                   <div className="mt-2 p-3 bg-stone-50 border border-stone-200 rounded-xl flex flex-col gap-1">
                     <p className="text-[11px] font-medium text-stone-500">🔗 Toko kamu akan bisa diakses di:</p>
-                    <p className="text-sm font-bold text-teal-700 break-all">bukly.id/{form.slug || "url-toko-kamu"}</p>
+                    <p className="text-sm font-bold text-indigo-700 break-all">bukly.id/{form.slug || "url-toko-kamu"}</p>
                   </div>
                 )}
               </div>
@@ -319,7 +319,7 @@ export default function RegisterPageClient() {
                     onChange={(e) => updateForm("whatsapp_number", e.target.value)}
                     onBlur={(e) => validateField("whatsapp_number", e.target.value)}
                     placeholder="Contoh: 081234567890"
-                    className={`w-full pl-9 pr-4 py-3 rounded-xl border text-sm text-stone-900 caret-teal-600 bg-white focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors ${fieldErrors.whatsapp_number ? "border-rose-400 focus:ring-rose-400" : "border-stone-200"}`}
+                    className={`w-full pl-9 pr-4 py-3 rounded-xl border text-sm text-stone-900 caret-indigo-600 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors ${fieldErrors.whatsapp_number ? "border-rose-400 focus:ring-rose-400" : "border-stone-200"}`}
                   />
                 </div>
                 {fieldErrors.whatsapp_number && <p className="text-xs text-rose-500 font-medium">{fieldErrors.whatsapp_number}</p>}
@@ -339,7 +339,7 @@ export default function RegisterPageClient() {
                     onChange={(e) => updateForm("email", e.target.value)}
                     onBlur={(e) => validateField("email", e.target.value)}
                     placeholder="admin@tokokamu.com"
-                    className={`w-full pl-9 pr-4 py-3 rounded-xl border text-sm text-stone-900 caret-teal-600 bg-white focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors ${fieldErrors.email ? "border-rose-400 focus:ring-rose-400" : "border-stone-200"}`}
+                    className={`w-full pl-9 pr-4 py-3 rounded-xl border text-sm text-stone-900 caret-indigo-600 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors ${fieldErrors.email ? "border-rose-400 focus:ring-rose-400" : "border-stone-200"}`}
                   />
                 </div>
                 {fieldErrors.email && <p className="text-xs text-rose-500 font-medium">{fieldErrors.email}</p>}
@@ -355,7 +355,7 @@ export default function RegisterPageClient() {
                     onChange={(e) => updateForm("password", e.target.value)}
                     onBlur={(e) => validateField("password", e.target.value)}
                     placeholder="••••••••"
-                    className={`w-full pl-9 pr-4 py-3 rounded-xl border text-sm text-stone-900 caret-teal-600 bg-white focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors ${fieldErrors.password ? "border-rose-400 focus:ring-rose-400" : "border-stone-200"}`}
+                    className={`w-full pl-9 pr-4 py-3 rounded-xl border text-sm text-stone-900 caret-indigo-600 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors ${fieldErrors.password ? "border-rose-400 focus:ring-rose-400" : "border-stone-200"}`}
                   />
                 </div>
                 {fieldErrors.password && <p className="text-xs text-rose-500 font-medium">{fieldErrors.password}</p>}
@@ -384,7 +384,7 @@ export default function RegisterPageClient() {
               ) : (
                 <Button
                   type="submit"
-                  className="flex-1 h-12 bg-teal-600 hover:bg-teal-700 text-white rounded-xl font-bold shadow-md shadow-teal-600/20"
+                  className="flex-1 h-12 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold shadow-md shadow-indigo-600/20"
                   disabled={isPending || !form.email || !form.password}
                 >
                   {isPending ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : <CheckCircle2 className="w-5 h-5 mr-2" />}
@@ -396,7 +396,7 @@ export default function RegisterPageClient() {
 
           <p className="text-sm text-stone-500 text-center mt-8 pb-8">
             Udah punya akun?{" "}
-            <Link href="/login" className="font-bold text-teal-700 hover:text-teal-800 transition-colors">
+            <Link href="/login" className="font-bold text-indigo-700 hover:text-indigo-800 transition-colors">
               Langsung masuk aja
             </Link>
           </p>
@@ -405,12 +405,12 @@ export default function RegisterPageClient() {
 
       {/* Kanan: Visual Benefit (Bento Grid) - Hidden on Mobile */}
       <div className="hidden lg:flex flex-1 bg-stone-50 items-center justify-center p-12 relative overflow-hidden border-l border-stone-100">
-        <div className="absolute top-0 left-0 w-[40rem] h-[40rem] bg-teal-50/60 rounded-full blur-3xl -translate-y-1/2 -translate-x-1/3" />
-        <div className="absolute bottom-0 right-0 w-[30rem] h-[30rem] bg-orange-50/60 rounded-full blur-3xl translate-y-1/3 translate-x-1/4" />
+        <div className="absolute top-0 left-0 w-[40rem] h-[40rem] bg-indigo-50/60 rounded-full blur-3xl -translate-y-1/2 -translate-x-1/3" />
+        <div className="absolute bottom-0 right-0 w-[30rem] h-[30rem] bg-amber-50/60 rounded-full blur-3xl translate-y-1/3 translate-x-1/4" />
         
         <div className="relative z-10 max-w-lg w-full flex flex-col gap-4">
           <div className="bg-white/60 backdrop-blur-xl border border-stone-100 rounded-[2rem] p-8 shadow-sm">
-            <div className="w-14 h-14 bg-teal-100/50 rounded-2xl flex items-center justify-center text-teal-700 mb-6 border border-teal-100">
+            <div className="w-14 h-14 bg-indigo-100/50 rounded-2xl flex items-center justify-center text-indigo-700 mb-6 border border-indigo-100">
               <CheckCircle2 className="w-7 h-7" />
             </div>
             <h2 className="text-3xl font-extrabold text-stone-900 leading-tight tracking-tight mb-3">
@@ -423,15 +423,15 @@ export default function RegisterPageClient() {
           </div>
           
           <div className="grid grid-cols-2 gap-4">
-            <div className="bg-gradient-to-br from-teal-600 to-teal-500 text-white rounded-[2rem] p-6 shadow-lg shadow-teal-600/20 relative overflow-hidden group">
+            <div className="bg-gradient-to-br from-indigo-600 to-indigo-500 text-white rounded-[2rem] p-6 shadow-lg shadow-indigo-600/20 relative overflow-hidden group">
               <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-white/10 rounded-full blur-xl transition-all duration-500 group-hover:scale-150" />
-              <Store className="w-8 h-8 mb-4 text-teal-100" />
+              <Store className="w-8 h-8 mb-4 text-indigo-100" />
               <p className="font-bold text-lg leading-tight mb-1">Siap Pakai 1 Menit</p>
-              <p className="text-teal-50 text-sm font-medium leading-snug">Isi form di samping, halaman bookingmu langsung online.</p>
+              <p className="text-indigo-50 text-sm font-medium leading-snug">Isi form di samping, halaman bookingmu langsung online.</p>
             </div>
             
             <div className="bg-white/80 backdrop-blur-xl border border-stone-100 rounded-[2rem] p-6 shadow-sm hover:shadow-md transition-all duration-300">
-              <div className="w-12 h-12 bg-orange-50 rounded-2xl flex items-center justify-center text-orange-600 mb-4 border border-orange-100">
+              <div className="w-12 h-12 bg-amber-50 rounded-2xl flex items-center justify-center text-orange-600 mb-4 border border-orange-100">
                 <Lock className="w-6 h-6" />
               </div>
               <p className="font-bold text-stone-900 leading-tight mb-1">Anti Pelanggan PHP</p>

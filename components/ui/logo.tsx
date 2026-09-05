@@ -9,7 +9,7 @@ export function Logo({ className, ...props }: LogoProps) {
       className={cn("font-extrabold tracking-tighter text-stone-900", className)}
       {...props}
     >
-      bukly<span className="text-teal-600">.id</span>
+      bukly<span className="text-indigo-700">.id</span>
     </span>
   );
 }

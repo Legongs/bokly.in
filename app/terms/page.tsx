@@ -11,13 +11,13 @@ export default function TermsPage() {
   return (
     <div className="min-h-screen bg-stone-50 font-sans">
       <main className="max-w-3xl mx-auto px-4 py-12 sm:py-20">
-        <Link href="/" className="inline-flex items-center gap-2 text-stone-500 hover:text-teal-600 font-semibold mb-8 transition-colors">
+        <Link href="/" className="inline-flex items-center gap-2 text-stone-500 hover:text-indigo-600 font-semibold mb-8 transition-colors">
           <ArrowLeft className="w-4 h-4" /> Kembali ke Beranda
         </Link>
         
         <article className="bg-white rounded-3xl p-8 sm:p-12 shadow-sm border border-stone-200">
           <div className="flex items-center gap-4 mb-8 pb-8 border-b border-stone-100">
-            <div className="w-12 h-12 bg-teal-50 rounded-2xl flex items-center justify-center text-teal-600 shrink-0">
+            <div className="w-12 h-12 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 shrink-0">
               <Scale className="w-6 h-6" />
             </div>
             <div>
@@ -28,7 +28,7 @@ export default function TermsPage() {
             </div>
           </div>
 
-          <div className="prose prose-stone max-w-none prose-p:leading-relaxed prose-headings:font-bold prose-teal">
+          <div className="prose prose-stone max-w-none prose-p:leading-relaxed prose-headings:font-bold prose-indigo">
             <p>
               Syarat dan Ketentuan ini ("Ketentuan") mengatur akses dan penggunaan Anda terhadap situs web, aplikasi, dan layanan bukly.id (selanjutnya disebut "Layanan"). Dengan mengakses Layanan kami, Anda menyetujui Ketentuan ini.
             </p>

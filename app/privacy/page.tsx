@@ -11,13 +11,13 @@ export default function PrivacyPage() {
   return (
     <div className="min-h-screen bg-stone-50 font-sans">
       <main className="max-w-3xl mx-auto px-4 py-12 sm:py-20">
-        <Link href="/" className="inline-flex items-center gap-2 text-stone-500 hover:text-teal-600 font-semibold mb-8 transition-colors">
+        <Link href="/" className="inline-flex items-center gap-2 text-stone-500 hover:text-indigo-600 font-semibold mb-8 transition-colors">
           <ArrowLeft className="w-4 h-4" /> Kembali ke Beranda
         </Link>
         
         <article className="bg-white rounded-3xl p-8 sm:p-12 shadow-sm border border-stone-200">
           <div className="flex items-center gap-4 mb-8 pb-8 border-b border-stone-100">
-            <div className="w-12 h-12 bg-teal-50 rounded-2xl flex items-center justify-center text-teal-600 shrink-0">
+            <div className="w-12 h-12 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 shrink-0">
               <ShieldCheck className="w-6 h-6" />
             </div>
             <div>
@@ -28,7 +28,7 @@ export default function PrivacyPage() {
             </div>
           </div>
 
-          <div className="prose prose-stone max-w-none prose-p:leading-relaxed prose-headings:font-bold prose-teal">
+          <div className="prose prose-stone max-w-none prose-p:leading-relaxed prose-headings:font-bold prose-indigo">
             <p>
               Selamat datang di bukly.id. Kami sangat menghargai privasi Anda. Kebijakan Privasi ini menjelaskan bagaimana kami mengumpulkan, menggunakan, dan melindungi informasi pribadi Anda saat menggunakan platform kami.
             </p>
@@ -66,7 +66,7 @@ export default function PrivacyPage() {
 
             <div className="mt-12 p-6 bg-stone-50 rounded-2xl text-center border border-stone-100">
               <p className="text-stone-600 mb-2">Punya pertanyaan seputar kebijakan ini?</p>
-              <a href="mailto:tuntasapp.id@gmail.com" className="text-teal-600 font-bold hover:underline">
+              <a href="mailto:tuntasapp.id@gmail.com" className="text-indigo-600 font-bold hover:underline">
                 Hubungi Kami di tuntasapp.id@gmail.com
               </a>
             </div>

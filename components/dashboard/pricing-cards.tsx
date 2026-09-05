@@ -101,14 +101,14 @@ export function PricingCards({ currentSubscription }: PricingCardsProps) {
         <button
           id="billing-cycle-toggle"
           onClick={() => setIsYearly((v) => !v)}
-          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${isYearly ? "bg-teal-600" : "bg-stone-300"}`}
+          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${isYearly ? "bg-indigo-600" : "bg-stone-300"}`}
         >
           <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${isYearly ? "translate-x-6" : "translate-x-1"}`} />
         </button>
         <span className={`text-sm font-semibold ${isYearly ? "text-stone-900" : "text-stone-400"}`}>
           Tahunan{" "}
           {isYearly && (
-            <span className="ml-1 text-[11px] font-bold text-teal-700 bg-teal-100 px-2 py-0.5 rounded-full">
+            <span className="ml-1 text-[11px] font-bold text-indigo-700 bg-indigo-100 px-2 py-0.5 rounded-full">
               Hemat 2 bulan
             </span>
           )}
@@ -144,13 +144,13 @@ export function PricingCards({ currentSubscription }: PricingCardsProps) {
         </div>
 
         {/* Pro */}
-        <div className="relative rounded-2xl border-2 border-teal-500 bg-white p-6 flex flex-col shadow-lg shadow-teal-500/10">
+        <div className="relative rounded-2xl border-2 border-indigo-500 bg-white p-6 flex flex-col shadow-lg shadow-indigo-500/10">
           <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-            <span className="bg-teal-600 text-white text-[11px] font-bold px-3 py-1 rounded-full">Paling Populer</span>
+            <span className="bg-indigo-600 text-white text-[11px] font-bold px-3 py-1 rounded-full">Paling Populer</span>
           </div>
           <div className="flex items-center gap-2 mb-4 mt-2">
-            <Zap className="w-5 h-5 text-teal-600" />
-            <span className="font-bold text-teal-700">Pro</span>
+            <Zap className="w-5 h-5 text-indigo-600" />
+            <span className="font-bold text-indigo-700">Pro</span>
           </div>
           <p className="text-3xl font-extrabold text-stone-900 mb-1">
             {fmt(isYearly ? proYearly : proMonthly)}
@@ -162,7 +162,7 @@ export function PricingCards({ currentSubscription }: PricingCardsProps) {
           <ul className="space-y-2.5 flex-1 mb-6">
             {FEATURES.pro.map((f) => (
               <li key={f} className="flex items-start gap-2 text-sm text-stone-600">
-                <Check className="w-4 h-4 text-teal-500 flex-shrink-0 mt-0.5" />
+                <Check className="w-4 h-4 text-indigo-500 flex-shrink-0 mt-0.5" />
                 {f}
               </li>
             ))}
@@ -171,7 +171,7 @@ export function PricingCards({ currentSubscription }: PricingCardsProps) {
             id="billing-pro-btn"
             onClick={() => handleUpgrade("pro")}
             disabled={isPending || currentPlan === "pro" || currentPlan === "bisnis"}
-            className="w-full bg-teal-600 text-white font-bold hover:bg-teal-700 shadow-md shadow-teal-600/20 transition-all gap-2"
+            className="w-full bg-indigo-600 text-white font-bold hover:bg-indigo-700 shadow-md shadow-indigo-600/20 transition-all gap-2"
           >
             {loadingPlan === "pro" && isPending ? (
               <><Loader2 className="w-4 h-4 animate-spin" /> Memproses...</>

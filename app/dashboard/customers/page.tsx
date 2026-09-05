@@ -28,7 +28,7 @@ export default async function CustomersPage() {
       {/* Header */}
       <div>
         <h2 className="text-2xl font-extrabold text-stone-900 flex items-center gap-2">
-          <Contact className="w-6 h-6 text-teal-600" />
+          <Contact className="w-6 h-6 text-indigo-600" />
           Daftar Pelanggan
         </h2>
         <p className="text-stone-500 text-sm mt-1">

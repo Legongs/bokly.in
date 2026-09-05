@@ -99,7 +99,7 @@ export function PaymentSettings({ tenant }: PaymentSettingsProps) {
               className={`flex items-start gap-2 p-3 rounded-xl text-sm ${
                 serverStatus.type === "error"
                   ? "bg-rose-50 text-rose-600 "
-                  : "bg-teal-50 text-teal-700 "
+                  : "bg-indigo-50 text-indigo-700 "
               }`}
             >
               {serverStatus.type === "error" ? (
@@ -131,7 +131,7 @@ export function PaymentSettings({ tenant }: PaymentSettingsProps) {
               <select
                 value={form.payment_method_type}
                 onChange={(e) => updateForm("payment_method_type", e.target.value)}
-                className={`w-full px-4 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 caret-teal-600 focus:outline-none focus:ring-4 focus:ring-teal-500/20 transition-all shadow-inner appearance-none ${
+                className={`w-full px-4 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 caret-indigo-600 focus:outline-none focus:ring-4 focus:ring-indigo-500/20 transition-all shadow-inner appearance-none ${
                   fieldErrors.payment_method_type ? "ring-2 ring-rose-400 bg-rose-50" : ""
                 }`}
                 disabled={isPending}
@@ -157,7 +157,7 @@ export function PaymentSettings({ tenant }: PaymentSettingsProps) {
                   onChange={(e) => updateForm("bank_name", e.target.value)}
                   onBlur={(e) => validateField("bank_name", e.target.value)}
                   placeholder="Misal: BCA, Mandiri, BSI"
-                  className={`w-full px-4 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 caret-teal-600 focus:outline-none focus:ring-4 focus:ring-teal-500/20 transition-all shadow-inner ${
+                  className={`w-full px-4 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 caret-indigo-600 focus:outline-none focus:ring-4 focus:ring-indigo-500/20 transition-all shadow-inner ${
                     fieldErrors.bank_name ? "ring-2 ring-rose-400 bg-rose-50" : ""
                   }`}
                   disabled={isPending}
@@ -175,7 +175,7 @@ export function PaymentSettings({ tenant }: PaymentSettingsProps) {
                   onChange={(e) => updateForm("bank_account_number", e.target.value)}
                   onBlur={(e) => validateField("bank_account_number", e.target.value)}
                   placeholder="Contoh: 1234567890"
-                  className={`w-full px-4 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 caret-teal-600 focus:outline-none focus:ring-4 focus:ring-teal-500/20 transition-all shadow-inner ${
+                  className={`w-full px-4 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 caret-indigo-600 focus:outline-none focus:ring-4 focus:ring-indigo-500/20 transition-all shadow-inner ${
                     fieldErrors.bank_account_number ? "ring-2 ring-rose-400 bg-rose-50" : ""
                   }`}
                   disabled={isPending}
@@ -193,7 +193,7 @@ export function PaymentSettings({ tenant }: PaymentSettingsProps) {
                   onChange={(e) => updateForm("bank_account_name", e.target.value)}
                   onBlur={(e) => validateField("bank_account_name", e.target.value)}
                   placeholder="Atas nama siapa rekening tersebut?"
-                  className={`w-full px-4 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 caret-teal-600 focus:outline-none focus:ring-4 focus:ring-teal-500/20 transition-all shadow-inner ${
+                  className={`w-full px-4 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 caret-indigo-600 focus:outline-none focus:ring-4 focus:ring-indigo-500/20 transition-all shadow-inner ${
                     fieldErrors.bank_account_name ? "ring-2 ring-rose-400 bg-rose-50" : ""
                   }`}
                   disabled={isPending}
@@ -214,7 +214,7 @@ export function PaymentSettings({ tenant }: PaymentSettingsProps) {
                 <select
                   value={form.payment_gateway_provider || "midtrans"}
                   onChange={(e) => updateForm("payment_gateway_provider", e.target.value)}
-                  className={`w-full px-4 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 caret-teal-600 focus:outline-none focus:ring-4 focus:ring-teal-500/20 transition-all shadow-inner appearance-none`}
+                  className={`w-full px-4 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 caret-indigo-600 focus:outline-none focus:ring-4 focus:ring-indigo-500/20 transition-all shadow-inner appearance-none`}
                   disabled={isPending}
                 >
                   <option value="midtrans">Midtrans</option>
@@ -229,7 +229,7 @@ export function PaymentSettings({ tenant }: PaymentSettingsProps) {
                   value={form.payment_gateway_server_key || ""}
                   onChange={(e) => updateForm("payment_gateway_server_key", e.target.value)}
                   placeholder="Masukkan Server Key"
-                  className={`w-full px-4 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 caret-teal-600 focus:outline-none focus:ring-4 focus:ring-teal-500/20 transition-all shadow-inner`}
+                  className={`w-full px-4 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 caret-indigo-600 focus:outline-none focus:ring-4 focus:ring-indigo-500/20 transition-all shadow-inner`}
                   disabled={isPending}
                 />
               </div>
@@ -241,7 +241,7 @@ export function PaymentSettings({ tenant }: PaymentSettingsProps) {
                   value={form.payment_gateway_client_key || ""}
                   onChange={(e) => updateForm("payment_gateway_client_key", e.target.value)}
                   placeholder="Masukkan Client Key"
-                  className={`w-full px-4 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 caret-teal-600 focus:outline-none focus:ring-4 focus:ring-teal-500/20 transition-all shadow-inner`}
+                  className={`w-full px-4 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 caret-indigo-600 focus:outline-none focus:ring-4 focus:ring-indigo-500/20 transition-all shadow-inner`}
                   disabled={isPending}
                 />
               </div>
@@ -250,7 +250,7 @@ export function PaymentSettings({ tenant }: PaymentSettingsProps) {
 
           <Button
             type="submit"
-            className="w-full h-12 bg-teal-600 hover:bg-teal-700 text-white rounded-full font-bold mt-4 shadow-md shadow-teal-600/20 transition-all hover:shadow-lg"
+            className="w-full h-12 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full font-bold mt-4 shadow-md shadow-indigo-600/20 transition-all hover:shadow-lg"
             disabled={
               isPending ||
               Object.values(fieldErrors).some((err) => !!err)

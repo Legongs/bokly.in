@@ -108,7 +108,7 @@ export function PortfolioSettings({ tenant }: PortfolioSettingsProps) {
   if (isLoading) {
     return (
       <div className="w-full max-w-xl mx-auto p-10 flex justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-teal-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
       </div>
     );
   }
@@ -128,7 +128,7 @@ export function PortfolioSettings({ tenant }: PortfolioSettingsProps) {
       </div>
 
       {message && (
-        <div className={`p-4 rounded-xl text-sm font-semibold mb-6 flex items-center gap-2 ${message.type === "success" ? "bg-teal-50 text-teal-700 border border-teal-200" : "bg-rose-50 text-rose-700 border border-rose-200"}`}>
+        <div className={`p-4 rounded-xl text-sm font-semibold mb-6 flex items-center gap-2 ${message.type === "success" ? "bg-indigo-50 text-indigo-700 border border-indigo-200" : "bg-rose-50 text-rose-700 border border-rose-200"}`}>
           {message.type === "success" ? <Check className="w-5 h-5" /> : <Info className="w-5 h-5" />}
           {message.text}
         </div>
@@ -167,7 +167,7 @@ export function PortfolioSettings({ tenant }: PortfolioSettingsProps) {
               type="text"
               value={formData.title}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              className="w-full px-4 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 caret-teal-600 focus:outline-none focus:ring-4 focus:ring-teal-500/20 transition-all shadow-inner"
+              className="w-full px-4 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 caret-indigo-600 focus:outline-none focus:ring-4 focus:ring-indigo-500/20 transition-all shadow-inner"
               placeholder="Contoh: Hasil pewarnaan rambut ombre"
               disabled={isPending}
             />
@@ -189,7 +189,7 @@ export function PortfolioSettings({ tenant }: PortfolioSettingsProps) {
             <Button 
               onClick={handleSave} 
               disabled={!formData.image_url || isPending}
-              className="bg-teal-600 hover:bg-teal-700 text-white rounded-full shadow-md shadow-teal-600/20"
+              className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-full shadow-md shadow-indigo-600/20"
             >
               {isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : "Unggah & Pasang Foto"}
             </Button>
@@ -200,7 +200,7 @@ export function PortfolioSettings({ tenant }: PortfolioSettingsProps) {
           <Button 
             onClick={() => setIsAdding(true)}
             variant="outline"
-            className="w-full border-dashed border-2 border-stone-300 text-stone-500 hover:text-teal-600 hover:border-teal-400 hover:bg-teal-50 h-14 rounded-2xl mb-8 font-bold"
+            className="w-full border-dashed border-2 border-stone-300 text-stone-500 hover:text-indigo-600 hover:border-indigo-400 hover:bg-indigo-50 h-14 rounded-2xl mb-8 font-bold"
           >
             <PlusCircle className="w-5 h-5 mr-2" /> Tambah Foto Portofolio
           </Button>

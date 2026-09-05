@@ -94,7 +94,7 @@ export function SettingsForm({ tenant }: SettingsFormProps) {
  className={`flex items-start gap-2 p-3 rounded-xl text-sm ${
  serverStatus.type === "error"
  ? "bg-rose-50 text-rose-600 "
- : "bg-teal-50 text-teal-700 "
+ : "bg-indigo-50 text-indigo-700 "
  }`}
  >
  {serverStatus.type === "error" ? (
@@ -118,7 +118,7 @@ export function SettingsForm({ tenant }: SettingsFormProps) {
  onChange={(e) => updateForm("business_name", e.target.value)}
  onBlur={(e) => validateField("business_name", e.target.value)}
  placeholder="Misal: Salon Siska"
- className={`w-full pl-10 pr-4 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 caret-teal-600 focus:outline-none focus:ring-4 focus:ring-teal-500/20 transition-all shadow-inner ${
+ className={`w-full pl-10 pr-4 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 caret-indigo-600 focus:outline-none focus:ring-4 focus:ring-indigo-500/20 transition-all shadow-inner ${
  fieldErrors.business_name ? "ring-2 ring-rose-400 bg-rose-50" : ""
  }`}
  disabled={isPending}
@@ -159,7 +159,7 @@ export function SettingsForm({ tenant }: SettingsFormProps) {
  onChange={(e) => updateForm("whatsapp_number", e.target.value)}
  onBlur={(e) => validateField("whatsapp_number", e.target.value)}
  placeholder="Contoh: 081234567890"
- className={`w-full pl-10 pr-4 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 caret-teal-600 focus:outline-none focus:ring-4 focus:ring-teal-500/20 transition-all shadow-inner ${
+ className={`w-full pl-10 pr-4 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 caret-indigo-600 focus:outline-none focus:ring-4 focus:ring-indigo-500/20 transition-all shadow-inner ${
  fieldErrors.whatsapp_number ? "ring-2 ring-rose-400 bg-rose-50" : ""
  }`}
  disabled={isPending}
@@ -182,7 +182,7 @@ export function SettingsForm({ tenant }: SettingsFormProps) {
  onChange={(e) => updateForm("telegram_chat_id", e.target.value)}
  onBlur={(e) => validateField("telegram_chat_id", e.target.value)}
  placeholder="Misal: 123456789"
- className={`w-full pl-10 pr-4 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 caret-teal-600 focus:outline-none focus:ring-4 focus:ring-teal-500/20 transition-all shadow-inner ${
+ className={`w-full pl-10 pr-4 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 caret-indigo-600 focus:outline-none focus:ring-4 focus:ring-indigo-500/20 transition-all shadow-inner ${
  fieldErrors.telegram_chat_id ? "ring-2 ring-rose-400 bg-rose-50" : ""
  }`}
  disabled={isPending}
@@ -199,7 +199,7 @@ export function SettingsForm({ tenant }: SettingsFormProps) {
 
   <Button
   type="submit"
-  className="w-full h-12 bg-teal-600 hover:bg-teal-700 text-white rounded-full font-bold mt-4 shadow-md shadow-teal-600/20 transition-all hover:shadow-lg"
+  className="w-full h-12 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full font-bold mt-4 shadow-md shadow-indigo-600/20 transition-all hover:shadow-lg"
  disabled={
  isPending ||
  !form.business_name ||

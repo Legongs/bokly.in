@@ -18,7 +18,7 @@ export default function DashboardPage() {
   if (isLoading || !response) {
     return (
       <main className="min-h-screen bg-stone-50 p-6 flex flex-col items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-teal-600 mb-4" />
+        <Loader2 className="w-8 h-8 animate-spin text-indigo-600 mb-4" />
         <p className="text-stone-500 font-medium">Memuat dasbor...</p>
       </main>
     );
@@ -56,7 +56,7 @@ export default function DashboardPage() {
       <header className="bg-white border-b border-stone-200 px-4 py-5 sticky top-0 z-10 shadow-sm">
         <div className="max-w-3xl mx-auto flex items-center justify-between gap-4">
           <div className="flex-1 min-w-0 flex items-center gap-4">
-            <div className="w-14 h-14 rounded-[1.2rem] bg-gradient-to-br from-teal-100 to-teal-50 flex-shrink-0 flex items-center justify-center text-teal-700 font-extrabold text-2xl shadow-inner border border-teal-200/50">
+            <div className="w-14 h-14 rounded-[1.2rem] bg-gradient-to-br from-indigo-100 to-indigo-50 flex-shrink-0 flex items-center justify-center text-indigo-700 font-extrabold text-2xl shadow-inner border border-indigo-200/50">
               {tenant.business_name.charAt(0).toUpperCase()}
             </div>
             <div className="min-w-0 flex-1">
@@ -105,11 +105,11 @@ export default function DashboardPage() {
                 </p>
               </div>
               
-              <div className="min-w-[200px] flex-shrink-0 lg:min-w-0 bg-orange-50/80 rounded-[2rem] p-6 shadow-sm shadow-orange-900/5 border border-orange-200/50 relative overflow-hidden">
+              <div className="min-w-[200px] flex-shrink-0 lg:min-w-0 bg-amber-50/80 rounded-[2rem] p-6 shadow-sm shadow-orange-900/5 border border-amber-200/50 relative overflow-hidden">
                 {/* Decorative earthy blob */}
                 <div className="absolute -bottom-8 -right-8 w-32 h-32 bg-orange-200/40 rounded-full blur-3xl" aria-hidden="true" />
                 <div className="relative">
-                  <div className="flex items-center gap-2 text-orange-700 mb-4">
+                  <div className="flex items-center gap-2 text-amber-700 mb-4">
                     <div className="w-8 h-8 rounded-full bg-orange-100/50 flex items-center justify-center">
                       <TrendingUp className="w-4 h-4 text-orange-600" />
                     </div>
@@ -164,7 +164,7 @@ export default function DashboardPage() {
                   Tunggu Konfirmasi
                 </h2>
                 {pendingCount > 0 && (
-                  <span className="bg-orange-100 text-orange-700 py-1 px-3 rounded-full text-xs font-bold animate-pulse whitespace-nowrap">
+                  <span className="bg-orange-100 text-amber-700 py-1 px-3 rounded-full text-xs font-bold animate-pulse whitespace-nowrap">
                     {pendingCount} Baru
                   </span>
                 )}

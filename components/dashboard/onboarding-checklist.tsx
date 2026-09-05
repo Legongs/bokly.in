@@ -51,22 +51,22 @@ export function OnboardingChecklist({
 
       <div className="w-full bg-stone-100 rounded-full h-2.5 mb-6 overflow-hidden">
         <div 
-          className="bg-teal-600 h-2.5 rounded-full transition-all duration-1000 ease-out" 
+          className="bg-indigo-600 h-2.5 rounded-full transition-all duration-1000 ease-out" 
           style={{ width: `${(completedCount / totalCount) * 100}%` }}
         ></div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         {checklist.map((item, idx) => (
-          <div key={idx} className={`flex items-center gap-3 p-3 rounded-xl border transition-colors ${item.done ? 'bg-stone-50 border-stone-100' : 'bg-white border-stone-200 hover:border-teal-50'}`}>
+          <div key={idx} className={`flex items-center gap-3 p-3 rounded-xl border transition-colors ${item.done ? 'bg-stone-50 border-stone-100' : 'bg-white border-stone-200 hover:border-indigo-50'}`}>
             {item.done ? (
-              <CheckCircle2 className="w-5 h-5 text-teal-600 flex-shrink-0" />
+              <CheckCircle2 className="w-5 h-5 text-indigo-600 flex-shrink-0" />
             ) : (
               <Circle className="w-5 h-5 text-stone-300 flex-shrink-0" />
             )}
             
             {item.href && !item.done ? (
-              <Link href={item.href} className="text-sm font-semibold text-stone-700 hover:text-teal-700">
+              <Link href={item.href} className="text-sm font-semibold text-stone-700 hover:text-indigo-700">
                 {item.label}
               </Link>
             ) : (

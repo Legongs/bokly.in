@@ -57,7 +57,7 @@ export default function ResetPasswordPage() {
       <div className="w-full max-w-md bg-white rounded-[2rem] p-8 sm:p-10 shadow-sm border border-stone-100">
         
         <Link href="/" className="inline-flex items-center gap-2 mb-8">
-          <div className="w-8 h-8 rounded-xl bg-teal-600 flex items-center justify-center text-white shadow-sm shadow-teal-600/20">
+          <div className="w-8 h-8 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-sm shadow-indigo-600/20">
             <Store className="w-4 h-4" />
           </div>
           <span className="font-extrabold text-lg tracking-tight text-stone-900">
@@ -66,7 +66,7 @@ export default function ResetPasswordPage() {
         </Link>
         
         <div className="mb-8">
-          <div className="w-12 h-12 bg-teal-50 rounded-2xl flex items-center justify-center text-teal-600 mb-4 border border-teal-100">
+          <div className="w-12 h-12 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 mb-4 border border-indigo-100">
             <Lock className="w-6 h-6" />
           </div>
           <h1 className="text-2xl font-extrabold text-stone-900 tracking-tight">
@@ -97,7 +97,7 @@ export default function ResetPasswordPage() {
                   if (fieldErrors.password) setFieldErrors({ ...fieldErrors, password: "" });
                 }}
                 placeholder="••••••••"
-                className={`w-full pl-9 pr-4 py-2.5 rounded-xl border text-sm text-stone-900 caret-teal-600 bg-stone-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors ${
+                className={`w-full pl-9 pr-4 py-2.5 rounded-xl border text-sm text-stone-900 caret-indigo-600 bg-stone-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors ${
                   fieldErrors.password ? "border-rose-400 focus:ring-rose-400" : "border-stone-200"
                 }`}
                 disabled={isPending}
@@ -118,7 +118,7 @@ export default function ResetPasswordPage() {
                   if (fieldErrors.confirmPassword) setFieldErrors({ ...fieldErrors, confirmPassword: "" });
                 }}
                 placeholder="••••••••"
-                className={`w-full pl-9 pr-4 py-2.5 rounded-xl border text-sm text-stone-900 caret-teal-600 bg-stone-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors ${
+                className={`w-full pl-9 pr-4 py-2.5 rounded-xl border text-sm text-stone-900 caret-indigo-600 bg-stone-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors ${
                   fieldErrors.confirmPassword ? "border-rose-400 focus:ring-rose-400" : "border-stone-200"
                 }`}
                 disabled={isPending}
@@ -129,7 +129,7 @@ export default function ResetPasswordPage() {
 
           <Button
             type="submit"
-            className="w-full h-12 bg-teal-600 hover:bg-teal-700 text-white rounded-xl font-bold mt-6 shadow-md shadow-teal-600/20"
+            className="w-full h-12 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold mt-6 shadow-md shadow-indigo-600/20"
             disabled={isPending || !password || !confirmPassword}
           >
             {isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : "Simpan Password Baru"}

@@ -46,7 +46,7 @@ export default function ForgotPasswordPage() {
       <div className="w-full max-w-md bg-white rounded-[2rem] p-8 sm:p-10 shadow-sm border border-stone-100">
         
         <Link href="/" className="inline-flex items-center gap-2 mb-8">
-          <div className="w-8 h-8 rounded-xl bg-teal-600 flex items-center justify-center text-white shadow-sm shadow-teal-600/20">
+          <div className="w-8 h-8 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-sm shadow-indigo-600/20">
             <Store className="w-4 h-4" />
           </div>
           <span className="font-extrabold text-lg tracking-tight text-stone-900">
@@ -55,7 +55,7 @@ export default function ForgotPasswordPage() {
         </Link>
         
         <div className="mb-8">
-          <div className="w-12 h-12 bg-teal-50 rounded-2xl flex items-center justify-center text-teal-600 mb-4 border border-teal-100">
+          <div className="w-12 h-12 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 mb-4 border border-indigo-100">
             <KeyRound className="w-6 h-6" />
           </div>
           <h1 className="text-2xl font-extrabold text-stone-900 tracking-tight">
@@ -67,15 +67,15 @@ export default function ForgotPasswordPage() {
         </div>
 
         {isSuccess ? (
-          <div className="bg-teal-50 border border-teal-100 rounded-2xl p-6 text-center animate-in fade-in zoom-in duration-300">
-            <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center mx-auto mb-4 text-teal-600 shadow-sm">
+          <div className="bg-indigo-50 border border-indigo-100 rounded-2xl p-6 text-center animate-in fade-in zoom-in duration-300">
+            <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center mx-auto mb-4 text-indigo-600 shadow-sm">
               <CheckCircle2 className="w-6 h-6" />
             </div>
-            <h3 className="font-bold text-teal-900 mb-2">Link Terkirim!</h3>
-            <p className="text-sm text-teal-700/80 mb-6">
-              Cek inbox atau folder spam email <span className="font-semibold text-teal-800">{email}</span> ya.
+            <h3 className="font-bold text-indigo-900 mb-2">Link Terkirim!</h3>
+            <p className="text-sm text-indigo-700/80 mb-6">
+              Cek inbox atau folder spam email <span className="font-semibold text-indigo-800">{email}</span> ya.
             </p>
-            <Link href="/login" className="block w-full py-3 bg-white border border-teal-200 text-teal-700 rounded-xl font-bold hover:bg-teal-50 transition-colors">
+            <Link href="/login" className="block w-full py-3 bg-white border border-indigo-200 text-indigo-700 rounded-xl font-bold hover:bg-indigo-50 transition-colors">
               Kembali ke Login
             </Link>
           </div>
@@ -100,7 +100,7 @@ export default function ForgotPasswordPage() {
                     if (fieldError) setFieldError(null);
                   }}
                   placeholder="admin@tokokamu.com"
-                  className={`w-full pl-9 pr-4 py-2.5 rounded-xl border text-sm text-stone-900 caret-teal-600 bg-stone-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors ${
+                  className={`w-full pl-9 pr-4 py-2.5 rounded-xl border text-sm text-stone-900 caret-indigo-600 bg-stone-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors ${
                     fieldError ? "border-rose-400 focus:ring-rose-400" : "border-stone-200"
                   }`}
                   disabled={isPending}
@@ -111,7 +111,7 @@ export default function ForgotPasswordPage() {
 
             <Button
               type="submit"
-              className="w-full h-12 bg-teal-600 hover:bg-teal-700 text-white rounded-xl font-bold mt-6 shadow-md shadow-teal-600/20"
+              className="w-full h-12 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold mt-6 shadow-md shadow-indigo-600/20"
               disabled={isPending || !email}
             >
               {isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : "Kirim Link Reset"}
@@ -119,7 +119,7 @@ export default function ForgotPasswordPage() {
 
             <p className="text-sm text-stone-500 text-center mt-6">
               Ingat passwordnya?{" "}
-              <Link href="/login" className="font-bold text-teal-700 hover:text-teal-800 transition-colors">
+              <Link href="/login" className="font-bold text-indigo-700 hover:text-indigo-800 transition-colors">
                 Kembali login
               </Link>
             </p>

@@ -42,7 +42,7 @@ export function WaSettings({ tenant }: WaSettingsProps) {
       </p>
 
       {waMessage && (
-        <div className={`p-4 rounded-xl text-sm font-semibold mb-6 flex items-center gap-2 ${waMessage.type === "success" ? "bg-teal-50 text-teal-700 border border-teal-200" : "bg-rose-50 text-rose-700 border border-rose-200"}`}>
+        <div className={`p-4 rounded-xl text-sm font-semibold mb-6 flex items-center gap-2 ${waMessage.type === "success" ? "bg-indigo-50 text-indigo-700 border border-indigo-200" : "bg-rose-50 text-rose-700 border border-rose-200"}`}>
           {waMessage.type === "success" && <Check className="w-5 h-5" />}
           {waMessage.text}
         </div>
@@ -51,17 +51,17 @@ export function WaSettings({ tenant }: WaSettingsProps) {
       <form onSubmit={handleWaSubmit} className="space-y-6">
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
           {/* Manual Option */}
-          <label className={`relative flex cursor-pointer rounded-xl border p-5 shadow-sm transition-all focus:outline-none ${waMethod === 'manual' ? 'border-teal-600 ring-1 ring-teal-600 bg-teal-50/20' : 'border-stone-200 hover:bg-stone-50'}`}>
+          <label className={`relative flex cursor-pointer rounded-xl border p-5 shadow-sm transition-all focus:outline-none ${waMethod === 'manual' ? 'border-indigo-600 ring-1 ring-indigo-600 bg-indigo-50/20' : 'border-stone-200 hover:bg-stone-50'}`}>
             <input type="radio" name="wa_method" value="manual" className="sr-only" checked={waMethod === 'manual'} onChange={() => setWaMethod('manual')} />
             <span className="flex flex-1">
               <span className="flex flex-col">
                 <span className="flex items-center justify-between w-full mb-3">
                   <span className="flex items-center gap-2 text-stone-900 font-bold text-base">
-                    <MessageSquare className={`w-5 h-5 ${waMethod === 'manual' ? 'text-teal-600' : 'text-stone-500'}`} />
+                    <MessageSquare className={`w-5 h-5 ${waMethod === 'manual' ? 'text-indigo-600' : 'text-stone-500'}`} />
                     Manual (Tautan wa.me)
                   </span>
-                  <div className={`h-5 w-5 rounded-full border flex items-center justify-center flex-shrink-0 ${waMethod === 'manual' ? 'border-teal-600' : 'border-stone-300'}`}>
-                    {waMethod === 'manual' && <div className="h-2.5 w-2.5 rounded-full bg-teal-600" />}
+                  <div className={`h-5 w-5 rounded-full border flex items-center justify-center flex-shrink-0 ${waMethod === 'manual' ? 'border-indigo-600' : 'border-stone-300'}`}>
+                    {waMethod === 'manual' && <div className="h-2.5 w-2.5 rounded-full bg-indigo-600" />}
                   </div>
                 </span>
                 
@@ -88,17 +88,17 @@ export function WaSettings({ tenant }: WaSettingsProps) {
           </label>
 
           {/* API Option */}
-          <label className={`relative flex cursor-pointer rounded-xl border p-5 shadow-sm transition-all focus:outline-none ${waMethod === 'api' ? 'border-teal-600 ring-1 ring-teal-600 bg-teal-50/20' : 'border-stone-200 hover:bg-stone-50'}`}>
+          <label className={`relative flex cursor-pointer rounded-xl border p-5 shadow-sm transition-all focus:outline-none ${waMethod === 'api' ? 'border-indigo-600 ring-1 ring-indigo-600 bg-indigo-50/20' : 'border-stone-200 hover:bg-stone-50'}`}>
             <input type="radio" name="wa_method" value="api" className="sr-only" checked={waMethod === 'api'} onChange={() => setWaMethod('api')} />
             <span className="flex flex-1">
               <span className="flex flex-col">
                 <span className="flex items-center justify-between w-full mb-3">
                   <span className="flex items-center gap-2 text-stone-900 font-bold text-base">
-                    <Bot className={`w-5 h-5 ${waMethod === 'api' ? 'text-teal-600' : 'text-stone-500'}`} />
+                    <Bot className={`w-5 h-5 ${waMethod === 'api' ? 'text-indigo-600' : 'text-stone-500'}`} />
                     Otomatis (API Fonnte)
                   </span>
-                  <div className={`h-5 w-5 rounded-full border flex items-center justify-center flex-shrink-0 ${waMethod === 'api' ? 'border-teal-600' : 'border-stone-300'}`}>
-                    {waMethod === 'api' && <div className="h-2.5 w-2.5 rounded-full bg-teal-600" />}
+                  <div className={`h-5 w-5 rounded-full border flex items-center justify-center flex-shrink-0 ${waMethod === 'api' ? 'border-indigo-600' : 'border-stone-300'}`}>
+                    {waMethod === 'api' && <div className="h-2.5 w-2.5 rounded-full bg-indigo-600" />}
                   </div>
                 </span>
 
@@ -117,7 +117,7 @@ export function WaSettings({ tenant }: WaSettingsProps) {
                   </div>
                   <div>
                     <strong className="text-xs text-stone-900 uppercase tracking-wider">Syarat:</strong>
-                    <p className="text-sm text-stone-600 mt-1">Wajib berlangganan dan memiliki Token API dari <a href="https://fonnte.com" target="_blank" rel="noreferrer" className="text-teal-600 hover:underline">fonnte.com</a>.</p>
+                    <p className="text-sm text-stone-600 mt-1">Wajib berlangganan dan memiliki Token API dari <a href="https://fonnte.com" target="_blank" rel="noreferrer" className="text-indigo-600 hover:underline">fonnte.com</a>.</p>
                   </div>
                 </div>
               </span>
@@ -132,14 +132,14 @@ export function WaSettings({ tenant }: WaSettingsProps) {
               Fonnte API Key (Token)
             </label>
             <p className="text-sm text-stone-600 mb-4 leading-relaxed">
-              Tempelkan <strong>Token</strong> perangkat Anda di sini. Anda bisa mendapatkannya melalui menu <strong>Device</strong> di dashboard akun <a href="https://md.fonnte.com" target="_blank" rel="noreferrer" className="text-teal-600 hover:underline font-semibold">Fonnte</a> Anda. Pastikan status <em>device</em> di Fonnte dalam keadaan terhubung (Connected).
+              Tempelkan <strong>Token</strong> perangkat Anda di sini. Anda bisa mendapatkannya melalui menu <strong>Device</strong> di dashboard akun <a href="https://md.fonnte.com" target="_blank" rel="noreferrer" className="text-indigo-600 hover:underline font-semibold">Fonnte</a> Anda. Pastikan status <em>device</em> di Fonnte dalam keadaan terhubung (Connected).
             </p>
             <input
               type="password"
               id="apiKey"
               value={waApiKey}
               onChange={(e) => setWaApiKey(e.target.value)}
-              className="w-full px-4 py-2.5 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-600 focus:border-transparent transition-shadow text-sm"
+              className="w-full px-4 py-2.5 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent transition-shadow text-sm"
               placeholder="Masukkan Token Fonnte (Misal: XyZ123...)"
               required={waMethod === "api"}
             />
@@ -149,7 +149,7 @@ export function WaSettings({ tenant }: WaSettingsProps) {
         <div className="pt-3 border-t border-stone-100">
           <Button
             type="submit"
-            className="w-full h-12 bg-teal-600 hover:bg-teal-700 text-white rounded-full font-bold mt-4 shadow-md shadow-teal-600/20 transition-all hover:shadow-lg"
+            className="w-full h-12 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full font-bold mt-4 shadow-md shadow-indigo-600/20 transition-all hover:shadow-lg"
             disabled={isPendingWa}
           >
             {isPendingWa ? (

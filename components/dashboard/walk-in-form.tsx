@@ -81,11 +81,11 @@ export function WalkInForm({
         <DialogContent className="sm:max-w-md bg-white rounded-3xl p-5 sm:p-6 border border-stone-100 shadow-xl max-w-[90vw]">
         <DialogHeader>
           <DialogTitle className="text-xl font-extrabold flex items-center gap-2 text-stone-900">
-            <Store className="w-5 h-5 text-teal-600" /> Tambah Walk-in
+            <Store className="w-5 h-5 text-indigo-600" /> Tambah Walk-in
           </DialogTitle>
         </DialogHeader>
 
-        <div className="bg-teal-50 text-teal-800 text-xs p-3 rounded-xl border border-teal-100 font-medium leading-relaxed mt-2 shadow-sm">
+        <div className="bg-indigo-50 text-indigo-800 text-xs p-3 rounded-xl border border-indigo-100 font-medium leading-relaxed mt-2 shadow-sm">
           <strong>Ssst, fitur Walk-in ini khusus buat kasir!</strong> Sistem bakal langsung ngunci jadwal tanpa nunggu pelanggan bayar DP, dan batas waktu pesanan juga dilewati. Pas banget buat masukin jadwal tamu yang datang mendadak ke toko.
         </div>
 
@@ -101,7 +101,7 @@ export function WalkInForm({
             <label className="text-sm font-bold text-stone-700">Layanan</label>
             <select
               required
-              className="w-full bg-stone-50 border border-stone-200 text-stone-900 text-sm rounded-xl focus:ring-teal-500 focus:border-teal-500 block p-3 font-medium outline-none transition-all"
+              className="w-full bg-stone-50 border border-stone-200 text-stone-900 text-sm rounded-xl focus:ring-indigo-500 focus:border-indigo-500 block p-3 font-medium outline-none transition-all"
               value={serviceId}
               onChange={(e) => setServiceId(e.target.value)}
             >
@@ -117,7 +117,7 @@ export function WalkInForm({
             <div className="space-y-1.5">
               <label className="text-sm font-bold text-stone-700">Pilih Staf (Opsional)</label>
               <select
-                className="w-full bg-stone-50 border border-stone-200 text-stone-900 text-sm rounded-xl focus:ring-teal-500 focus:border-teal-500 block p-3 font-medium outline-none transition-all"
+                className="w-full bg-stone-50 border border-stone-200 text-stone-900 text-sm rounded-xl focus:ring-indigo-500 focus:border-indigo-500 block p-3 font-medium outline-none transition-all"
                 value={staffId}
                 onChange={(e) => setStaffId(e.target.value)}
               >
@@ -139,7 +139,7 @@ export function WalkInForm({
               required
               value={startTime}
               onChange={(e) => setStartTime(e.target.value)}
-              className="w-full bg-stone-50 border border-stone-200 text-stone-900 text-sm rounded-xl focus:ring-teal-500 focus:border-teal-500 block p-3 font-medium outline-none transition-all"
+              className="w-full bg-stone-50 border border-stone-200 text-stone-900 text-sm rounded-xl focus:ring-indigo-500 focus:border-indigo-500 block p-3 font-medium outline-none transition-all"
             />
           </div>
 
@@ -155,7 +155,7 @@ export function WalkInForm({
                 placeholder="Cth: Budi"
                 value={customerName}
                 onChange={(e) => setCustomerName(e.target.value)}
-                className="w-full bg-stone-50 border border-stone-200 text-stone-900 text-sm rounded-xl focus:ring-teal-500 focus:border-teal-500 block p-3 font-medium outline-none transition-all"
+                className="w-full bg-stone-50 border border-stone-200 text-stone-900 text-sm rounded-xl focus:ring-indigo-500 focus:border-indigo-500 block p-3 font-medium outline-none transition-all"
               />
             </div>
 
@@ -170,7 +170,7 @@ export function WalkInForm({
                 placeholder="081xxx"
                 value={customerWa}
                 onChange={(e) => setCustomerWa(e.target.value)}
-                className="w-full bg-stone-50 border border-stone-200 text-stone-900 text-sm rounded-xl focus:ring-teal-500 focus:border-teal-500 block p-3 font-medium outline-none transition-all"
+                className="w-full bg-stone-50 border border-stone-200 text-stone-900 text-sm rounded-xl focus:ring-indigo-500 focus:border-indigo-500 block p-3 font-medium outline-none transition-all"
               />
             </div>
           </div>
@@ -179,7 +179,7 @@ export function WalkInForm({
             <Button
               type="submit"
               disabled={isPending || !serviceId}
-              className="w-full bg-teal-600 hover:bg-teal-700 text-white rounded-xl h-11 text-base font-bold shadow-sm"
+              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl h-11 text-base font-bold shadow-sm"
             >
               {isPending ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : null}
               {isPending ? "Memasukkan jadwal..." : "Kunci Jadwal Walk-in"}

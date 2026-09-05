@@ -88,7 +88,7 @@ export function CalendarSettings({ tenant }: { tenant: Tenant }) {
       <div className="bg-white rounded-[2rem] shadow-md shadow-stone-200/50 border-none overflow-hidden p-6 sm:p-8 animate-in fade-in zoom-in-95 duration-200">
         <div className="pb-4 border-b border-stone-100">
           <h3 className="text-lg font-bold flex items-center gap-2 text-stone-900">
-            <CalendarDays className="w-5 h-5 text-teal-600" />
+            <CalendarDays className="w-5 h-5 text-indigo-600" />
             Jadwal Buka (Mingguan)
           </h3>
           <p className="text-sm text-stone-500 mt-1">
@@ -109,7 +109,7 @@ export function CalendarSettings({ tenant }: { tenant: Tenant }) {
                         checked={schedule.isOpen}
                         onChange={(e) => updateDay(day.id, "isOpen", e.target.checked)}
                       />
-                      <div className="w-11 h-6 bg-stone-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-stone-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-500"></div>
+                      <div className="w-11 h-6 bg-stone-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-stone-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-500"></div>
                     </label>
                     <span className={`text-sm font-bold ${schedule.isOpen ? "text-stone-900" : "text-stone-400"}`}>
                       {day.label}
@@ -122,14 +122,14 @@ export function CalendarSettings({ tenant }: { tenant: Tenant }) {
                         type="time" 
                         value={schedule.openTime}
                         onChange={(e) => updateDay(day.id, "openTime", e.target.value)}
-                        className="flex-1 rounded-xl border border-stone-200 px-3 py-1.5 text-sm font-medium focus:ring-2 focus:ring-teal-500 focus:outline-none"
+                        className="flex-1 rounded-xl border border-stone-200 px-3 py-1.5 text-sm font-medium focus:ring-2 focus:ring-indigo-500 focus:outline-none"
                       />
                       <span className="text-stone-400 font-bold">-</span>
                       <input 
                         type="time" 
                         value={schedule.closeTime}
                         onChange={(e) => updateDay(day.id, "closeTime", e.target.value)}
-                        className="flex-1 rounded-xl border border-stone-200 px-3 py-1.5 text-sm font-medium focus:ring-2 focus:ring-teal-500 focus:outline-none"
+                        className="flex-1 rounded-xl border border-stone-200 px-3 py-1.5 text-sm font-medium focus:ring-2 focus:ring-indigo-500 focus:outline-none"
                       />
                     </div>
                   ) : (
@@ -147,7 +147,7 @@ export function CalendarSettings({ tenant }: { tenant: Tenant }) {
       <div className="bg-white rounded-[2rem] shadow-md shadow-stone-200/50 border-none overflow-hidden p-6 sm:p-8 animate-in fade-in zoom-in-95 duration-200">
         <div className="pb-4 border-b border-stone-100">
           <h3 className="text-lg font-bold flex items-center gap-2 text-stone-900">
-            <Clock className="w-5 h-5 text-teal-600" />
+            <Clock className="w-5 h-5 text-indigo-600" />
             Aturan Pemesanan
           </h3>
           <p className="text-sm text-stone-500 mt-1">
@@ -166,7 +166,7 @@ export function CalendarSettings({ tenant }: { tenant: Tenant }) {
                 min="0"
                 value={minimumNoticeHours}
                 onChange={(e) => setMinimumNoticeHours(Number(e.target.value))}
-                className="w-full pl-4 pr-12 py-3 rounded-2xl border border-stone-200 text-sm font-medium bg-stone-50 text-stone-900 caret-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-500/20"
+                className="w-full pl-4 pr-12 py-3 rounded-2xl border border-stone-200 text-sm font-medium bg-stone-50 text-stone-900 caret-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
               />
               <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold text-stone-400">JAM</span>
             </div>
@@ -178,7 +178,7 @@ export function CalendarSettings({ tenant }: { tenant: Tenant }) {
             </div>
           )}
           {successMsg && (
-            <div className="mt-4 bg-teal-50 text-teal-700 p-3 rounded-xl text-sm font-medium">
+            <div className="mt-4 bg-indigo-50 text-indigo-700 p-3 rounded-xl text-sm font-medium">
               {successMsg}
             </div>
           )}
@@ -187,7 +187,7 @@ export function CalendarSettings({ tenant }: { tenant: Tenant }) {
           <Button 
             onClick={handleSave} 
             disabled={isPending}
-            className="bg-teal-600 hover:bg-teal-700 text-white rounded-full px-6 h-11 shadow-md shadow-teal-600/20 hover:shadow-lg transition-all w-full sm:w-auto"
+            className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-full px-6 h-11 shadow-md shadow-indigo-600/20 hover:shadow-lg transition-all w-full sm:w-auto"
           >
             {isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
             Kunci Pengaturan Kalender
@@ -208,7 +208,7 @@ export function CalendarSettings({ tenant }: { tenant: Tenant }) {
               </p>
             </div>
             {tenant.google_refresh_token && (
-              <span className="text-[10px] font-black uppercase tracking-wider bg-teal-100 text-teal-700 px-2 py-1 rounded-md">Terhubung</span>
+              <span className="text-[10px] font-black uppercase tracking-wider bg-indigo-100 text-indigo-700 px-2 py-1 rounded-md">Terhubung</span>
             )}
           </div>
         </div>
@@ -216,8 +216,8 @@ export function CalendarSettings({ tenant }: { tenant: Tenant }) {
           <div className="flex flex-col items-center justify-center text-center p-6 bg-stone-50 rounded-2xl border border-stone-200 border-dashed">
             {tenant.google_refresh_token ? (
               <>
-                <div className="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center mb-3">
-                  <CheckCircle2 className="w-6 h-6 text-teal-600" />
+                <div className="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mb-3">
+                  <CheckCircle2 className="w-6 h-6 text-indigo-600" />
                 </div>
                 <h4 className="text-sm font-bold text-stone-700 mb-1">Google Calendar Terhubung</h4>
                 <p className="text-xs text-stone-500 max-w-xs mb-4">

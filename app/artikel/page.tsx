@@ -31,8 +31,8 @@ const articles = [
     category: "Teknologi",
     date: "10 Jul 2025",
     readTime: "3 menit baca",
-    imageColor: "bg-teal-100",
-    textColor: "text-teal-700",
+    imageColor: "bg-indigo-100",
+    textColor: "text-indigo-700",
   },
   {
     slug: "3-menghindari-pelanggan-no-show",
@@ -42,7 +42,7 @@ const articles = [
     date: "05 Jul 2025",
     readTime: "5 menit baca",
     imageColor: "bg-orange-100",
-    textColor: "text-orange-700",
+    textColor: "text-amber-700",
   },
 ];
 
@@ -53,7 +53,7 @@ export default function ArticleIndexPage() {
       <header className="border-b border-stone-200 bg-stone-50/80 backdrop-blur-md sticky top-0 z-50">
         <nav className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between" aria-label="Main Navigation">
           <Link href="/" className="flex items-center gap-2" aria-label="Beranda bukly.id">
-            <div className="w-8 h-8 rounded-xl bg-teal-600 flex items-center justify-center text-white shadow-sm shadow-teal-600/20">
+            <div className="w-8 h-8 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-sm shadow-indigo-600/20">
               <Calendar className="w-4 h-4" />
             </div>
             <span className="font-extrabold text-lg tracking-tight text-stone-900">
@@ -62,10 +62,10 @@ export default function ArticleIndexPage() {
           </Link>
 
           <ul className="hidden md:flex items-center gap-6 text-sm font-semibold text-stone-600">
-            <li><Link href="/#fitur" className="hover:text-teal-600 transition-colors">Fitur</Link></li>
-            <li><Link href="/#cara-kerja" className="hover:text-teal-600 transition-colors">Cara Kerja</Link></li>
-            <li><Link href="/#faq" className="hover:text-teal-600 transition-colors">FAQ</Link></li>
-            <li><Link href="/artikel" className="text-teal-600 transition-colors">Artikel</Link></li>
+            <li><Link href="/#fitur" className="hover:text-indigo-600 transition-colors">Fitur</Link></li>
+            <li><Link href="/#cara-kerja" className="hover:text-indigo-600 transition-colors">Cara Kerja</Link></li>
+            <li><Link href="/#faq" className="hover:text-indigo-600 transition-colors">FAQ</Link></li>
+            <li><Link href="/artikel" className="text-indigo-600 transition-colors">Artikel</Link></li>
           </ul>
 
           <div className="flex items-center gap-3">
@@ -78,7 +78,7 @@ export default function ArticleIndexPage() {
               </Button>
             </Link>
             <Link href="/register">
-              <Button size="sm" className="bg-teal-600 text-white font-semibold hover:bg-teal-700 shadow-sm transition-all duration-200 hidden sm:flex">
+              <Button size="sm" className="bg-indigo-600 text-white font-semibold hover:bg-indigo-700 shadow-sm transition-all duration-200 hidden sm:flex">
                 Coba Gratis
               </Button>
             </Link>
@@ -93,7 +93,7 @@ export default function ArticleIndexPage() {
             <span>Blog & Insights</span>
           </div>
           <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-stone-900 leading-[1.15]">
-            Jelajahi Tips <span className="text-teal-700">Bisnis Jasa</span>
+            Jelajahi Tips <span className="text-indigo-700">Bisnis Jasa</span>
           </h1>
           <p className="mt-6 text-base sm:text-lg text-stone-600 leading-relaxed">
             Kumpulan panduan, strategi, dan cerita sukses untuk membantu UMKM Anda berkembang pesat di era digital.
@@ -117,7 +117,7 @@ export default function ArticleIndexPage() {
                   <span className="text-xs font-medium text-stone-500">{article.readTime}</span>
                 </div>
                 
-                <h2 className="text-xl font-bold text-stone-900 mb-3 group-hover:text-teal-700 transition-colors line-clamp-2 leading-snug">
+                <h2 className="text-xl font-bold text-stone-900 mb-3 group-hover:text-indigo-700 transition-colors line-clamp-2 leading-snug">
                   {article.title}
                 </h2>
                 
@@ -127,7 +127,7 @@ export default function ArticleIndexPage() {
                 
                 <div className="flex items-center justify-between mt-auto pt-4 border-t border-stone-100">
                   <span className="text-xs font-semibold text-stone-500">{article.date}</span>
-                  <span className="text-teal-600 font-bold text-sm flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                  <span className="text-indigo-600 font-bold text-sm flex items-center gap-1 group-hover:translate-x-1 transition-transform">
                     Baca <ArrowRight className="w-4 h-4" />
                   </span>
                 </div>
@@ -142,7 +142,7 @@ export default function ArticleIndexPage() {
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex flex-col items-center md:items-start gap-2">
             <div className="flex items-center gap-2">
-              <Calendar className="w-5 h-5 text-teal-600" />
+              <Calendar className="w-5 h-5 text-indigo-600" />
               <span className="font-extrabold text-stone-900">bukly.id</span>
             </div>
             <p className="text-xs text-stone-500 font-medium">
@@ -151,9 +151,9 @@ export default function ArticleIndexPage() {
           </div>
           
           <div className="flex items-center gap-6 text-sm font-semibold text-stone-500">
-            <Link href="/contact" className="hover:text-teal-600 transition-colors">Kontak</Link>
-            <Link href="/privacy" className="hover:text-teal-600 transition-colors">Kebijakan Privasi</Link>
-            <Link href="/terms" className="hover:text-teal-600 transition-colors">Syarat & Ketentuan</Link>
+            <Link href="/contact" className="hover:text-indigo-600 transition-colors">Kontak</Link>
+            <Link href="/privacy" className="hover:text-indigo-600 transition-colors">Kebijakan Privasi</Link>
+            <Link href="/terms" className="hover:text-indigo-600 transition-colors">Syarat & Ketentuan</Link>
           </div>
         </div>
       </footer>

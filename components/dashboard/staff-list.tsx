@@ -97,7 +97,7 @@ export function StaffList({ initialStaff, businessType, suggestedRoles = [], ser
               setIsAdding(true);
               setFormData({ name: "", role: "", description: "", image_url: "", serviceIds: [] });
             }}
-            className="bg-teal-600 hover:bg-teal-700 text-white rounded-full shadow-md shadow-teal-600/20"
+            className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-full shadow-md shadow-indigo-600/20"
           >
             <PlusCircle className="w-4 h-4 mr-2" />
             Tambah Pegawai
@@ -109,7 +109,7 @@ export function StaffList({ initialStaff, businessType, suggestedRoles = [], ser
         <Card className="border-none shadow-md shadow-stone-200/50 rounded-[2rem] bg-white overflow-hidden">
           <CardHeader className="pb-4 border-b border-stone-100">
             <CardTitle className="text-lg font-bold flex items-center gap-2 text-stone-900">
-              <PlusCircle className="w-5 h-5 text-teal-600" />
+              <PlusCircle className="w-5 h-5 text-indigo-600" />
               Tambah Pegawai Baru
             </CardTitle>
           </CardHeader>
@@ -122,7 +122,7 @@ export function StaffList({ initialStaff, businessType, suggestedRoles = [], ser
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   placeholder="Misal: Budi"
-                  className="w-full px-4 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 caret-teal-600 focus:outline-none focus:ring-4 focus:ring-teal-500/20 transition-all shadow-inner"
+                  className="w-full px-4 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 caret-indigo-600 focus:outline-none focus:ring-4 focus:ring-indigo-500/20 transition-all shadow-inner"
                   disabled={isPending}
                   autoFocus
                 />
@@ -135,7 +135,7 @@ export function StaffList({ initialStaff, businessType, suggestedRoles = [], ser
                   value={formData.role}
                   onChange={(e) => setFormData({ ...formData, role: e.target.value })}
                   placeholder={`Misal: ${staffTerm.split(" / ")[0]}`}
-                  className="w-full px-4 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 caret-teal-600 focus:outline-none focus:ring-4 focus:ring-teal-500/20 transition-all shadow-inner"
+                  className="w-full px-4 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 caret-indigo-600 focus:outline-none focus:ring-4 focus:ring-indigo-500/20 transition-all shadow-inner"
                   disabled={isPending}
                 />
                 <datalist id="suggested-roles">
@@ -150,7 +150,7 @@ export function StaffList({ initialStaff, businessType, suggestedRoles = [], ser
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   placeholder="Misal: Spesialis hair coloring dan perm"
-                  className="w-full px-4 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 caret-teal-600 focus:outline-none focus:ring-4 focus:ring-teal-500/20 transition-all shadow-inner min-h-[80px]"
+                  className="w-full px-4 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 caret-indigo-600 focus:outline-none focus:ring-4 focus:ring-indigo-500/20 transition-all shadow-inner min-h-[80px]"
                   disabled={isPending}
                 />
               </div>
@@ -161,7 +161,7 @@ export function StaffList({ initialStaff, businessType, suggestedRoles = [], ser
                   value={formData.image_url}
                   onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
                   placeholder="Misal: https://contoh.com/foto-budi.jpg"
-                  className="w-full px-4 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 caret-teal-600 focus:outline-none focus:ring-4 focus:ring-teal-500/20 transition-all shadow-inner"
+                  className="w-full px-4 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 caret-indigo-600 focus:outline-none focus:ring-4 focus:ring-indigo-500/20 transition-all shadow-inner"
                   disabled={isPending}
                 />
               </div>
@@ -172,10 +172,10 @@ export function StaffList({ initialStaff, businessType, suggestedRoles = [], ser
                   <p className="text-xs text-stone-500 mb-2">Jika tidak ada yang dicentang, pegawai ini dianggap bisa melayani semua layanan.</p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     {services.map(service => (
-                      <label key={service.id} className="flex items-center gap-2 p-2 bg-white border border-stone-100 rounded-xl cursor-pointer hover:border-teal-300 transition-colors">
+                      <label key={service.id} className="flex items-center gap-2 p-2 bg-white border border-stone-100 rounded-xl cursor-pointer hover:border-indigo-300 transition-colors">
                         <input
                           type="checkbox"
-                          className="accent-teal-600 w-4 h-4"
+                          className="accent-indigo-600 w-4 h-4"
                           checked={formData.serviceIds.includes(service.id)}
                           onChange={(e) => {
                             if (e.target.checked) {
@@ -196,7 +196,7 @@ export function StaffList({ initialStaff, businessType, suggestedRoles = [], ser
                 <Button type="button" variant="ghost" onClick={() => setIsAdding(false)} disabled={isPending} className="rounded-full px-5">
                   <X className="w-4 h-4 mr-1.5" /> Batal
                 </Button>
-                <Button type="submit" disabled={isPending || !formData.name} className="bg-teal-600 hover:bg-teal-700 text-white rounded-full px-6 shadow-md shadow-teal-600/20">
+                <Button type="submit" disabled={isPending || !formData.name} className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-full px-6 shadow-md shadow-indigo-600/20">
                   {isPending ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <Save className="w-4 h-4 mr-1.5" />}
                   Terapkan Perubahan Pegawai
                 </Button>
@@ -229,7 +229,7 @@ export function StaffList({ initialStaff, businessType, suggestedRoles = [], ser
                         type="text"
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        className="w-full px-4 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 caret-teal-600 focus:outline-none focus:ring-4 focus:ring-teal-500/20 transition-all shadow-inner"
+                        className="w-full px-4 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 caret-indigo-600 focus:outline-none focus:ring-4 focus:ring-indigo-500/20 transition-all shadow-inner"
                         disabled={isPending}
                         autoFocus
                       />
@@ -242,7 +242,7 @@ export function StaffList({ initialStaff, businessType, suggestedRoles = [], ser
                         value={formData.role}
                         onChange={(e) => setFormData({ ...formData, role: e.target.value })}
                         placeholder={`Misal: ${staffTerm.split(" / ")[0]}`}
-                        className="w-full px-4 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 caret-teal-600 focus:outline-none focus:ring-4 focus:ring-teal-500/20 transition-all shadow-inner"
+                        className="w-full px-4 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 caret-indigo-600 focus:outline-none focus:ring-4 focus:ring-indigo-500/20 transition-all shadow-inner"
                         disabled={isPending}
                       />
                       <datalist id="suggested-roles-edit">
@@ -256,7 +256,7 @@ export function StaffList({ initialStaff, businessType, suggestedRoles = [], ser
                       <textarea
                         value={formData.description}
                         onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                        className="w-full px-4 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 caret-teal-600 focus:outline-none focus:ring-4 focus:ring-teal-500/20 transition-all shadow-inner min-h-[80px]"
+                        className="w-full px-4 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 caret-indigo-600 focus:outline-none focus:ring-4 focus:ring-indigo-500/20 transition-all shadow-inner min-h-[80px]"
                         disabled={isPending}
                       />
                     </div>
@@ -266,7 +266,7 @@ export function StaffList({ initialStaff, businessType, suggestedRoles = [], ser
                         type="url"
                         value={formData.image_url}
                         onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                        className="w-full px-4 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 caret-teal-600 focus:outline-none focus:ring-4 focus:ring-teal-500/20 transition-all shadow-inner"
+                        className="w-full px-4 py-3 rounded-2xl border-none text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 caret-indigo-600 focus:outline-none focus:ring-4 focus:ring-indigo-500/20 transition-all shadow-inner"
                         disabled={isPending}
                       />
                     </div>
@@ -277,10 +277,10 @@ export function StaffList({ initialStaff, businessType, suggestedRoles = [], ser
                         <p className="text-xs text-stone-500 mb-2">Jika tidak ada yang dicentang, pegawai ini dianggap bisa melayani semua layanan.</p>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                           {services.map(service => (
-                            <label key={service.id} className="flex items-center gap-2 p-2 bg-white border border-stone-100 rounded-xl cursor-pointer hover:border-teal-300 transition-colors">
+                            <label key={service.id} className="flex items-center gap-2 p-2 bg-white border border-stone-100 rounded-xl cursor-pointer hover:border-indigo-300 transition-colors">
                               <input
                                 type="checkbox"
-                                className="accent-teal-600 w-4 h-4"
+                                className="accent-indigo-600 w-4 h-4"
                                 checked={formData.serviceIds.includes(service.id)}
                                 onChange={(e) => {
                                   if (e.target.checked) {
@@ -301,7 +301,7 @@ export function StaffList({ initialStaff, businessType, suggestedRoles = [], ser
                       <Button type="button" variant="ghost" onClick={() => setEditingId(null)} disabled={isPending} className="rounded-full px-5 h-9 text-sm">
                         Batal
                       </Button>
-                      <Button type="submit" disabled={isPending || !formData.name} className="bg-teal-600 text-white rounded-full px-5 h-9 text-sm shadow-md shadow-teal-600/20">
+                      <Button type="submit" disabled={isPending || !formData.name} className="bg-indigo-600 text-white rounded-full px-5 h-9 text-sm shadow-md shadow-indigo-600/20">
                         {isPending ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : "Kunci Penugasan Layanan"}
                       </Button>
                     </div>
@@ -310,12 +310,12 @@ export function StaffList({ initialStaff, businessType, suggestedRoles = [], ser
                   <div className="flex items-center justify-between p-5">
                     <div className="flex items-center gap-4">
                       {s.image_url ? (
-                        <div className="w-12 h-12 rounded-2xl overflow-hidden border border-teal-100 flex-shrink-0 shadow-inner">
+                        <div className="w-12 h-12 rounded-2xl overflow-hidden border border-indigo-100 flex-shrink-0 shadow-inner">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img src={s.image_url} alt={s.name} className="w-full h-full object-cover" />
                         </div>
                       ) : (
-                        <div className="w-12 h-12 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center border border-teal-100 flex-shrink-0">
+                        <div className="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center border border-indigo-100 flex-shrink-0">
                           <User className="w-6 h-6" />
                         </div>
                       )}
@@ -350,7 +350,7 @@ export function StaffList({ initialStaff, businessType, suggestedRoles = [], ser
                           });
                         }}
                         disabled={isPending}
-                        className="border-stone-200 text-stone-600 hover:text-teal-600 hover:border-teal-200 rounded-xl bg-white"
+                        className="border-stone-200 text-stone-600 hover:text-indigo-600 hover:border-indigo-200 rounded-xl bg-white"
                       >
                         <Edit3 className="w-4 h-4" />
                       </Button>

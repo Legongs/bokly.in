@@ -104,10 +104,10 @@ export function DashboardNav({ children, serviceLabel, staffLabel }: DashboardNa
                   key={item.href}
                   href={item.href}
                   className={`flex items-center gap-3 px-4 py-3 rounded-xl font-semibold transition-all duration-200 ${
-                    isActive ? "bg-teal-50 text-teal-700" : "text-stone-600 hover:bg-stone-100 hover:text-stone-900"
+                    isActive ? "bg-indigo-50 text-indigo-700" : "text-stone-600 hover:bg-stone-100 hover:text-stone-900"
                   }`}
                 >
-                  <Icon className={`w-5 h-5 flex-shrink-0 transition-colors duration-200 ${isActive ? "text-teal-600" : "text-stone-400"}`} />
+                  <Icon className={`w-5 h-5 flex-shrink-0 transition-colors duration-200 ${isActive ? "text-indigo-600" : "text-stone-400"}`} />
                   {item.label}
                 </Link>
               );
@@ -146,13 +146,13 @@ export function DashboardNav({ children, serviceLabel, staffLabel }: DashboardNa
                 key={item.href}
                 href={item.href}
                 className={`flex flex-col items-center justify-center w-full h-full gap-0.5 transition-all duration-200 ${
-                  isActive ? "text-teal-700" : "text-stone-400 active:text-stone-600"
+                  isActive ? "text-indigo-700" : "text-stone-400 active:text-stone-600"
                 }`}
               >
                 <div className="relative flex flex-col items-center">
-                  <Icon className={`w-5 h-5 transition-transform duration-200 ${isActive ? "text-teal-600 scale-110" : ""}`} />
+                  <Icon className={`w-5 h-5 transition-transform duration-200 ${isActive ? "text-indigo-600 scale-110" : ""}`} />
                   {isActive && (
-                    <span className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-teal-600" />
+                    <span className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-indigo-600" />
                   )}
                 </div>
                 <span className="text-[10px] font-bold mt-0.5">{item.label}</span>
@@ -166,14 +166,14 @@ export function DashboardNav({ children, serviceLabel, staffLabel }: DashboardNa
             onClick={() => setIsMoreOpen(true)}
             aria-label="Menu lainnya"
             className={`flex flex-col items-center justify-center w-full h-full gap-0.5 transition-all duration-200 ${
-              isMoreActive ? "text-teal-700" : "text-stone-400 active:text-stone-600"
+              isMoreActive ? "text-indigo-700" : "text-stone-400 active:text-stone-600"
             }`}
           >
             {/* Dot indicator jika halaman aktif ada di dalam drawer */}
             <div className="relative flex flex-col items-center">
-              <MoreHorizontal className={`w-5 h-5 transition-transform duration-200 ${isMoreActive ? "text-teal-600 scale-110" : ""}`} />
+              <MoreHorizontal className={`w-5 h-5 transition-transform duration-200 ${isMoreActive ? "text-indigo-600 scale-110" : ""}`} />
               {isMoreActive && (
-                <span className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-teal-600" />
+                <span className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-indigo-600" />
               )}
             </div>
             <span className="text-[10px] font-bold mt-0.5">Lainnya</span>
@@ -223,12 +223,12 @@ export function DashboardNav({ children, serviceLabel, staffLabel }: DashboardNa
                 onClick={() => setIsMoreOpen(false)}
                 className={`flex items-center gap-4 px-4 py-3.5 rounded-2xl font-semibold transition-all duration-200 ${
                   isActive
-                    ? "bg-teal-50 text-teal-700"
+                    ? "bg-indigo-50 text-indigo-700"
                     : "text-stone-700 hover:bg-stone-100 active:scale-[0.98]"
                 }`}
               >
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${isActive ? "bg-teal-100" : "bg-stone-100"}`}>
-                  <Icon className={`w-5 h-5 ${isActive ? "text-teal-600" : "text-stone-500"}`} />
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${isActive ? "bg-indigo-100" : "bg-stone-100"}`}>
+                  <Icon className={`w-5 h-5 ${isActive ? "text-indigo-600" : "text-stone-500"}`} />
                 </div>
                 <div>
                   <p className="text-sm font-bold">{item.label}</p>

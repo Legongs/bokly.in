@@ -117,7 +117,7 @@ export function PaymentTable({ bookings }: { bookings: Booking[] }) {
                       variant="outline"
                       size="sm"
                       onClick={() => setSelectedProof(b.proof_url)}
-                      className="rounded-full text-teal-600 border-teal-200 hover:bg-teal-50"
+                      className="rounded-full text-indigo-600 border-indigo-200 hover:bg-indigo-50"
                     >
                       <Eye className="w-4 h-4 mr-1" />
                       Bukti
@@ -130,7 +130,7 @@ export function PaymentTable({ bookings }: { bookings: Booking[] }) {
                         size="sm"
                         disabled={isPending}
                         onClick={() => handleApprove(b.id)}
-                        className="rounded-full bg-teal-600 hover:bg-teal-700"
+                        className="rounded-full bg-indigo-600 hover:bg-indigo-700"
                       >
                         <Check className="w-4 h-4 mr-1" />
                         Setujui
