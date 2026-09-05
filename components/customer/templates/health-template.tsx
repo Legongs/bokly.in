@@ -1,5 +1,6 @@
 import React from "react";
-import { Stethoscope, MessageCircle, MapPin, AtSign, Info, ShieldCheck } from "lucide-react";
+import { Stethoscope, MessageCircle, MapPin, Info, ShieldCheck } from "lucide-react";
+import { StoreBadge } from "../store-badge";
 import { BookingFlow } from "@/components/customer/booking-flow";
 import { PortfolioGallery } from "@/components/customer/portfolio-gallery";
 import { Logo } from "@/components/ui/logo";
@@ -98,6 +99,7 @@ export function HealthTemplate({ tenant, services, staffList, portfolios, dictio
                     </div>
                   </div>
                 )}
+                <StoreBadge schedule={(tenant as any).weekly_schedule} timezone={tenant.timezone} />
               </div>
             </div>
 

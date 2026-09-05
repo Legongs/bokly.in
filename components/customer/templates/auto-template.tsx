@@ -1,5 +1,6 @@
 import React from "react";
-import { Car, MessageCircle, MapPin, AtSign, Info, Wrench } from "lucide-react";
+import { Store, Car, MessageCircle, MapPin, AtSign, Info } from "lucide-react";
+import { StoreBadge } from "../store-badge";
 import { BookingFlow } from "@/components/customer/booking-flow";
 import { PortfolioGallery } from "@/components/customer/portfolio-gallery";
 import { Logo } from "@/components/ui/logo";
@@ -61,6 +62,7 @@ export function AutoTemplate({ tenant, services, staffList, portfolios, dictiona
               <AtSign className="w-5 h-5" />
             </a>
           )}
+          <StoreBadge schedule={(tenant as any).weekly_schedule} timezone={tenant.timezone} />
         </div>
       </header>
 

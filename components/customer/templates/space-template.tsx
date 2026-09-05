@@ -1,5 +1,6 @@
 import React from "react";
-import { Building, MessageCircle, MapPin, AtSign, Info } from "lucide-react";
+import { Store, Building, MessageCircle, MapPin, AtSign, Info } from "lucide-react";
+import { StoreBadge } from "../store-badge";
 import { BookingFlow } from "@/components/customer/booking-flow";
 import { PortfolioGallery } from "@/components/customer/portfolio-gallery";
 import { Logo } from "@/components/ui/logo";
@@ -77,6 +78,7 @@ export function SpaceTemplate({ tenant, services, staffList, portfolios, diction
                 <span className="hidden md:inline">Lihat Foto</span>
               </a>
             )}
+            <StoreBadge schedule={(tenant as any).weekly_schedule} timezone={tenant.timezone} />
           </div>
         </header>
 

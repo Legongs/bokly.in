@@ -1,5 +1,6 @@
 import React from "react";
-import { Scissors, MessageCircle, MapPin, AtSign, Info } from "lucide-react";
+import { Store, Scissors, MessageCircle, MapPin, AtSign, Info } from "lucide-react";
+import { StoreBadge } from "../store-badge";
 import { BookingFlow } from "@/components/customer/booking-flow";
 import { PortfolioGallery } from "@/components/customer/portfolio-gallery";
 import { Logo } from "@/components/ui/logo";
@@ -80,6 +81,7 @@ export function BeautyTemplate({ tenant, services, staffList, portfolios, dictio
                   <span className="text-xs font-bold uppercase tracking-wider">Instagram</span>
                 </a>
               )}
+              <StoreBadge schedule={(tenant as any).weekly_schedule} timezone={tenant.timezone} />
             </div>
           </div>
         )}

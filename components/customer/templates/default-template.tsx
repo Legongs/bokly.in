@@ -2,6 +2,7 @@ import React from "react";
 import { Store, Scissors, Building, Car, Stethoscope, MessageCircle, MapPin, AtSign, Info } from "lucide-react";
 import { BookingFlow } from "@/components/customer/booking-flow";
 import { PortfolioGallery } from "@/components/customer/portfolio-gallery";
+import { StoreBadge } from "@/components/customer/store-badge";
 import { Logo } from "@/components/ui/logo";
 import type { StorefrontTemplateProps } from "./types";
 
@@ -173,6 +174,7 @@ export function DefaultTemplate({ tenant, services, staffList, portfolios, dicti
                   {services.length} {dictionary.serviceLabel}
                 </span>
               </span>
+              <StoreBadge schedule={(tenant as any).weekly_schedule} timezone={tenant.timezone} />
             </div>
             
             {tenant.address && (
