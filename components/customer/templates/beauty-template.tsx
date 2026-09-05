@@ -81,7 +81,7 @@ export function BeautyTemplate({ tenant, services, staffList, portfolios, dictio
                   <span className="text-xs font-bold uppercase tracking-wider">Instagram</span>
                 </a>
               )}
-              <StoreBadge schedule={(tenant as any).weekly_schedule} timezone={tenant.timezone} />
+              <StoreBadge schedule={(tenant as any).weekly_schedule} timezone={tenant.timezone} variant="beauty" />
             </div>
           </div>
         )}

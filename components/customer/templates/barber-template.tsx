@@ -75,7 +75,7 @@ export function BarberTemplate({ tenant, services, staffList, portfolios, dictio
                 <AtSign className="w-4 h-4" /> Instagram
               </a>
             )}
-            <StoreBadge schedule={(tenant as any).weekly_schedule} timezone={tenant.timezone} />
+            <StoreBadge schedule={(tenant as any).weekly_schedule} timezone={tenant.timezone} variant="barber" />
           </div>
         </div>
       </header>

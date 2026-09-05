@@ -62,7 +62,7 @@ export function AutoTemplate({ tenant, services, staffList, portfolios, dictiona
               <AtSign className="w-5 h-5" />
             </a>
           )}
-          <StoreBadge schedule={(tenant as any).weekly_schedule} timezone={tenant.timezone} />
+          <StoreBadge schedule={(tenant as any).weekly_schedule} timezone={tenant.timezone} variant="auto" />
         </div>
       </header>
 

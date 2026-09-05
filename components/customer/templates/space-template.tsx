@@ -78,7 +78,7 @@ export function SpaceTemplate({ tenant, services, staffList, portfolios, diction
                 <span className="hidden md:inline">Lihat Foto</span>
               </a>
             )}
-            <StoreBadge schedule={(tenant as any).weekly_schedule} timezone={tenant.timezone} />
+            <StoreBadge schedule={(tenant as any).weekly_schedule} timezone={tenant.timezone} variant="space" />
           </div>
         </header>
 

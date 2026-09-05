@@ -99,7 +99,7 @@ export function HealthTemplate({ tenant, services, staffList, portfolios, dictio
                     </div>
                   </div>
                 )}
-                <StoreBadge schedule={(tenant as any).weekly_schedule} timezone={tenant.timezone} />
+                <StoreBadge schedule={(tenant as any).weekly_schedule} timezone={tenant.timezone} variant="health" />
               </div>
             </div>
 
