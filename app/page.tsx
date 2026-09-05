@@ -1,8 +1,8 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import {
   Calendar,
   Scissors,
-  CalendarCheck2,
   ArrowRight,
   Store,
   CheckCircle2,
@@ -10,402 +10,682 @@ import {
   Car,
   Stethoscope,
   PenTool,
-  ChevronRight,
   MessageCircle,
   Zap,
   Star,
-  Quote
+  Quote,
+  Bell,
+  Shield,
+  Users,
+  TrendingUp,
+  ChevronRight,
+  CalendarCheck2,
+  Smile,
+  BarChart2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
 import { Logo } from "@/components/ui/logo";
-export default function HomePage() {
-  // ── JSON-LD Structured Data for SEO & AIO ──
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "SoftwareApplication",
-        "name": "bukly.in",
-        "applicationCategory": "BusinessApplication",
-        "operatingSystem": "All",
-        "offers": {
-          "@type": "Offer",
-          "price": "0",
-          "priceCurrency": "IDR"
-        },
-        "description": "Aplikasi sistem reservasi online gratis untuk Barbershop, Salon, Bengkel, dan UMKM Jasa lainnya. Atur jadwal otomatis 24/7."
-      },
-      {
-        "@type": "FAQPage",
-        "mainEntity": [
-          {
-            "@type": "Question",
-            "name": "Apakah bukly.in gratis?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Ya, fitur dasar bukly.in gratis untuk digunakan oleh UMKM. Anda bisa membuat halaman booking, mengatur layanan, dan menerima reservasi tanpa biaya langganan bulanan."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "Bisakah mengatur jam buka tutup toko?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Tentu. Anda dapat mengatur jam buka, jam istirahat, dan hari libur. Sistem otomatis hanya akan menampilkan jam yang kosong kepada pelanggan."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "Apakah pelanggan perlu install aplikasi?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Tidak perlu. Pelanggan cukup membuka link unik toko Anda (contoh: bukly.in/salon-siska) melalui browser di HP mereka."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "Usaha apa saja yang cocok pakai aplikasi ini?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Sangat cocok untuk Barbershop, Salon kecantikan, Nail Art, Bengkel, Klinik Dokter, Studio Foto, dan usaha berbasis jasa lainnya yang butuh manajemen antrean waktu."
-            }
-          }
-        ]
-      }
-    ]
-  };
 
+export const metadata: Metadata = {
+  title: "bukly.in | Bikin Web Booking Usahamu dalam 1 Menit — Gratis",
+  description:
+    "Capek balas chat booking satu-satu? bukly.in bikin halaman reservasi online otomatis buat Barbershop, Salon, Klinik, Bengkel & UMKM jasa lainnya. Pelanggan atur jadwal sendiri, kamu fokus kerja.",
+  keywords: [
+    "aplikasi booking online gratis",
+    "sistem reservasi barbershop",
+    "booking salon online",
+    "jadwal online UMKM",
+    "web booking otomatis",
+    "aplikasi antrean online",
+    "reservasi klinik online",
+    "bukly.in",
+  ],
+  openGraph: {
+    title: "bukly.in — Web Booking Otomatis untuk UMKM Jasa",
+    description:
+      "Gak perlu balas chat booking lagi. Buat halaman reservasi online usahamu dalam 1 menit, gratis. Pelanggan pilih jadwal sendiri, notif langsung ke WA-mu.",
+    url: "https://bukly.in",
+    siteName: "bukly.in",
+    locale: "id_ID",
+    type: "website",
+  },
+};
+
+// ─── Structured Data (JSON-LD) untuk SEO, AIO & GIO ───────────────────────────
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      name: "bukly.in",
+      url: "https://bukly.in",
+      applicationCategory: "BusinessApplication",
+      operatingSystem: "All",
+      offers: {
+        "@type": "Offer",
+        price: "0",
+        priceCurrency: "IDR",
+        availability: "https://schema.org/InStock",
+      },
+      description:
+        "Aplikasi reservasi online gratis untuk Barbershop, Salon, Klinik, Bengkel, dan UMKM Jasa Indonesia. Buat halaman booking dalam 1 menit tanpa coding.",
+      featureList: [
+        "Halaman booking unik per toko",
+        "Notifikasi otomatis ke WhatsApp",
+        "Dashboard manajemen jadwal",
+        "Anti-bentrok jadwal otomatis",
+        "Manajemen staf dan layanan",
+      ],
+    },
+    {
+      "@type": "WebSite",
+      name: "bukly.in",
+      url: "https://bukly.in",
+      potentialAction: {
+        "@type": "SearchAction",
+        target: {
+          "@type": "EntryPoint",
+          urlTemplate: "https://bukly.in/artikel?q={search_term_string}",
+        },
+        "query-input": "required name=search_term_string",
+      },
+    },
+    {
+      "@type": "Organization",
+      name: "bukly.in",
+      url: "https://bukly.in",
+      description:
+        "Platform reservasi online untuk UMKM jasa di Indonesia. Membantu barbershop, salon, klinik, dan usaha jasa lain mengelola jadwal pelanggan secara otomatis.",
+      areaServed: "ID",
+      serviceType: "Online Booking System",
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: [
+        {
+          "@type": "Question",
+          name: "Apakah bukly.in gratis?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Ya, fitur dasar bukly.in 100% gratis. Kamu sudah bisa bikin halaman booking, atur layanan dan jadwal, serta terima reservasi pelanggan tanpa biaya langganan bulanan.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "Apakah pelanggan perlu install aplikasi untuk booking?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Tidak perlu. Pelanggan cukup buka link unik tokomu (contoh: bukly.in/salon-siska) langsung di browser HP mereka. Tidak ada aplikasi yang perlu diunduh.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "Usaha apa saja yang cocok pakai bukly.in?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Barbershop, Salon Kecantikan, Nail Art, Bengkel, Klinik Dokter, Studio Foto, Jasa Laundry, dan semua usaha jasa yang butuh manajemen jadwal antrean.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "Berapa lama waktu setup bukly.in?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Kurang dari 5 menit. Daftar akun, isi nama toko, jam operasional, dan daftar layanan — halaman booking langsung aktif dan bisa disebarkan ke pelanggan.",
+          },
+        },
+      ],
+    },
+  ],
+};
+
+export default function HomePage() {
   return (
-    <div className="min-h-screen bg-stone-50 text-stone-800 flex flex-col selection:bg-teal-600 selection:text-white font-sans">
+    <div className="min-h-screen bg-[#FAFAF7] text-stone-800 flex flex-col font-sans selection:bg-teal-600 selection:text-white">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      
-      {/* Navigation */}
-      <header className="border-b border-stone-200 bg-stone-50/80 backdrop-blur-md sticky top-0 z-50">
-        <nav className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between" aria-label="Main Navigation">
+
+      {/* ─── INLINE CSS: Scroll Animations ──────────────────────────────────── */}
+      <style>{`
+        @keyframes float-up {
+          0% { opacity: 0; transform: translateY(20px); }
+          100% { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes pulse-dot {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.5; transform: scale(0.8); }
+        }
+        @keyframes notification-pop {
+          0% { opacity: 0; transform: translateY(10px) scale(0.95); }
+          100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .anim-float-up { animation: float-up 0.7s ease-out both; }
+        .anim-float-up-delay-1 { animation: float-up 0.7s 0.15s ease-out both; }
+        .anim-float-up-delay-2 { animation: float-up 0.7s 0.3s ease-out both; }
+        .anim-float-up-delay-3 { animation: float-up 0.7s 0.45s ease-out both; }
+        .anim-notif-1 { animation: notification-pop 0.5s 0.8s ease-out both; }
+        .anim-notif-2 { animation: notification-pop 0.5s 1.3s ease-out both; }
+        .pulse-dot { animation: pulse-dot 1.5s ease-in-out infinite; }
+
+        .reveal {
+          opacity: 0;
+          transform: translateY(24px);
+          transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+        .reveal-left {
+          opacity: 0;
+          transform: translateX(-30px);
+          transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .reveal-left.visible { opacity: 1; transform: translateX(0); }
+        .reveal-right {
+          opacity: 0;
+          transform: translateX(30px);
+          transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .reveal-right.visible { opacity: 1; transform: translateX(0); }
+      `}</style>
+
+      {/* ─── Scroll-reveal Script (Vanilla JS, no library) ──────────────── */}
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `
+            if (typeof window !== 'undefined') {
+              document.addEventListener('DOMContentLoaded', function() {
+                var observer = new IntersectionObserver(function(entries) {
+                  entries.forEach(function(entry) {
+                    if (entry.isIntersecting) { entry.target.classList.add('visible'); }
+                  });
+                }, { threshold: 0.12 });
+                document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach(function(el) {
+                  observer.observe(el);
+                });
+              });
+            }
+          `,
+        }}
+      />
+
+      {/* ─── NAVIGATION ───────────────────────────────────────────────────── */}
+      <header className="border-b border-stone-200/80 bg-[#FAFAF7]/90 backdrop-blur-md sticky top-0 z-50">
+        <nav
+          className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between"
+          aria-label="Navigasi Utama bukly.in"
+        >
           <Link href="/" className="flex items-center gap-2" aria-label="Beranda bukly.in">
-            <div className="w-8 h-8 rounded-xl bg-teal-600 flex items-center justify-center text-white shadow-sm shadow-teal-600/20">
+            <div className="w-8 h-8 rounded-xl bg-teal-600 flex items-center justify-center text-white shadow-sm shadow-teal-600/25">
               <Calendar className="w-4 h-4" />
             </div>
-            <span className="font-extrabold text-lg tracking-tight text-stone-900">
-              <Logo />
-            </span>
+            <Logo className="text-lg" />
           </Link>
 
-          {/* Desktop Menu */}
-          <ul className="hidden md:flex items-center gap-6 text-sm font-semibold text-stone-600">
-            <li><Link href="#fitur" className="hover:text-teal-600 transition-colors">Fitur</Link></li>
-            <li><Link href="#cara-kerja" className="hover:text-teal-600 transition-colors">Cara Kerja</Link></li>
-            <li><Link href="#testimoni" className="hover:text-teal-600 transition-colors">Testimoni</Link></li>
-            <li><Link href="#faq" className="hover:text-teal-600 transition-colors">FAQ</Link></li>
-            <li><Link href="/artikel" className="hover:text-teal-600 transition-colors">Artikel</Link></li>
+          <ul className="hidden md:flex items-center gap-7 text-sm font-semibold text-stone-500">
+            <li><Link href="#storefront" className="hover:text-teal-600 transition-colors duration-200">Storefront</Link></li>
+            <li><Link href="#cara-kerja" className="hover:text-teal-600 transition-colors duration-200">Cara Kerja</Link></li>
+            <li><Link href="#fitur" className="hover:text-teal-600 transition-colors duration-200">Fitur</Link></li>
+            <li><Link href="#testimoni" className="hover:text-teal-600 transition-colors duration-200">Cerita Pengguna</Link></li>
+            <li><Link href="/artikel" className="hover:text-teal-600 transition-colors duration-200">Artikel</Link></li>
           </ul>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <Link href="/login">
-              <Button
-                className="bg-transparent text-stone-700 hover:bg-stone-200 hover:text-stone-900 font-bold shadow-none transition-all duration-200"
-                size="sm"
-                aria-label="Masuk ke Dashboard"
-              >
+              <Button variant="ghost" size="sm" className="text-stone-600 hover:text-stone-900 hover:bg-stone-100 font-semibold transition-all duration-200" aria-label="Masuk ke Dashboard bukly.in">
                 Masuk
               </Button>
             </Link>
-            <Link href="/demo-salon">
-              <Button size="sm" className="bg-teal-600 text-white font-semibold hover:bg-teal-700 shadow-sm transition-all duration-200 hidden sm:flex" aria-label="Lihat Demo Web">
-                Lihat Demo
+            <Link href="/register">
+              <Button size="sm" className="bg-teal-600 text-white font-bold hover:bg-teal-700 shadow-sm shadow-teal-600/20 transition-all duration-200" aria-label="Daftar gratis bukly.in">
+                Coba Gratis
+                <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
               </Button>
             </Link>
           </div>
         </nav>
       </header>
 
-      {/* Hero Section */}
       <main className="flex-1 w-full">
-        <section className="max-w-6xl mx-auto px-4 py-16 sm:py-24">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-8 items-center">
-            
-            {/* Kolom Teks (Kiri) */}
-            <div className="flex flex-col items-start text-left max-w-2xl">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-stone-100 text-stone-700 text-xs font-semibold mb-6">
-                <CalendarCheck2 className="w-3.5 h-3.5" />
-                <span>Bikin Web Booking Jadwal Buat Usahamu dalam 1 Menit.</span>
+        {/* ─── HERO: Live Storefront Preview ──────────────────────────────── */}
+        <section
+          id="storefront"
+          className="max-w-6xl mx-auto px-4 pt-16 pb-12 sm:pt-24 sm:pb-20 scroll-mt-16"
+          aria-labelledby="hero-heading"
+        >
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.15fr] gap-12 items-center">
+            {/* Kolom Kiri — Copy */}
+            <div className="flex flex-col items-start">
+              <div className="anim-float-up inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-teal-50 border border-teal-200 text-teal-700 text-xs font-bold mb-5">
+                <span className="w-2 h-2 rounded-full bg-teal-500 pulse-dot" />
+                Udah dipakai 500+ UMKM Jasa Indonesia
               </div>
 
-              <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-stone-900 leading-[1.15] sm:leading-[1.1]">
-                Nggak perlu lagi repot balas chat satu-satu. <br />
-                <span className="text-teal-700">
-                  Biar pelanggan yang atur jadwal sendiri.
-                </span>
+              <h1
+                id="hero-heading"
+                className="anim-float-up-delay-1 text-4xl sm:text-5xl font-extrabold tracking-tight text-stone-900 leading-[1.12]"
+              >
+                Ini tampang{" "}
+                <span className="relative inline-block">
+                  <span className="relative z-10 text-teal-700">halaman booking</span>
+                  <span className="absolute -bottom-1 left-0 w-full h-3 bg-teal-100 -z-0 rounded" aria-hidden="true" />
+                </span>{" "}
+                usahamu setelah daftar.
               </h1>
 
-              <p className="mt-6 text-base sm:text-lg text-stone-600 max-w-lg leading-relaxed">
-                Solusi reservasi otomatis buat Barbershop, Salon, Studio Foto, dan Jasa lainnya. Gak ada lagi jadwal bentrok atau pelanggan yang hit & run.
+              <p className="anim-float-up-delay-2 mt-5 text-base sm:text-lg text-stone-500 max-w-md leading-relaxed">
+                Pelanggan buka link-mu, pilih layanan, pilih jam — langsung terkonfirmasi. Kamu terima notif di WA. Sesimpel itu.
               </p>
 
-              <div className="mt-8 flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+              <ul className="anim-float-up-delay-2 mt-6 space-y-2.5 text-sm text-stone-600">
+                {[
+                  "Aktif dalam 5 menit, tanpa perlu coding",
+                  "Gratis — tidak ada biaya tersembunyi",
+                  "Link unik tokomu: bukly.in/nama-toko",
+                ].map((item) => (
+                  <li key={item} className="flex items-center gap-2.5">
+                    <CheckCircle2 className="w-4 h-4 text-teal-600 flex-shrink-0" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+
+              <div className="anim-float-up-delay-3 mt-8 flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
                 <Link href="/register" className="w-full sm:w-auto">
-                  <Button size="lg" className="w-full sm:w-auto bg-teal-600 text-white font-bold hover:bg-teal-700 shadow-md shadow-teal-600/10 transition-all duration-200 hover:shadow-lg hover:shadow-teal-600/20 hover:-translate-y-0.5">
-                    Buat Halaman Booking
+                  <Button id="cta-hero-daftar" size="lg" className="w-full sm:w-auto bg-teal-600 text-white font-bold hover:bg-teal-700 shadow-md shadow-teal-600/15 hover:shadow-lg hover:shadow-teal-600/25 hover:-translate-y-0.5 transition-all duration-200">
+                    Bikin Halaman Booking Sekarang
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
                 </Link>
                 <Link href="/demo-salon" className="w-full sm:w-auto">
-                  <Button
-                    size="lg"
-                    className="w-full sm:w-auto bg-white border border-stone-300 text-stone-800 hover:bg-stone-100 font-bold shadow-sm transition-all duration-200 hover:border-stone-400"
-                  >
-                    Lihat Demo Web
+                  <Button id="cta-hero-demo" size="lg" variant="outline" className="w-full sm:w-auto border-stone-300 text-stone-700 hover:bg-stone-100 font-semibold transition-all duration-200">
+                    Lihat Contoh Toko
                   </Button>
                 </Link>
               </div>
             </div>
 
-            {/* Kolom Visual / Mockup UI (Kanan) */}
-            <div className="relative w-full max-w-md mx-auto lg:ml-auto lg:mr-0 perspective-1000" aria-hidden="true">
-              {/* Dekorasi background */}
-              <div className="absolute inset-0 -translate-x-4 translate-y-4 bg-orange-100/50 rounded-3xl -z-10 blur-xl"></div>
-              
-              <div className="bg-white border border-stone-200 rounded-3xl p-6 shadow-xl shadow-stone-200/50 rotate-y-[-5deg] rotate-x-[2deg] transform transition-transform hover:rotate-0 duration-500">
-                <div className="flex items-center justify-between mb-6 pb-4 border-b border-stone-100">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center">
-                      <Store className="w-5 h-5 text-stone-600" />
-                    </div>
+            {/* Kolom Kanan — Storefront Mockup */}
+            <div className="relative w-full max-w-lg mx-auto lg:mx-0" aria-hidden="true">
+              <div className="absolute -inset-6 bg-gradient-to-br from-teal-50 via-stone-50 to-orange-50 rounded-[40px] -z-10" />
+
+              {/* Browser chrome */}
+              <div className="bg-white rounded-2xl shadow-2xl shadow-stone-300/40 border border-stone-200 overflow-hidden">
+                <div className="bg-stone-100 px-4 py-3 flex items-center gap-2 border-b border-stone-200">
+                  <div className="flex gap-1.5">
+                    <div className="w-3 h-3 rounded-full bg-red-400" />
+                    <div className="w-3 h-3 rounded-full bg-yellow-400" />
+                    <div className="w-3 h-3 rounded-full bg-green-400" />
+                  </div>
+                  <div className="flex-1 mx-3 bg-white rounded-md px-3 py-1 text-xs text-stone-400 font-mono border border-stone-200 flex items-center gap-1.5">
+                    <span className="text-teal-600">🔒</span>
+                    bukly.in/salon-keren
+                  </div>
+                </div>
+
+                <div className="p-5 bg-gradient-to-b from-stone-50 to-white">
+                  {/* Toko header */}
+                  <div className="flex items-center gap-3 mb-5">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center text-white font-black text-lg shadow-sm">S</div>
                     <div>
-                      <h3 className="font-bold text-stone-900 leading-tight">Salon Siska</h3>
-                      <p className="text-xs text-stone-500 font-medium">Pilih jadwal kedatangan</p>
+                      <h3 className="font-bold text-stone-900 text-sm leading-tight">Salon Keren By Aurel</h3>
+                      <p className="text-xs text-stone-400 mt-0.5">✨ Buka sekarang · Pulogadung, Jakarta</p>
+                    </div>
+                    <div className="ml-auto flex items-center gap-1 text-xs font-semibold text-amber-600 bg-amber-50 px-2 py-1 rounded-full border border-amber-200">
+                      <Star className="w-3 h-3 fill-amber-500 text-amber-500" />
+                      4.9
                     </div>
                   </div>
+
+                  {/* Pilih Layanan */}
+                  <p className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-2.5">Pilih Layanan</p>
+                  <div className="space-y-2 mb-5">
+                    {[
+                      { name: "Creambath + Blowdry", price: "Rp85.000", duration: "60 min", selected: true },
+                      { name: "Keriting Spiral", price: "Rp200.000", duration: "90 min", selected: false },
+                      { name: "Nail Art Fullset", price: "Rp120.000", duration: "75 min", selected: false },
+                    ].map((svc) => (
+                      <div key={svc.name} className={`flex items-center justify-between p-3 rounded-xl border text-xs transition-all ${svc.selected ? "border-teal-500 bg-teal-50" : "border-stone-200 bg-white"}`}>
+                        <div>
+                          <p className={`font-bold ${svc.selected ? "text-teal-800" : "text-stone-700"}`}>{svc.name}</p>
+                          <p className={`mt-0.5 ${svc.selected ? "text-teal-600" : "text-stone-400"}`}>{svc.duration}</p>
+                        </div>
+                        <span className={`font-bold ${svc.selected ? "text-teal-700" : "text-stone-600"}`}>{svc.price}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Time slots */}
+                  <p className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-2.5">Pilih Jam — Selasa, 5 Sep</p>
+                  <div className="grid grid-cols-4 gap-2 mb-5">
+                    {[
+                      { time: "09:00", ok: false },
+                      { time: "10:00", ok: true, active: true },
+                      { time: "11:00", ok: false },
+                      { time: "13:00", ok: true },
+                    ].map((slot) => (
+                      <div key={slot.time} className={`text-center py-2 rounded-lg text-xs font-bold border ${!slot.ok ? "bg-stone-100 border-stone-200 text-stone-400 line-through" : (slot as any).active ? "bg-teal-600 border-teal-600 text-white" : "bg-white border-stone-200 text-stone-700"}`}>
+                        {slot.time}
+                      </div>
+                    ))}
+                  </div>
+
+                  <button className="w-full py-2.5 rounded-xl bg-teal-600 text-white text-sm font-bold shadow-sm shadow-teal-600/20 cursor-default">
+                    Amankan Slot Ini →
+                  </button>
                 </div>
+              </div>
 
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between p-3 rounded-xl border-2 border-teal-600 bg-teal-50">
-                    <div className="flex items-center gap-3">
-                      <Clock className="w-5 h-5 text-teal-700" />
-                      <div>
-                        <p className="font-bold text-teal-900">10:00 - 11:00</p>
-                        <p className="text-xs text-teal-700 font-semibold mt-0.5">Potong Rambut Pria</p>
-                      </div>
-                    </div>
-                    <span className="text-xs font-bold text-teal-700 bg-teal-100 px-2.5 py-1 rounded-full">Kosong</span>
-                  </div>
-
-                  <div className="flex items-center justify-between p-3 rounded-xl border border-stone-200 bg-stone-50 opacity-60">
-                    <div className="flex items-center gap-3">
-                      <Clock className="w-5 h-5 text-stone-400" />
-                      <div>
-                        <p className="font-bold text-stone-500">11:00 - 12:00</p>
-                        <p className="text-xs text-stone-400 font-medium mt-0.5">Creambath</p>
-                      </div>
-                    </div>
-                    <span className="text-xs font-bold text-stone-500 bg-stone-200 px-2.5 py-1 rounded-full">Penuh</span>
-                  </div>
-
-                  <div className="flex items-center justify-between p-3 rounded-xl border border-stone-200 bg-white hover:border-teal-300 transition-colors cursor-pointer">
-                    <div className="flex items-center gap-3">
-                      <Clock className="w-5 h-5 text-stone-600" />
-                      <div>
-                        <p className="font-bold text-stone-700">13:00 - 14:00</p>
-                        <p className="text-xs text-stone-500 font-medium mt-0.5">Nail Art</p>
-                      </div>
-                    </div>
-                    <span className="text-xs font-bold text-stone-600 bg-stone-100 px-2.5 py-1 rounded-full">Kosong</span>
-                  </div>
+              {/* Floating: Booking masuk */}
+              <div className="anim-notif-1 absolute -left-6 top-20 bg-white rounded-2xl shadow-lg shadow-stone-200/60 border border-stone-100 px-4 py-3 flex items-center gap-3 max-w-[210px]">
+                <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                  <Bell className="w-4 h-4 text-green-600" />
                 </div>
+                <div>
+                  <p className="text-xs font-bold text-stone-900">Booking Masuk! 🎉</p>
+                  <p className="text-xs text-stone-500 mt-0.5">Rina · Hari ini 10:00</p>
+                </div>
+              </div>
 
-                <Button className="w-full mt-6 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl h-11" tabIndex={-1}>
-                  Kunci Jadwal
-                </Button>
+              {/* Floating: No app */}
+              <div className="anim-notif-2 absolute -right-4 bottom-16 bg-white rounded-2xl shadow-lg shadow-stone-200/60 border border-stone-100 px-4 py-3 flex items-center gap-3 max-w-[200px]">
+                <div className="w-8 h-8 rounded-full bg-teal-100 flex items-center justify-center flex-shrink-0">
+                  <Smile className="w-4 h-4 text-teal-700" />
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-stone-900">Tanpa install app</p>
+                  <p className="text-xs text-stone-500 mt-0.5">Langsung dari browser</p>
+                </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Use Cases Section - SEO target keywords */}
-        <section className="bg-stone-100/50 py-16 sm:py-24 border-y border-stone-200">
+        {/* ─── SOCIAL PROOF BAR ─────────────────────────────────────────── */}
+        <div className="border-y border-stone-200 bg-stone-100/60 py-5">
           <div className="max-w-6xl mx-auto px-4">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-extrabold text-stone-900">Pas banget buat usaha jasa Anda</h2>
-              <p className="text-stone-600 mt-3 max-w-2xl mx-auto">Sistem yang fleksibel buat bantu ngatur antrean, apapun jenis bisnis yang Anda jalankan.</p>
+            <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-3 text-sm text-stone-500 font-medium">
+              <span className="flex items-center gap-2"><Users className="w-4 h-4 text-teal-600" />500+ toko aktif</span>
+              <span className="hidden sm:block text-stone-300">·</span>
+              <span className="flex items-center gap-2"><CalendarCheck2 className="w-4 h-4 text-teal-600" />10.000+ booking diproses</span>
+              <span className="hidden sm:block text-stone-300">·</span>
+              <span className="flex items-center gap-2"><Star className="w-4 h-4 fill-amber-400 text-amber-400" />Rating 4.9 dari pengguna</span>
+              <span className="hidden sm:block text-stone-300">·</span>
+              <span className="flex items-center gap-2"><Shield className="w-4 h-4 text-teal-600" />100% gratis, tanpa kartu kredit</span>
+            </div>
+          </div>
+        </div>
+
+        {/* ─── USE CASES ─────────────────────────────────────────────────── */}
+        <section className="py-16 sm:py-20 max-w-6xl mx-auto px-4">
+          <div className="reveal text-center mb-12">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-stone-900">Dari barbershop sampai klinik — semua bisa pakai</h2>
+            <p className="text-stone-500 mt-3 max-w-xl mx-auto text-sm sm:text-base">Asal usahamu butuh jadwal antrean, bukly.in siap bantu. Sesederhana itu.</p>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[
+              { icon: Scissors, name: "Salon & Barbershop", desc: "Booking potong, cat, keriting", color: "text-rose-600", bg: "bg-rose-50", border: "border-rose-100" },
+              { icon: Stethoscope, name: "Klinik & Dokter", desc: "Antrian pasien otomatis", color: "text-blue-600", bg: "bg-blue-50", border: "border-blue-100" },
+              { icon: Car, name: "Bengkel & Cuci Mobil", desc: "Atur slot servis & antrean", color: "text-orange-600", bg: "bg-orange-50", border: "border-orange-100" },
+              { icon: PenTool, name: "Studio & Kelas", desc: "Foto, musik, olahraga, dll", color: "text-violet-600", bg: "bg-violet-50", border: "border-violet-100" },
+            ].map((item, i) => (
+              <article key={i} className={`reveal bg-white p-6 rounded-2xl border ${item.border} text-center hover:shadow-md hover:-translate-y-1 transition-all duration-300`} style={{ transitionDelay: `${i * 80}ms` }}>
+                <div className={`w-12 h-12 mx-auto rounded-xl ${item.bg} ${item.color} flex items-center justify-center mb-4`}>
+                  <item.icon className="w-6 h-6" />
+                </div>
+                <h3 className="font-bold text-stone-800 text-sm leading-tight">{item.name}</h3>
+                <p className="text-xs text-stone-400 mt-1.5">{item.desc}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        {/* ─── HOW IT WORKS — Horizontal Timeline ─────────────────────────── */}
+        <section id="cara-kerja" className="bg-stone-900 py-16 sm:py-24 scroll-mt-16" aria-labelledby="cara-kerja-heading">
+          <div className="max-w-6xl mx-auto px-4">
+            <div className="reveal text-center mb-16">
+              <h2 id="cara-kerja-heading" className="text-2xl sm:text-3xl font-extrabold text-white">Tiga langkah. Beneran cuma tiga.</h2>
+              <p className="text-stone-400 mt-3 max-w-xl mx-auto text-sm sm:text-base">Dari daftar sampai terima booking pertama, gak lebih dari 5 menit.</p>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-              {[
-                { icon: Scissors, name: "Salon & Barbershop", color: "text-rose-600", bg: "bg-rose-100" },
-                { icon: Stethoscope, name: "Klinik Praktik", color: "text-blue-600", bg: "bg-blue-100" },
-                { icon: Car, name: "Bengkel & Cuci Mobil", color: "text-orange-600", bg: "bg-orange-100" },
-                { icon: PenTool, name: "Studio Foto & Kelas", color: "text-violet-600", bg: "bg-violet-100" },
-              ].map((item, i) => (
-                <article key={i} className="bg-white p-6 rounded-3xl border border-stone-200 text-center hover:shadow-md transition-shadow">
-                  <div className={`w-14 h-14 mx-auto rounded-full ${item.bg} ${item.color} flex items-center justify-center mb-4`}>
-                    <item.icon className="w-7 h-7" />
+            <div className="relative">
+              <div className="hidden md:block absolute top-10 left-[calc(16.6%+24px)] right-[calc(16.6%+24px)] h-0.5 bg-gradient-to-r from-teal-600/0 via-teal-500 to-teal-600/0" />
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-6">
+                {[
+                  { step: "01", icon: Store, title: "Buat akun & atur profil toko", desc: "Daftar gratis, tulis nama toko, jam buka, dan masukin daftar layanan beserta harganya. Selesai dalam hitungan menit.", color: "bg-teal-600" },
+                  { step: "02", icon: MessageCircle, title: "Bagikan link-mu ke pelanggan", desc: "Taruh bukly.in/nama-tokomu di bio Instagram, WhatsApp story, atau langsung chat ke pelanggan setia.", color: "bg-teal-500" },
+                  { step: "03", icon: Bell, title: "Duduk manis, notif masuk sendiri", desc: "Pelanggan booking kapan saja — tengah malam pun bisa. Kamu terima notifikasi di WA, jadwal masuk otomatis ke dashboard.", color: "bg-teal-400" },
+                ].map((step, i) => (
+                  <div key={i} className="reveal flex flex-col items-center md:items-start text-center md:text-left" style={{ transitionDelay: `${i * 120}ms` }}>
+                    <div className="relative">
+                      <div className={`w-20 h-20 rounded-2xl ${step.color} flex items-center justify-center shadow-lg shadow-teal-900/30`}>
+                        <step.icon className="w-9 h-9 text-white" />
+                      </div>
+                      <span className="absolute -top-2 -right-2 bg-stone-800 border border-stone-600 text-teal-400 text-xs font-black rounded-full w-7 h-7 flex items-center justify-center">{step.step}</span>
+                    </div>
+                    <h3 className="mt-5 font-bold text-white text-lg leading-snug">{step.title}</h3>
+                    <p className="mt-2 text-stone-400 text-sm leading-relaxed max-w-xs">{step.desc}</p>
                   </div>
-                  <h3 className="font-bold text-stone-800">{item.name}</h3>
+                ))}
+              </div>
+            </div>
+
+            <div className="reveal mt-14 text-center">
+              <Link href="/register">
+                <Button id="cta-cara-kerja" size="lg" className="bg-teal-500 hover:bg-teal-400 text-stone-900 font-bold shadow-lg shadow-teal-900/30 hover:-translate-y-0.5 transition-all duration-200">
+                  Mulai Sekarang — Gratis
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* ─── FEATURES — Alternating Split Layout ─────────────────────── */}
+        <section id="fitur" className="py-16 sm:py-24 scroll-mt-16" aria-labelledby="fitur-heading">
+          <div className="max-w-6xl mx-auto px-4">
+            <div className="reveal text-center max-w-2xl mx-auto mb-16">
+              <h2 id="fitur-heading" className="text-2xl sm:text-3xl font-extrabold text-stone-900">Kenapa ribuan UMKM milih bukly.in?</h2>
+              <p className="text-stone-500 mt-4 text-sm sm:text-base">Bukan soal fitur terbanyak — tapi yang paling berguna buat usahamu. Simpel, dan langsung kerasa manfaatnya.</p>
+            </div>
+
+            <div className="space-y-16 sm:space-y-24">
+              {/* Feature 1 — Anti-bentrok */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+                <div className="reveal-left">
+                  <div className="inline-flex items-center gap-2 text-xs font-bold text-teal-700 bg-teal-50 border border-teal-200 px-3 py-1.5 rounded-full mb-5">
+                    <Calendar className="w-3.5 h-3.5" />Smart Scheduling
+                  </div>
+                  <h3 className="text-2xl font-extrabold text-stone-900 leading-snug">Jadwal bentrok?<br />Gak akan terjadi lagi.</h3>
+                  <p className="mt-4 text-stone-500 leading-relaxed text-sm sm:text-base">Setiap slot yang udah dipesan langsung terkunci otomatis. Gak ada celah dua orang ngambil jam yang sama, bahkan kalau booking dateng barengan.</p>
+                  <ul className="mt-6 space-y-3">
+                    {["Real-time slot locking", "Atur durasi per layanan secara manual", "Tampil jelas: kosong, penuh, atau perlu konfirmasi"].map((f) => (
+                      <li key={f} className="flex items-start gap-2.5 text-sm text-stone-600">
+                        <CheckCircle2 className="w-4 h-4 text-teal-600 flex-shrink-0 mt-0.5" />{f}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="reveal-right">
+                  <div className="bg-stone-50 border border-stone-200 rounded-2xl p-6">
+                    <p className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-4">Timeline Hari Ini · Selasa 5 Sep</p>
+                    {[
+                      { time: "09:00", name: "Dina Rahayu", svc: "Creambath", label: "✓ Selesai", color: "bg-teal-100 text-teal-700 border-teal-200" },
+                      { time: "10:30", name: "Rina Susanti", svc: "Keriting", label: "● Berlangsung", color: "bg-blue-100 text-blue-700 border-blue-200" },
+                      { time: "12:00", name: "–", svc: "Istirahat Siang", label: "⏸ Istirahat", color: "bg-stone-100 text-stone-400 border-stone-200" },
+                      { time: "13:00", name: "Maya Dewi", svc: "Nail Art", label: "◷ Akan datang", color: "bg-orange-50 text-orange-700 border-orange-200" },
+                    ].map((slot, i) => (
+                      <div key={i} className={`flex items-center gap-3 p-3 rounded-xl border mb-2 text-xs ${slot.color}`}>
+                        <span className="font-mono font-bold w-12 flex-shrink-0">{slot.time}</span>
+                        <div className="flex-1"><p className="font-bold">{slot.name}</p><p className="opacity-70">{slot.svc}</p></div>
+                        <span className="font-semibold opacity-70">{slot.label}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Feature 2 — WA Notif */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+                <div className="reveal-right md:order-2">
+                  <div className="inline-flex items-center gap-2 text-xs font-bold text-green-700 bg-green-50 border border-green-200 px-3 py-1.5 rounded-full mb-5">
+                    <MessageCircle className="w-3.5 h-3.5" />WhatsApp Reminder
+                  </div>
+                  <h3 className="text-2xl font-extrabold text-stone-900 leading-snug">Pelanggan lupa jadwal?<br />Kita yang ingetin.</h3>
+                  <p className="mt-4 text-stone-500 leading-relaxed text-sm sm:text-base">Notifikasi otomatis dikirim ke WhatsApp pelanggan H-1 sebelum jadwal. Kamu juga dapat notif setiap ada booking baru masuk. Gak ada lagi pelanggan yang ujug-ujug ngilang.</p>
+                  <ul className="mt-6 space-y-3">
+                    {["Reminder otomatis H-1 ke pelanggan via WA", "Notif instan ke admin setiap booking masuk", "Pesan konfirmasi langsung ke HP pelanggan"].map((f) => (
+                      <li key={f} className="flex items-start gap-2.5 text-sm text-stone-600">
+                        <CheckCircle2 className="w-4 h-4 text-teal-600 flex-shrink-0 mt-0.5" />{f}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="reveal-left md:order-1">
+                  <div className="bg-[#ECF5EC] rounded-2xl p-5 border border-green-200 max-w-xs mx-auto">
+                    <div className="flex items-center gap-2 mb-4">
+                      <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center">
+                        <MessageCircle className="w-4 h-4 text-white" />
+                      </div>
+                      <div><p className="text-xs font-bold text-stone-800">bukly.in Bot</p><p className="text-xs text-green-600">● Online</p></div>
+                    </div>
+                    {[
+                      { msg: "Hei Rina! 👋 Jangan lupa, besok kamu ada jadwal keriting jam 10:30 di Salon Keren By Aurel.", time: "Kemarin 18:00", out: false },
+                      { msg: "Siap! Makasih remindernya 🙏", time: "18:05", out: true },
+                      { msg: "Oke! Sampai besok ya! Kalau mau reschedule, tinggal buka link-nya lagi 😊", time: "18:05", out: false },
+                    ].map((m, i) => (
+                      <div key={i} className={`flex ${m.out ? "justify-end" : "justify-start"} mb-2`}>
+                        <div className={`rounded-2xl px-3 py-2 text-xs max-w-[85%] ${m.out ? "bg-green-500 text-white rounded-tr-sm" : "bg-white text-stone-700 shadow-sm rounded-tl-sm"}`}>
+                          <p>{m.msg}</p>
+                          <p className={`text-right mt-1 text-[10px] ${m.out ? "text-green-100" : "text-stone-400"}`}>{m.time}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Feature 3 — Analytics */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+                <div className="reveal-left">
+                  <div className="inline-flex items-center gap-2 text-xs font-bold text-violet-700 bg-violet-50 border border-violet-200 px-3 py-1.5 rounded-full mb-5">
+                    <BarChart2 className="w-3.5 h-3.5" />Analytics Dashboard
+                  </div>
+                  <h3 className="text-2xl font-extrabold text-stone-900 leading-snug">Tahu persis kapan hari<br />paling ramai — dan sepi.</h3>
+                  <p className="mt-4 text-stone-500 leading-relaxed text-sm sm:text-base">Dashboard analytics bawaan kasih tau kamu tren booking mingguan, layanan paling laris, dan jam tersibuk. Buat keputusan bisnis yang lebih cerdas.</p>
+                  <ul className="mt-6 space-y-3">
+                    {["Grafik booking mingguan & bulanan", "Layanan paling sering dipesan", "Retensi pelanggan lama vs pelanggan baru"].map((f) => (
+                      <li key={f} className="flex items-start gap-2.5 text-sm text-stone-600">
+                        <CheckCircle2 className="w-4 h-4 text-teal-600 flex-shrink-0 mt-0.5" />{f}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="reveal-right">
+                  <div className="bg-stone-50 border border-stone-200 rounded-2xl p-6">
+                    <p className="text-sm font-bold text-stone-700 mb-4">Booking Minggu Ini</p>
+                    <div className="flex items-end gap-2 h-28 mb-2">
+                      {[
+                        { day: "Sen", val: 40 }, { day: "Sel", val: 65 }, { day: "Rab", val: 50 },
+                        { day: "Kam", val: 85 }, { day: "Jum", val: 100 }, { day: "Sab", val: 90 }, { day: "Min", val: 30 },
+                      ].map((d) => (
+                        <div key={d.day} className="flex-1 flex flex-col items-center gap-1">
+                          <div className="w-full rounded-t-md bg-teal-500" style={{ height: `${d.val}%` }} />
+                          <span className="text-[10px] text-stone-400 font-medium">{d.day}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="flex items-center justify-between mt-4 pt-4 border-t border-stone-200">
+                      <div>
+                        <p className="text-xs text-stone-400">Total minggu ini</p>
+                        <p className="font-extrabold text-stone-900 text-2xl">47 <span className="text-sm font-medium text-stone-400">booking</span></p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-xs text-stone-400">vs minggu lalu</p>
+                        <p className="font-bold text-green-600 flex items-center gap-1"><TrendingUp className="w-4 h-4" />+23%</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ─── TESTIMONIALS ─────────────────────────────────────────────── */}
+        <section id="testimoni" className="bg-gradient-to-b from-stone-50 to-white border-t border-stone-200 py-16 sm:py-24 scroll-mt-16" aria-labelledby="testimoni-heading">
+          <div className="max-w-6xl mx-auto px-4">
+            <div className="reveal text-center mb-14">
+              <h2 id="testimoni-heading" className="text-2xl sm:text-3xl font-extrabold text-stone-900">Kata mereka yang udah pakai</h2>
+              <p className="text-stone-500 mt-3 max-w-xl mx-auto text-sm">Bukan klaim kosong — ini cerita nyata dari pemilik usaha yang rasain langsung manfaatnya.</p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {[
+                { quote: "Dulu tiap pagi harus cek DM dulu, konfirmasi satu-satu, takut ada yang double. Sekarang? Buka mata langsung lihat dashboard, semua udah rapi sendiri. Stres berkurang banget.", name: "Tommy Hidayat", role: "Owner, The Classic Barbershop · Bandung", initial: "T", color: "bg-teal-600" },
+                { quote: "Pasien saya banyak yang sudah sepuh, mereka gak gaptek karena gak perlu install apapun. Buka link, pilih jadwal, selesai. Antrean di klinik jauh lebih tertib sekarang.", name: "dr. Sinta Wulandari", role: "Dokter Umum, Klinik Sehat Sentosa · Surabaya", initial: "S", color: "bg-blue-600" },
+                { quote: "Paling suka fitur notif WA-nya. Pelanggan diingetin otomatis, jadi yang skip jadwal turun drastis. Dalam sebulan, no-show turun dari 30% ke hampir nol.", name: "Aurel Pratiwi", role: "Owner, Studio Nail Aurel · Jakarta", initial: "A", color: "bg-rose-500" },
+              ].map((t, i) => (
+                <article key={i} className="reveal bg-white p-7 rounded-2xl border border-stone-200 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex flex-col" style={{ transitionDelay: `${i * 100}ms` }}>
+                  <Quote className="w-8 h-8 text-teal-200 mb-4 flex-shrink-0" />
+                  <p className="text-stone-600 leading-relaxed text-sm flex-1">&ldquo;{t.quote}&rdquo;</p>
+                  <div className="flex items-center gap-3 mt-6 pt-5 border-t border-stone-100">
+                    <div className={`w-10 h-10 rounded-full ${t.color} flex items-center justify-center text-white font-bold flex-shrink-0`}>{t.initial}</div>
+                    <div>
+                      <p className="font-bold text-stone-900 text-sm">{t.name}</p>
+                      <p className="text-xs text-stone-400">{t.role}</p>
+                    </div>
+                  </div>
                 </article>
               ))}
             </div>
           </div>
         </section>
 
-        {/* How It Works Section */}
-        <section id="cara-kerja" className="py-16 sm:py-24 max-w-6xl mx-auto px-4 scroll-mt-16">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-extrabold text-stone-900">Gimana sih cara mulainya?</h2>
-            <p className="text-stone-600 mt-3 max-w-2xl mx-auto">Cuma butuh 3 langkah simpel buat ngubah cara Anda nerima orderan selamanya.</p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
-            <div className="hidden md:block absolute top-1/2 left-0 w-full h-0.5 bg-stone-200 -z-10 -translate-y-1/2"></div>
-            
-            <div className="bg-white p-6 rounded-3xl border border-stone-200 text-center relative z-10 shadow-sm">
-              <div className="w-12 h-12 bg-teal-600 text-white rounded-full flex items-center justify-center text-xl font-black mx-auto mb-5 shadow-lg shadow-teal-600/30">1</div>
-              <h3 className="text-xl font-bold text-stone-900 mb-2">Bikin Akun & Atur Profil</h3>
-              <p className="text-stone-600 text-sm">Daftar gratis, tentukan jam buka, dan masukin layanan beserta harganya. Gak sampai 5 menit.</p>
-            </div>
-            
-            <div className="bg-white p-6 rounded-3xl border border-stone-200 text-center relative z-10 shadow-sm">
-              <div className="w-12 h-12 bg-teal-600 text-white rounded-full flex items-center justify-center text-xl font-black mx-auto mb-5 shadow-lg shadow-teal-600/30">2</div>
-              <h3 className="text-xl font-bold text-stone-900 mb-2">Tinggal Bagikan Link</h3>
-              <p className="text-stone-600 text-sm">Taruh link khusus (bukly.in/toko-anda) di bio Instagram atau tinggal share via WhatsApp.</p>
-            </div>
-            
-            <div className="bg-white p-6 rounded-3xl border border-stone-200 text-center relative z-10 shadow-sm">
-              <div className="w-12 h-12 bg-teal-600 text-white rounded-full flex items-center justify-center text-xl font-black mx-auto mb-5 shadow-lg shadow-teal-600/30">3</div>
-              <h3 className="text-xl font-bold text-stone-900 mb-2">Duduk Tenang, Terima Order</h3>
-              <p className="text-stone-600 text-sm">Pelanggan pilih jam sendiri, Anda tinggal nunggu notifikasi booking masuk ke HP.</p>
-            </div>
-          </div>
-        </section>
-
-        {/* Feature Highlights - Bento Grid */}
-        <section id="fitur" className="bg-white py-16 sm:py-24 border-t border-stone-200 scroll-mt-16">
-          <div className="max-w-6xl mx-auto px-4">
-            <div className="text-center max-w-2xl mx-auto mb-12">
-              <h2 className="text-3xl font-extrabold text-stone-900">Kenapa harus pakai bukly.in?</h2>
-              <p className="text-stone-600 mt-4">Desainnya gampang dipakai, fiturnya lengkap. Anda fokus kerja, biar sistem yang ngurusin jadwal pelanggan.</p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
-              {/* Card Besar */}
-              <article className="md:col-span-2 p-8 rounded-3xl bg-stone-50 border border-stone-200 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex flex-col sm:flex-row gap-6 items-start sm:items-center">
-                <div className="w-16 h-16 rounded-2xl bg-teal-100 text-teal-700 flex items-center justify-center flex-shrink-0">
-                  <Calendar className="w-8 h-8" />
-                </div>
-                <div>
-                  <h3 className="font-bold text-2xl text-stone-900">Gak ada lagi cerita jadwal bentrok</h3>
-                  <p className="text-base text-stone-600 mt-2.5 leading-relaxed">
-                    Sistem otomatis ngunci jam yang udah dipesan. Mustahil ada dua orang milih jam yang sama. Semua jadwal rapi tanpa pusing.
-                  </p>
-                </div>
-              </article>
-
-              {/* Card Kecil 1 */}
-              <article className="p-8 rounded-3xl bg-stone-50 border border-stone-200 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300">
-                <div className="w-14 h-14 rounded-2xl bg-orange-100 text-orange-700 flex items-center justify-center mb-5">
-                  <CheckCircle2 className="w-7 h-7" />
-                </div>
-                <h3 className="font-bold text-xl text-stone-900">Bebas dari pelanggan hit & run</h3>
-                <p className="text-sm text-stone-600 mt-2.5 leading-relaxed">
-                  Slot antrean dikelola dengan jelas. Gak perlu khawatir lagi sama pelanggan yang cuma iseng booking terus ngilang.
-                </p>
-              </article>
-              
-              {/* Card Lebar Bawah */}
-              <article className="md:col-span-3 p-8 rounded-3xl bg-stone-900 text-stone-50 shadow-md hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col sm:flex-row items-center justify-between gap-6">
-                <div className="flex items-center gap-5">
-                  <div className="w-14 h-14 rounded-2xl bg-teal-500/20 text-teal-400 flex items-center justify-center flex-shrink-0">
-                    <Zap className="w-7 h-7" />
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-xl text-white">Notifikasi otomatis ke WhatsApp</h3>
-                    <p className="text-sm text-stone-400 mt-1.5 leading-relaxed max-w-xl">
-                      Admin dan pelanggan langsung dapet pengingat otomatis H-1 di WA biar ngga ada jadwal yang kelupaan.
-                    </p>
-                  </div>
-                </div>
+        {/* ─── CTA BAND ─────────────────────────────────────────────────── */}
+        <section className="bg-stone-900 py-16 sm:py-20">
+          <div className="max-w-3xl mx-auto px-4 text-center">
+            <div className="reveal">
+              <h2 className="text-2xl sm:text-4xl font-extrabold text-white leading-tight">Udah siap gak perlu repot<br />balas chat booking lagi?</h2>
+              <p className="mt-4 text-stone-400 text-sm sm:text-base max-w-md mx-auto">Daftar gratis sekarang. Dalam 5 menit, halaman booking usahamu sudah aktif dan siap dibagikan.</p>
+              <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
                 <Link href="/register">
-                  <Button className="bg-teal-500 text-stone-900 hover:bg-teal-400 font-bold rounded-xl whitespace-nowrap transition-all duration-200">
-                    Daftar Gratis Sekarang
+                  <Button id="cta-bottom-daftar" size="lg" className="bg-teal-500 hover:bg-teal-400 text-stone-900 font-bold shadow-lg shadow-teal-900/30 hover:-translate-y-0.5 transition-all duration-200">
+                    Buat Halaman Booking — Gratis
+                    <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
                 </Link>
-              </article>
+                <Link href="/demo-salon">
+                  <Button size="lg" variant="outline" className="border-stone-600 text-stone-300 hover:bg-stone-800 hover:text-white hover:border-stone-500 font-semibold transition-all duration-200">
+                    Lihat Contoh Dulu
+                  </Button>
+                </Link>
+              </div>
+              <p className="mt-5 text-stone-500 text-xs">Tidak perlu kartu kredit · Tidak perlu download app · Aktif dalam 5 menit</p>
             </div>
           </div>
         </section>
 
-        {/* Testimonials Section */}
-        <section id="testimoni" className="bg-stone-900 py-16 sm:py-24 scroll-mt-16 text-stone-50 border-y border-stone-800">
-          <div className="max-w-6xl mx-auto px-4">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl font-extrabold text-white">Telah dipercaya ratusan bisnis</h2>
-              <p className="text-stone-400 mt-3 max-w-2xl mx-auto">Lihat gimana mereka bisa hemat waktu dan bikin pelanggan makin nyaman.</p>
+        {/* ─── FAQ ──────────────────────────────────────────────────────── */}
+        <section id="faq" className="bg-white py-16 sm:py-24 scroll-mt-16" aria-labelledby="faq-heading">
+          <div className="max-w-2xl mx-auto px-4">
+            <div className="reveal text-center mb-12">
+              <h2 id="faq-heading" className="text-2xl sm:text-3xl font-extrabold text-stone-900">Yang paling sering ditanyain</h2>
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <article className="bg-stone-800 p-8 rounded-3xl border border-stone-700">
-                <Quote className="w-10 h-10 text-teal-500/50 mb-4" />
-                <p className="text-stone-200 leading-relaxed mb-6">
-                  "Semenjak pakai bukly.in, DM Instagram saya jauh lebih rapi. Dulu pusing banget kalau ada jadwal double karena kelupaan catat manual. Sekarang pelanggan tinggal klik link di bio, pilih jam sendiri. Saya cuma tinggal nunggu notif."
-                </p>
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-teal-600 flex items-center justify-center text-xl font-bold text-white">T</div>
-                  <div>
-                    <h4 className="font-bold text-white">Tommy</h4>
-                    <p className="text-sm text-stone-400">Owner, The Classic Barbershop</p>
-                  </div>
-                </div>
-              </article>
-              
-              <article className="bg-stone-800 p-8 rounded-3xl border border-stone-700">
-                <Quote className="w-10 h-10 text-teal-500/50 mb-4" />
-                <p className="text-stone-200 leading-relaxed mb-6">
-                  "Klinik kami butuh sistem pendaftaran yang cepat tanpa bikin pasien antre berjam-jam di ruang tunggu. Platform ini jadi solusi instan buat kami yang ngga ngerti coding bikin web sendiri. Sangat direkomendasikan!"
-                </p>
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-teal-600 flex items-center justify-center text-xl font-bold text-white">S</div>
-                  <div>
-                    <h4 className="font-bold text-white">dr. Sinta</h4>
-                    <p className="text-sm text-stone-400">Founder, Klinik Sehat Sentosa</p>
-                  </div>
-                </div>
-              </article>
-            </div>
-          </div>
-        </section>
-
-        {/* FAQ Section */}
-        <section id="faq" className="bg-white py-16 sm:py-24 scroll-mt-16">
-          <div className="max-w-3xl mx-auto px-4">
-            <h2 className="text-3xl font-extrabold text-stone-900 text-center mb-10">Yang paling sering ditanyain (FAQ)</h2>
             <div className="space-y-4">
               {[
-                {
-                  q: "Apakah aplikasinya gratis?",
-                  a: "Iya dong. Fitur dasar buat nerima booking ini 100% gratis tanpa langganan bulanan. Anda udah bisa bikin halaman booking, masukin layanan, dan nerima pesanan langsung."
-                },
-                {
-                  q: "Bisa ngatur jam operasional sendiri?",
-                  a: "Pasti bisa. Atur jam buka, jam istirahat, sampai hari libur sesuka Anda. Sistem cuma nampilin jam yang emang Anda buka ke pelanggan."
-                },
-                {
-                  q: "Pelanggan harus install aplikasi dulu ngga?",
-                  a: "Nggak usah repot-repot. Pelanggan cukup klik link yang Anda kasih (kayak bukly.in/salon), terus halamannya langsung kebuka di browser HP mereka masing-masing."
-                },
-                {
-                  q: "Cocok buat usaha apa aja nih?",
-                  a: "Dari barbershop, salon kecantikan, bengkel, sampai dokter gigi. Intinya, semua jenis bisnis jasa yang butuh antrean waktu cocok banget pakai ini."
-                }
+                { q: "Apakah bukly.in benar-benar gratis?", a: "Iya, gratis beneran. Fitur dasar (bikin halaman booking, atur jadwal, terima reservasi) tidak dipungut biaya apapun. Tidak ada biaya tersembunyi atau masa trial yang tiba-tiba berakhir." },
+                { q: "Berapa lama setup awal bukly.in?", a: "Paling lama 5 menit. Daftar akun, isi nama toko, jam operasional, dan daftar layanan — halaman booking langsung aktif dan siap dibagikan ke pelanggan." },
+                { q: "Pelanggan perlu install aplikasi dulu?", a: "Nggak perlu sama sekali. Pelanggan cukup klik link yang kamu bagikan (kayak bukly.in/nama-tokomu), halaman langsung terbuka di browser HP mereka. Sesimpel buka link biasa." },
+                { q: "Cocok buat usaha apa saja?", a: "Semua usaha jasa yang butuh manajemen jadwal: Barbershop, Salon Kecantikan, Nail Art, Klinik & Dokter, Bengkel, Studio Foto, Kelas privat, Laundry, dan lainnya." },
+                { q: "Gimana kalau mau ganti jam atau tutup di hari tertentu?", a: "Bisa banget, lewat dashboard Settings. Atur jam buka, jam istirahat, dan blokir tanggal tertentu buat hari libur. Sistem otomatis menyesuaikan slot yang tampil ke pelanggan." },
               ].map((faq, i) => (
-                <article key={i} className="bg-stone-50 p-6 rounded-2xl border border-stone-200 shadow-sm">
-                  <h3 className="font-bold text-stone-900 flex items-center gap-2">
-                    <MessageCircle className="w-5 h-5 text-teal-600" />
+                <article key={i} className="reveal bg-stone-50 border border-stone-200 rounded-2xl p-6" style={{ transitionDelay: `${i * 60}ms` }}>
+                  <h3 className="font-bold text-stone-900 flex items-start gap-2.5 text-sm sm:text-base">
+                    <ChevronRight className="w-5 h-5 text-teal-600 flex-shrink-0 mt-0.5" />
                     {faq.q}
                   </h3>
-                  <p className="text-stone-600 mt-2 text-sm leading-relaxed ml-7">{faq.a}</p>
+                  <p className="text-stone-500 mt-2.5 text-sm leading-relaxed ml-7">{faq.a}</p>
                 </article>
               ))}
             </div>
@@ -413,17 +693,41 @@ export default function HomePage() {
         </section>
       </main>
 
-      {/* Footer */}
-      <footer className="bg-white border-t border-stone-200 py-10 px-4">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <Calendar className="w-5 h-5 text-teal-600" />
-            <span className="font-extrabold text-stone-900">bukly.in</span>
+      {/* ─── FOOTER ───────────────────────────────────────────────────── */}
+      <footer className="bg-stone-900 border-t border-stone-800 py-12 px-4">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-7 h-7 rounded-lg bg-teal-600 flex items-center justify-center">
+                  <Calendar className="w-3.5 h-3.5 text-white" />
+                </div>
+                <span className="font-extrabold text-white tracking-tight">bukly<span className="text-teal-400">.in</span></span>
+              </div>
+              <p className="text-stone-500 text-sm max-w-xs leading-relaxed">Platform reservasi online gratis untuk UMKM Jasa Indonesia. Biarkan pelanggan atur jadwal sendiri, 24 jam sehari.</p>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-8 text-sm">
+              <div>
+                <p className="text-stone-400 font-bold mb-3">Produk</p>
+                <ul className="space-y-2 text-stone-500">
+                  <li><Link href="#fitur" className="hover:text-teal-400 transition-colors">Fitur</Link></li>
+                  <li><Link href="/demo-salon" className="hover:text-teal-400 transition-colors">Demo Toko</Link></li>
+                  <li><Link href="/register" className="hover:text-teal-400 transition-colors">Daftar Gratis</Link></li>
+                </ul>
+              </div>
+              <div>
+                <p className="text-stone-400 font-bold mb-3">Informasi</p>
+                <ul className="space-y-2 text-stone-500">
+                  <li><Link href="/artikel" className="hover:text-teal-400 transition-colors">Artikel & Tips</Link></li>
+                  <li><Link href="#faq" className="hover:text-teal-400 transition-colors">FAQ</Link></li>
+                </ul>
+              </div>
+            </div>
           </div>
-          <p className="text-xs text-stone-500 font-medium text-center md:text-right">
-            © {new Date().getFullYear()} Dibuat untuk memajukan UMKM Jasa Indonesia.<br/>
-            Solusi Reservasi Online Cepat & Aman.
-          </p>
+          <div className="mt-10 pt-6 border-t border-stone-800 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-stone-600">
+            <p>© {new Date().getFullYear()} bukly.in — Dibuat untuk UMKM Jasa Indonesia.</p>
+            <p>Reservasi online yang manusiawi.</p>
+          </div>
         </div>
       </footer>
     </div>
