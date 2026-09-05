@@ -56,7 +56,7 @@ export default function ContactPage() {
           <div className="mt-12 p-6 bg-stone-900 text-white rounded-2xl text-center">
             <p className="text-stone-300 mb-4">Butuh bantuan teknis seputar akun atau penagihan?</p>
             <p className="font-medium">
-              Silakan <em>login</em> dan gunakan tombol obrolan bantuan (Chat) yang ada di sudut kanan bawah dasbor Anda.
+              Kirimkan pertanyaan Anda ke <a href="mailto:tuntasapp.id@gmail.com" className="text-teal-400 hover:underline">tuntasapp.id@gmail.com</a> dan tim teknis kami akan segera membantu.
             </p>
           </div>
         </div>
