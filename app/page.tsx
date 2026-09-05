@@ -696,7 +696,7 @@ export default function HomePage() {
                 <div className="w-7 h-7 rounded-lg bg-teal-600 flex items-center justify-center">
                   <Calendar className="w-3.5 h-3.5 text-white" />
                 </div>
-                <span className="font-extrabold text-white tracking-tight">bukly<span className="text-teal-400">.in</span></span>
+                <span className="font-extrabold text-white tracking-tight">bukly<span className="text-teal-400">.id</span></span>
               </div>
               <p className="text-stone-500 text-sm max-w-xs leading-relaxed">Platform reservasi online gratis untuk UMKM Jasa Indonesia. Biarkan pelanggan atur jadwal sendiri, 24 jam sehari.</p>
             </div>
@@ -714,6 +714,9 @@ export default function HomePage() {
                 <ul className="space-y-2 text-stone-500">
                   <li><Link href="/artikel" className="hover:text-teal-400 transition-colors">Artikel & Tips</Link></li>
                   <li><Link href="#faq" className="hover:text-teal-400 transition-colors">FAQ</Link></li>
+                  <li><Link href="/contact" className="hover:text-teal-400 transition-colors">Kontak</Link></li>
+                  <li><Link href="/privacy" className="hover:text-teal-400 transition-colors">Kebijakan Privasi</Link></li>
+                  <li><Link href="/terms" className="hover:text-teal-400 transition-colors">Syarat & Ketentuan</Link></li>
                 </ul>
               </div>
             </div>
