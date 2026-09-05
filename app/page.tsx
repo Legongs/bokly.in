@@ -70,7 +70,7 @@ const jsonLd = {
       description:
         "Aplikasi reservasi online gratis untuk Barbershop, Salon, Klinik, Bengkel, dan UMKM Jasa Indonesia. Buat halaman booking dalam 1 menit tanpa coding.",
       featureList: [
-        "Halaman booking unik per toko",
+        "Halaman booking unik per usaha",
         "Notifikasi otomatis ke WhatsApp",
         "Dashboard manajemen jadwal",
         "Anti-bentrok jadwal otomatis",
@@ -115,7 +115,7 @@ const jsonLd = {
           name: "Apakah pelanggan perlu install aplikasi untuk booking?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Tidak perlu. Pelanggan cukup buka link unik tokomu (contoh: bukly.in/salon-siska) langsung di browser HP mereka. Tidak ada aplikasi yang perlu diunduh.",
+            text: "Tidak perlu. Pelanggan cukup buka link unik usahamu (contoh: bukly.in/salon-siska) langsung di browser HP mereka. Tidak ada aplikasi yang perlu diunduh.",
           },
         },
         {
@@ -131,7 +131,7 @@ const jsonLd = {
           name: "Berapa lama waktu setup bukly.in?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Kurang dari 5 menit. Daftar akun, isi nama toko, jam operasional, dan daftar layanan — halaman booking langsung aktif dan bisa disebarkan ke pelanggan.",
+            text: "Kurang dari 5 menit. Daftar akun, isi nama usahamu, jam operasional, dan daftar layanan — halaman booking langsung aktif dan bisa disebarkan ke pelanggan.",
           },
         },
       ],
@@ -266,12 +266,12 @@ export default function HomePage() {
                 id="hero-heading"
                 className="anim-float-up-delay-1 text-4xl sm:text-5xl font-extrabold tracking-tight text-stone-900 leading-[1.12]"
               >
-                Ini tampang{" "}
+                Begini tampilan{" "}
                 <span className="relative inline-block">
                   <span className="relative z-10 text-teal-700">halaman booking</span>
                   <span className="absolute -bottom-1 left-0 w-full h-3 bg-teal-100 -z-0 rounded" aria-hidden="true" />
                 </span>{" "}
-                usahamu setelah daftar.
+                usahamu di mata pelanggan.
               </h1>
 
               <p className="anim-float-up-delay-2 mt-5 text-base sm:text-lg text-stone-500 max-w-md leading-relaxed">
@@ -282,7 +282,7 @@ export default function HomePage() {
                 {[
                   "Aktif dalam 5 menit, tanpa perlu coding",
                   "Gratis — tidak ada biaya tersembunyi",
-                  "Link unik tokomu: bukly.in/nama-toko",
+                  "Link unik usahamu: bukly.in/nama-usahamu",
                 ].map((item) => (
                   <li key={item} className="flex items-center gap-2.5">
                     <CheckCircle2 className="w-4 h-4 text-teal-600 flex-shrink-0" />
@@ -300,7 +300,7 @@ export default function HomePage() {
                 </Link>
                 <Link href="/demo-salon" className="w-full sm:w-auto">
                   <Button id="cta-hero-demo" size="lg" variant="outline" className="w-full sm:w-auto border-stone-300 text-stone-700 hover:bg-stone-100 font-semibold transition-all duration-200">
-                    Lihat Contoh Toko
+                    Lihat Contoh Halaman
                   </Button>
                 </Link>
               </div>
@@ -406,7 +406,7 @@ export default function HomePage() {
         <div className="border-y border-stone-200 bg-stone-100/60 py-5">
           <div className="max-w-6xl mx-auto px-4">
             <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-3 text-sm text-stone-500 font-medium">
-              <span className="flex items-center gap-2"><Users className="w-4 h-4 text-teal-600" />500+ toko aktif</span>
+              <span className="flex items-center gap-2"><Users className="w-4 h-4 text-teal-600" />500+ usaha aktif</span>
               <span className="hidden sm:block text-stone-300">·</span>
               <span className="flex items-center gap-2"><CalendarCheck2 className="w-4 h-4 text-teal-600" />10.000+ booking diproses</span>
               <span className="hidden sm:block text-stone-300">·</span>
@@ -453,8 +453,8 @@ export default function HomePage() {
               <div className="hidden md:block absolute top-10 left-[calc(16.6%+24px)] right-[calc(16.6%+24px)] h-0.5 bg-gradient-to-r from-teal-600/0 via-teal-500 to-teal-600/0" />
               <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-6">
                 {[
-                  { step: "01", icon: Store, title: "Buat akun & atur profil toko", desc: "Daftar gratis, tulis nama toko, jam buka, dan masukin daftar layanan beserta harganya. Selesai dalam hitungan menit.", color: "bg-teal-600" },
-                  { step: "02", icon: MessageCircle, title: "Bagikan link-mu ke pelanggan", desc: "Taruh bukly.in/nama-tokomu di bio Instagram, WhatsApp story, atau langsung chat ke pelanggan setia.", color: "bg-teal-500" },
+                  { step: "01", icon: Store, title: "Buat akun & atur profil usaha", desc: "Daftar gratis, tulis nama usahamu, jam buka, dan masukin daftar layanan beserta harganya. Selesai dalam hitungan menit.", color: "bg-teal-600" },
+                  { step: "02", icon: MessageCircle, title: "Bagikan link-mu ke pelanggan", desc: "Taruh bukly.in/nama-usahamu di bio Instagram, WhatsApp story, atau langsung chat ke pelanggan setia.", color: "bg-teal-500" },
                   { step: "03", icon: Bell, title: "Duduk manis, notif masuk sendiri", desc: "Pelanggan booking kapan saja — tengah malam pun bisa. Kamu terima notifikasi di WA, jadwal masuk otomatis ke dashboard.", color: "bg-teal-400" },
                 ].map((step, i) => (
                   <div key={i} className="reveal flex flex-col items-center md:items-start text-center md:text-left" style={{ transitionDelay: `${i * 120}ms` }}>
@@ -675,8 +675,8 @@ export default function HomePage() {
             <div className="space-y-4">
               {[
                 { q: "Apakah bukly.in benar-benar gratis?", a: "Iya, gratis beneran. Fitur dasar (bikin halaman booking, atur jadwal, terima reservasi) tidak dipungut biaya apapun. Tidak ada biaya tersembunyi atau masa trial yang tiba-tiba berakhir." },
-                { q: "Berapa lama setup awal bukly.in?", a: "Paling lama 5 menit. Daftar akun, isi nama toko, jam operasional, dan daftar layanan — halaman booking langsung aktif dan siap dibagikan ke pelanggan." },
-                { q: "Pelanggan perlu install aplikasi dulu?", a: "Nggak perlu sama sekali. Pelanggan cukup klik link yang kamu bagikan (kayak bukly.in/nama-tokomu), halaman langsung terbuka di browser HP mereka. Sesimpel buka link biasa." },
+                { q: "Berapa lama setup awal bukly.in?", a: "Paling lama 5 menit. Daftar akun, isi nama usahamu, jam operasional, dan daftar layanan — halaman booking langsung aktif dan siap dibagikan ke pelanggan." },
+                { q: "Pelanggan perlu install aplikasi dulu?", a: "Nggak perlu sama sekali. Pelanggan cukup klik link yang kamu bagikan (kayak bukly.in/nama-usahamu), halaman langsung terbuka di browser HP mereka. Sesimpel buka link biasa." },
                 { q: "Cocok buat usaha apa saja?", a: "Semua usaha jasa yang butuh manajemen jadwal: Barbershop, Salon Kecantikan, Nail Art, Klinik & Dokter, Bengkel, Studio Foto, Kelas privat, Laundry, dan lainnya." },
                 { q: "Gimana kalau mau ganti jam atau tutup di hari tertentu?", a: "Bisa banget, lewat dashboard Settings. Atur jam buka, jam istirahat, dan blokir tanggal tertentu buat hari libur. Sistem otomatis menyesuaikan slot yang tampil ke pelanggan." },
               ].map((faq, i) => (
@@ -711,7 +711,7 @@ export default function HomePage() {
                 <p className="text-stone-400 font-bold mb-3">Produk</p>
                 <ul className="space-y-2 text-stone-500">
                   <li><Link href="#fitur" className="hover:text-teal-400 transition-colors">Fitur</Link></li>
-                  <li><Link href="/demo-salon" className="hover:text-teal-400 transition-colors">Demo Toko</Link></li>
+                  <li><Link href="/demo-salon" className="hover:text-teal-400 transition-colors">Lihat Demo</Link></li>
                   <li><Link href="/register" className="hover:text-teal-400 transition-colors">Daftar Gratis</Link></li>
                 </ul>
               </div>
