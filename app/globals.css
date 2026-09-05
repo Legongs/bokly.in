@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 /* ── Design Tokens ────────────────────────────────────────────────────────── */
 /* Force light mode sesuai aturan ui_ux.md: DILARANG dark mode bawaan/neon   */

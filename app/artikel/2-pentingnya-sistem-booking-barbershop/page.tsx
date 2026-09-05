@@ -58,6 +58,19 @@ export default function Article2Page() {
               </div>
             </div>
           </div>
+          <div className="mt-12 pt-8 border-t border-stone-200">
+            <h3 className="text-xl font-bold text-stone-900 mb-4">Baca Juga</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Link href="/artikel/1-cara-meningkatkan-pelanggan-salon" className="p-4 rounded-2xl border border-stone-200 hover:border-teal-300 hover:bg-teal-50 transition-colors group">
+                <span className="text-xs font-bold text-teal-600 mb-1 block">Bisnis</span>
+                <h4 className="font-bold text-stone-800 group-hover:text-teal-700 leading-tight">5 Cara Meningkatkan Retensi Pelanggan Salon Kecantikan Anda</h4>
+              </Link>
+              <Link href="/artikel/3-menghindari-pelanggan-no-show" className="p-4 rounded-2xl border border-stone-200 hover:border-teal-300 hover:bg-teal-50 transition-colors group">
+                <span className="text-xs font-bold text-orange-600 mb-1 block">Manajemen</span>
+                <h4 className="font-bold text-stone-800 group-hover:text-teal-700 leading-tight">Strategi Ampuh Menghadapi Pelanggan 'No-Show' (Hit & Run)</h4>
+              </Link>
+            </div>
+          </div>
         </article>
       </main>
     </div>

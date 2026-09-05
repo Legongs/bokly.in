@@ -144,19 +144,40 @@ export default function ArticleDetailPage() {
               </Button>
             </Link>
           </div>
+          <div className="mt-12 pt-8 border-t border-stone-200">
+            <h3 className="text-xl font-bold text-stone-900 mb-4">Baca Juga</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Link href="/artikel/2-pentingnya-sistem-booking-barbershop" className="p-4 rounded-2xl border border-stone-200 hover:border-teal-300 hover:bg-teal-50 transition-colors group">
+                <span className="text-xs font-bold text-teal-600 mb-1 block">Teknologi</span>
+                <h4 className="font-bold text-stone-800 group-hover:text-teal-700 leading-tight">Mengapa Barbershop Anda Wajib Menggunakan Sistem Booking Online?</h4>
+              </Link>
+              <Link href="/artikel/3-menghindari-pelanggan-no-show" className="p-4 rounded-2xl border border-stone-200 hover:border-teal-300 hover:bg-teal-50 transition-colors group">
+                <span className="text-xs font-bold text-orange-600 mb-1 block">Manajemen</span>
+                <h4 className="font-bold text-stone-800 group-hover:text-teal-700 leading-tight">Strategi Ampuh Menghadapi Pelanggan 'No-Show' (Hit & Run)</h4>
+              </Link>
+            </div>
+          </div>
         </article>
       </main>
 
       {/* Footer */}
       <footer className="bg-stone-50 border-t border-stone-200 py-10 px-4 mt-auto">
-        <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <Calendar className="w-5 h-5 text-teal-600" />
-            <span className="font-extrabold text-stone-900">bukly.id</span>
+        <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="flex flex-col items-center md:items-start gap-2">
+            <div className="flex items-center gap-2">
+              <Calendar className="w-5 h-5 text-teal-600" />
+              <span className="font-extrabold text-stone-900">bukly.id</span>
+            </div>
+            <p className="text-xs text-stone-500 font-medium">
+              © {new Date().getFullYear()} Dibuat untuk memajukan UMKM Jasa Indonesia.
+            </p>
           </div>
-          <p className="text-xs text-stone-500 font-medium text-center md:text-right">
-            © {new Date().getFullYear()} Dibuat untuk memajukan UMKM Jasa Indonesia.
-          </p>
+          
+          <div className="flex items-center gap-6 text-sm font-semibold text-stone-500">
+            <Link href="/contact" className="hover:text-teal-600 transition-colors">Kontak</Link>
+            <Link href="/privacy" className="hover:text-teal-600 transition-colors">Kebijakan Privasi</Link>
+            <Link href="/terms" className="hover:text-teal-600 transition-colors">Syarat & Ketentuan</Link>
+          </div>
         </div>
       </footer>
     </div>
