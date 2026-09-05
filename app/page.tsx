@@ -709,11 +709,8 @@ export default function HomePage() {
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
             <div>
-              <div className="flex items-center gap-2 mb-2">
-                <div className="w-7 h-7 rounded-lg bg-indigo-600 flex items-center justify-center">
-                  <Calendar className="w-3.5 h-3.5 text-white" />
-                </div>
-                <span className="font-extrabold text-white tracking-tight">bukly<span className="text-indigo-400">.id</span></span>
+              <div className="mb-3">
+                <Logo variant="dark" className="text-2xl" />
               </div>
               <p className="text-stone-500 text-sm max-w-xs leading-relaxed">Platform reservasi online gratis untuk UMKM Jasa Indonesia. Biarkan pelanggan atur jadwal sendiri, 24 jam sehari.</p>
             </div>

@@ -168,13 +168,8 @@ export default function RegisterPageClient() {
         <div className="w-full max-w-md mx-auto flex-1 flex flex-col justify-center py-10">
           
           <div className="mb-10">
-            <Link href="/" className="inline-flex items-center gap-2 mb-8">
-              <div className="w-8 h-8 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-sm shadow-indigo-600/20">
-                <Store className="w-4 h-4" />
-              </div>
-              <span className="font-extrabold text-lg tracking-tight text-stone-900">
-                <Logo />
-              </span>
+            <Link href="/" className="inline-block mb-8" aria-label="Beranda bukly.id">
+              <Logo className="text-2xl" />
             </Link>
             
             {/* Stepper Progress */}

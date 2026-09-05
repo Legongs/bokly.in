@@ -3,6 +3,7 @@ import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import Link from "next/link";
 import { ShieldCheck, LogOut } from "lucide-react";
+import { Logo } from "@/components/ui/logo";
 
 export default async function SuperAdminLayout({
   children,
@@ -39,12 +40,14 @@ export default async function SuperAdminLayout({
     <div className="min-h-screen bg-stone-100 flex flex-col font-sans">
       <header className="bg-stone-900 text-white border-b border-stone-800">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center text-indigo-400">
-              <ShieldCheck className="w-5 h-5" />
-            </div>
-            <span className="font-bold text-lg tracking-tight">Superadmin</span>
-            <span className="text-stone-500 text-sm ml-2 px-2 py-0.5 rounded-full bg-stone-800 border border-stone-700">bukly.id</span>
+          <div className="flex items-center gap-3">
+            <Link href="/" className="flex items-center" aria-label="Beranda bukly.id">
+              <Logo variant="dark" className="text-xl" />
+            </Link>
+            <span className="text-indigo-400 font-semibold text-xs px-2.5 py-0.5 rounded-full bg-indigo-950/60 border border-indigo-800/60 flex items-center gap-1.5">
+              <ShieldCheck className="w-3.5 h-3.5" />
+              Superadmin
+            </span>
           </div>
           
           <div className="flex items-center gap-4">

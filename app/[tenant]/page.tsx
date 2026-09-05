@@ -109,7 +109,7 @@ export default async function TenantPage({ params }: TenantPageProps) {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
     "name": tenantData.business_name,
-    "image": tenantData.hero_image_url || tenantData.logo_url || "https://bukly.id/icon.jpg",
+    "image": tenantData.hero_image_url || tenantData.logo_url || "https://bukly.id/icon.png",
     "url": `https://bukly.id/${tenantSlug}`,
     "telephone": tenantData.whatsapp_number ? `+${tenantData.whatsapp_number}` : undefined,
     "address": {

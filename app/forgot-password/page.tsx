@@ -45,13 +45,8 @@ export default function ForgotPasswordPage() {
     <main className="min-h-screen bg-stone-50 flex items-center justify-center p-4 sm:p-8">
       <div className="w-full max-w-md bg-white rounded-[2rem] p-8 sm:p-10 shadow-sm border border-stone-100">
         
-        <Link href="/" className="inline-flex items-center gap-2 mb-8">
-          <div className="w-8 h-8 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-sm shadow-indigo-600/20">
-            <Store className="w-4 h-4" />
-          </div>
-          <span className="font-extrabold text-lg tracking-tight text-stone-900">
-            <Logo />
-          </span>
+        <Link href="/" className="inline-block mb-8" aria-label="Beranda bukly.id">
+          <Logo className="text-2xl" />
         </Link>
         
         <div className="mb-8">

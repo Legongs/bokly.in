@@ -52,13 +52,8 @@ export default function ArticleIndexPage() {
       {/* Navigation */}
       <header className="border-b border-stone-200 bg-stone-50/80 backdrop-blur-md sticky top-0 z-50">
         <nav className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between" aria-label="Main Navigation">
-          <Link href="/" className="flex items-center gap-2" aria-label="Beranda bukly.id">
-            <div className="w-8 h-8 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-sm shadow-indigo-600/20">
-              <Calendar className="w-4 h-4" />
-            </div>
-            <span className="font-extrabold text-lg tracking-tight text-stone-900">
-              <Logo />
-            </span>
+          <Link href="/" className="flex items-center" aria-label="Beranda bukly.id">
+            <Logo className="text-2xl" />
           </Link>
 
           <ul className="hidden md:flex items-center gap-6 text-sm font-semibold text-stone-600">
