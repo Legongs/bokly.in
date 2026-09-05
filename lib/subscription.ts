@@ -41,6 +41,32 @@ export const PLAN_PRICES = {
   bisnis: { monthly: 119000, yearly: 1140000 },
 } as const;
 
+export type PlanPricesType = typeof PLAN_PRICES;
+
+/**
+ * Ambil konfigurasi harga dari app_settings di database.
+ * Jika gagal, fallback ke konstanta PLAN_PRICES.
+ */
+export async function getDynamicPricing(): Promise<PlanPricesType> {
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("app_settings")
+      .select("value")
+      .eq("id", "pricing_config")
+      .single();
+
+    if (error || !data) {
+      return PLAN_PRICES;
+    }
+
+    return data.value as unknown as PlanPricesType;
+  } catch (error) {
+    console.error("Failed to fetch dynamic pricing:", error);
+    return PLAN_PRICES;
+  }
+}
+
 export const FREE_SUBSCRIPTION: Subscription = {
   id: "",
   tenant_id: "",

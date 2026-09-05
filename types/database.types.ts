@@ -473,6 +473,7 @@ export interface Database {
           status: BillingStatus;
           midtrans_order_id: string | null;
           midtrans_token: string | null;
+          voucher_id: string | null;
           created_at: string;
         };
         Insert: {
@@ -495,6 +496,7 @@ export interface Database {
           status?: BillingStatus;
           midtrans_order_id?: string | null;
           midtrans_token?: string | null;
+          voucher_id?: string | null;
           created_at?: string;
         };
         Relationships: [
@@ -506,6 +508,66 @@ export interface Database {
             referencedColumns: ["id"];
           }
         ];
+      };
+      app_settings: {
+        Row: {
+          id: string;
+          value: Json;
+          updated_at: string;
+        };
+        Insert: {
+          id: string;
+          value: Json;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          value?: Json;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      vouchers: {
+        Row: {
+          id: string;
+          code: string;
+          discount_type: "percentage" | "fixed";
+          discount_value: number;
+          max_uses: number | null;
+          current_uses: number;
+          valid_from: string;
+          valid_until: string | null;
+          is_active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          code: string;
+          discount_type: "percentage" | "fixed";
+          discount_value: number;
+          max_uses?: number | null;
+          current_uses?: number;
+          valid_from?: string;
+          valid_until?: string | null;
+          is_active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          code?: string;
+          discount_type?: "percentage" | "fixed";
+          discount_value?: number;
+          max_uses?: number | null;
+          current_uses?: number;
+          valid_from?: string;
+          valid_until?: string | null;
+          is_active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
       };
     };
     Views: {
@@ -540,3 +602,5 @@ export type CustomerInsert = Database["public"]["Tables"]["customers"]["Insert"]
 export type PortfolioInsert = Database["public"]["Tables"]["portfolios"]["Insert"];
 export type Subscription = Database["public"]["Tables"]["subscriptions"]["Row"];
 export type BillingIntent = Database["public"]["Tables"]["billing_intents"]["Row"];
+export type AppSettings = Database["public"]["Tables"]["app_settings"]["Row"];
+export type Voucher = Database["public"]["Tables"]["vouchers"]["Row"];

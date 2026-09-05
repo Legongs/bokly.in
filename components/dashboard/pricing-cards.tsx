@@ -7,8 +7,11 @@ import { createBillingIntent } from "@/lib/actions/billing.actions";
 import { toast } from "sonner";
 import type { Subscription } from "@/types/database.types";
 
+import type { PlanPricesType } from "@/lib/subscription";
+
 interface PricingCardsProps {
   currentSubscription: Subscription;
+  prices: PlanPricesType;
 }
 
 const FEATURES = {
@@ -43,17 +46,18 @@ declare global {
   }
 }
 
-export function PricingCards({ currentSubscription }: PricingCardsProps) {
+export function PricingCards({ currentSubscription, prices }: PricingCardsProps) {
   const [isYearly, setIsYearly] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [loadingPlan, setLoadingPlan] = useState<"pro" | "bisnis" | null>(null);
+  const [voucherCode, setVoucherCode] = useState("");
 
   const currentPlan = currentSubscription.plan;
 
   const handleUpgrade = (plan: "pro" | "bisnis") => {
     setLoadingPlan(plan);
     startTransition(async () => {
-      const res = await createBillingIntent(plan, isYearly ? "yearly" : "monthly");
+      const res = await createBillingIntent(plan, isYearly ? "yearly" : "monthly", voucherCode || undefined);
       if (!res.success || !res.data) {
         toast.error(res.error ?? "Gagal membuat sesi pembayaran.");
         setLoadingPlan(null);
@@ -85,10 +89,10 @@ export function PricingCards({ currentSubscription }: PricingCardsProps) {
     });
   };
 
-  const proMonthly = 49000;
-  const proYearly = Math.round(470400 / 12);
-  const bisnisMonthly = 119000;
-  const bisnisYearly = Math.round(1140000 / 12);
+  const proMonthly = prices.pro.monthly;
+  const proYearly = Math.round(prices.pro.yearly / 12);
+  const bisnisMonthly = prices.bisnis.monthly;
+  const bisnisYearly = Math.round(prices.bisnis.yearly / 12);
 
   const fmt = (n: number) =>
     new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(n);
@@ -113,6 +117,26 @@ export function PricingCards({ currentSubscription }: PricingCardsProps) {
             </span>
           )}
         </span>
+      </div>
+
+      {/* Voucher Input */}
+      <div className="flex flex-col items-center justify-center max-w-sm mx-auto mt-4">
+        <label htmlFor="voucher" className="text-xs font-semibold text-stone-500 mb-1.5 self-start">
+          Punya kode voucher?
+        </label>
+        <input
+          id="voucher"
+          type="text"
+          placeholder="Masukkan kode voucher (opsional)"
+          value={voucherCode}
+          onChange={(e) => setVoucherCode(e.target.value.toUpperCase())}
+          className="w-full rounded-lg border border-stone-200 bg-white px-4 py-2 text-sm uppercase placeholder:normal-case placeholder:text-stone-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+        />
+        {voucherCode && (
+          <p className="text-[11px] text-stone-500 mt-1.5 text-center">
+            Voucher <strong className="text-indigo-600">{voucherCode}</strong> akan divalidasi saat kamu klik tombol Upgrade.
+          </p>
+        )}
       </div>
 
       {/* Pricing cards */}

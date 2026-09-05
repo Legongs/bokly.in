@@ -1,10 +1,15 @@
-import { getPlatformStats, getAllTenants } from "@/lib/actions/superadmin.actions";
+import { getPlatformStats, getAllTenants, getAllVouchers } from "@/lib/actions/superadmin.actions";
+import { getDynamicPricing } from "@/lib/subscription";
 import { Users, Store, TrendingUp, Activity } from "lucide-react";
-import { TenantTable } from "./tenant-table";
+import { SuperadminClient } from "./superadmin-client";
 
 export default async function SuperAdminDashboard() {
   const stats = await getPlatformStats();
   const tenants = await getAllTenants();
+  
+  const prices = await getDynamicPricing();
+  const vouchersRes = await getAllVouchers();
+  const vouchers = vouchersRes.success && vouchersRes.data ? vouchersRes.data : [];
 
   return (
     <div className="space-y-6">
@@ -45,8 +50,12 @@ export default async function SuperAdminDashboard() {
         </div>
       </div>
 
-      {/* ── Tabel Tenant (Client Component) ── */}
-      <TenantTable tenants={tenants as any} />
+      {/* ── Konten Utama (Client Component: Tabs + Tabel) ── */}
+      <SuperadminClient 
+        tenants={tenants as any} 
+        prices={prices} 
+        vouchers={vouchers} 
+      />
     </div>
   );
 }

@@ -3,7 +3,7 @@
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { createClient, createAdminClient } from "@/lib/supabase/server";
-import { PLAN_PRICES } from "@/lib/subscription";
+import { PLAN_PRICES, getDynamicPricing } from "@/lib/subscription";
 import type { ActionResponse } from "@/lib/actions/tenant.actions";
 import type { SubscriptionPlan, BillingCycle } from "@/types/database.types";
 
@@ -44,11 +44,12 @@ export async function getPlatformStats() {
   const inactiveTenants = totalTenants - activeTenants;
 
   // Hitung MRR berdasarkan plan + billing_cycle (sama seperti PLAN_PRICES di lib/subscription)
+  const pricesConfig = await getDynamicPricing();
   let totalMRR = 0;
   subscriptions.forEach((sub) => {
     const plan = sub.plan as SubscriptionPlan;
     if (plan === "free") return;
-    const prices = PLAN_PRICES[plan as keyof typeof PLAN_PRICES];
+    const prices = pricesConfig[plan as keyof typeof pricesConfig];
     if (!prices) return;
     // Kalau billing tahunan, normalkan ke per-bulan
     const monthly =
@@ -188,6 +189,96 @@ export async function toggleTenantActive(
 
     if (error) return { success: false, error: "Gagal mengubah status tenant." };
 
+    revalidatePath("/superadmin");
+    return { success: true, data: null };
+  } catch {
+    return { success: false, error: "Terjadi gangguan sistem." };
+  }
+}
+
+// ── App Settings (Pricing Config) ──────────────────────────────────────────────
+export async function updatePricingConfig(prices: any): Promise<ActionResponse<null>> {
+  await verifySuperAdmin();
+  try {
+    const supabase = createAdminClient();
+    const { error } = await supabase
+      .from("app_settings")
+      .upsert({ id: "pricing_config", value: prices });
+      
+    if (error) return { success: false, error: "Gagal menyimpan harga." };
+    revalidatePath("/superadmin");
+    return { success: true, data: null };
+  } catch {
+    return { success: false, error: "Terjadi gangguan sistem." };
+  }
+}
+
+// ── Vouchers ──────────────────────────────────────────────────────────────────
+export async function getAllVouchers(): Promise<ActionResponse<any[]>> {
+  await verifySuperAdmin();
+  try {
+    const supabase = createAdminClient();
+    const { data, error } = await supabase
+      .from("vouchers")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) return { success: false, error: "Gagal mengambil data voucher." };
+    return { success: true, data: data || [] };
+  } catch {
+    return { success: false, error: "Terjadi gangguan sistem." };
+  }
+}
+
+export async function createVoucher(data: {
+  code: string;
+  discount_type: "percentage" | "fixed";
+  discount_value: number;
+  max_uses: number | null;
+  valid_until: string | null;
+}): Promise<ActionResponse<null>> {
+  await verifySuperAdmin();
+  try {
+    const supabase = createAdminClient();
+    const { error } = await supabase.from("vouchers").insert({
+      code: data.code.toUpperCase(),
+      discount_type: data.discount_type,
+      discount_value: data.discount_value,
+      max_uses: data.max_uses,
+      valid_until: data.valid_until,
+    });
+
+    if (error) {
+      if (error.code === "23505") return { success: false, error: "Kode voucher sudah digunakan." };
+      return { success: false, error: "Gagal membuat voucher." };
+    }
+    
+    revalidatePath("/superadmin");
+    return { success: true, data: null };
+  } catch {
+    return { success: false, error: "Terjadi gangguan sistem." };
+  }
+}
+
+export async function toggleVoucherActive(id: string, is_active: boolean): Promise<ActionResponse<null>> {
+  await verifySuperAdmin();
+  try {
+    const supabase = createAdminClient();
+    const { error } = await supabase.from("vouchers").update({ is_active }).eq("id", id);
+    if (error) return { success: false, error: "Gagal mengubah status voucher." };
+    revalidatePath("/superadmin");
+    return { success: true, data: null };
+  } catch {
+    return { success: false, error: "Terjadi gangguan sistem." };
+  }
+}
+
+export async function deleteVoucher(id: string): Promise<ActionResponse<null>> {
+  await verifySuperAdmin();
+  try {
+    const supabase = createAdminClient();
+    const { error } = await supabase.from("vouchers").delete().eq("id", id);
+    if (error) return { success: false, error: "Gagal menghapus voucher." };
     revalidatePath("/superadmin");
     return { success: true, data: null };
   } catch {

@@ -3,7 +3,7 @@
 import { z } from "zod";
 import { createHash } from "crypto";
 import { createClient } from "@/lib/supabase/server";
-import { PLAN_PRICES } from "@/lib/subscription";
+import { PLAN_PRICES, getDynamicPricing } from "@/lib/subscription";
 import type { ActionResponse } from "@/lib/actions/tenant.actions";
 import type { BillingCycle, SubscriptionPlan } from "@/types/database.types";
 
@@ -18,6 +18,7 @@ const MIDTRANS_SNAP_URL = IS_PRODUCTION
 const createBillingIntentSchema = z.object({
   plan: z.enum(["pro", "bisnis"]),
   billingCycle: z.enum(["monthly", "yearly"]),
+  voucherCode: z.string().optional(),
 });
 
 // ── createBillingIntent ───────────────────────────────────────────────────────
@@ -27,9 +28,10 @@ const createBillingIntentSchema = z.object({
  */
 export async function createBillingIntent(
   plan: "pro" | "bisnis",
-  billingCycle: BillingCycle
+  billingCycle: BillingCycle,
+  voucherCode?: string
 ): Promise<ActionResponse<{ snapToken: string; orderId: string }>> {
-  const parsed = createBillingIntentSchema.safeParse({ plan, billingCycle });
+  const parsed = createBillingIntentSchema.safeParse({ plan, billingCycle, voucherCode });
   if (!parsed.success) {
     return { success: false, error: "Data paket tidak valid." };
   }
@@ -41,7 +43,46 @@ export async function createBillingIntent(
       return { success: false, error: "Kamu belum login. Silakan login ulang." };
     }
 
-    const amount = PLAN_PRICES[parsed.data.plan][parsed.data.billingCycle === "monthly" ? "monthly" : "yearly"];
+    const prices = await getDynamicPricing();
+    let amount = prices[parsed.data.plan][parsed.data.billingCycle === "monthly" ? "monthly" : "yearly"];
+    let voucherId: string | undefined = undefined;
+
+    // Validasi voucher jika ada
+    if (parsed.data.voucherCode) {
+      const { data: voucher, error: vErr } = await supabase
+        .from("vouchers")
+        .select("*")
+        .eq("code", parsed.data.voucherCode.toUpperCase())
+        .eq("is_active", true)
+        .single();
+        
+      if (vErr || !voucher) {
+        return { success: false, error: "Kode voucher tidak valid atau sudah tidak aktif." };
+      }
+      
+      const now = new Date();
+      if (new Date(voucher.valid_from) > now) {
+        return { success: false, error: "Voucher belum dapat digunakan." };
+      }
+      if (voucher.valid_until && new Date(voucher.valid_until) < now) {
+        return { success: false, error: "Voucher sudah expired." };
+      }
+      if (voucher.max_uses !== null && voucher.current_uses >= voucher.max_uses) {
+        return { success: false, error: "Kuota voucher sudah habis." };
+      }
+
+      // Hitung diskon
+      if (voucher.discount_type === "percentage") {
+        amount = amount - (amount * (voucher.discount_value / 100));
+      } else if (voucher.discount_type === "fixed") {
+        amount = amount - voucher.discount_value;
+      }
+      
+      // Jangan sampai negatif
+      amount = Math.max(0, amount);
+      voucherId = voucher.id;
+    }
+
     const orderId = `buklyid-${user.id.slice(0, 8)}-${Date.now()}`;
 
     // Insert billing intent ke DB
@@ -54,6 +95,7 @@ export async function createBillingIntent(
         amount,
         midtrans_order_id: orderId,
         status: "pending",
+        ...(voucherId ? { voucher_id: voucherId } : {}),
       })
       .select("id")
       .single();
@@ -157,7 +199,7 @@ export async function handleMidtransWebhook(payload: unknown): Promise<void> {
     // Ambil billing intent dari DB
     const { data: intent } = await supabase
       .from("billing_intents")
-      .select("id, tenant_id, plan, billing_cycle, amount")
+      .select("id, tenant_id, plan, billing_cycle, amount, voucher_id")
       .eq("midtrans_order_id", order_id)
       .single();
 
@@ -195,6 +237,17 @@ export async function handleMidtransWebhook(payload: unknown): Promise<void> {
           updated_at: now.toISOString(),
         })
         .eq("tenant_id", intent.tenant_id);
+
+      // Increment voucher uses if applicable
+      if (intent.voucher_id) {
+        // Karena ini fungsi RPC sederhana tidak bisa langsung +1 lewat update
+        // Kita select dulu current_uses, lalu update
+        const { data: v } = await supabase.from("vouchers").select("current_uses").eq("id", intent.voucher_id).single();
+        if (v) {
+          await supabase.from("vouchers").update({ current_uses: v.current_uses + 1 }).eq("id", intent.voucher_id);
+        }
+      }
+
 
     } else if (isFailed) {
       await supabase
