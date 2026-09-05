@@ -102,10 +102,11 @@ export function PaymentTable({ bookings }: { bookings: Booking[] }) {
                   <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${
                     b.payment_status === "approved" ? "bg-emerald-50 text-emerald-600" :
                     b.payment_status === "rejected" ? "bg-rose-50 text-rose-600" :
-                    b.payment_status === "pending_verification" ? "bg-amber-50 text-amber-600" :
+                    (b.payment_status === "pending_verification" || b.payment_status === "pending") ? "bg-amber-50 text-amber-600" :
                     "bg-stone-100 text-stone-600"
                   }`}>
                     {b.payment_status === "pending_verification" ? "Perlu Verifikasi" : 
+                     b.payment_status === "pending" ? "Pending" :
                      b.payment_status === "approved" ? "Disetujui" : 
                      b.payment_status === "rejected" ? "Ditolak" : b.payment_status}
                   </span>
