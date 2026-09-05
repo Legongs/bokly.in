@@ -7,6 +7,9 @@ export type Json =
   | Json[];
 
 export type PaymentStatus = "pending" | "pending_verification" | "approved" | "rejected" | "completed";
+export type SubscriptionPlan = "free" | "pro" | "bisnis";
+export type BillingCycle = "monthly" | "yearly";
+export type BillingStatus = "pending" | "paid" | "failed" | "expired";
 
 export interface Database {
   public: {
@@ -413,6 +416,97 @@ export interface Database {
           }
         ];
       };
+      subscriptions: {
+        Row: {
+          id: string;
+          tenant_id: string;
+          plan: SubscriptionPlan;
+          status: "active" | "expired" | "cancelled";
+          billing_cycle: BillingCycle | null;
+          current_period_start: string | null;
+          current_period_end: string | null;
+          midtrans_order_id: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          tenant_id: string;
+          plan?: SubscriptionPlan;
+          status?: "active" | "expired" | "cancelled";
+          billing_cycle?: BillingCycle | null;
+          current_period_start?: string | null;
+          current_period_end?: string | null;
+          midtrans_order_id?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          tenant_id?: string;
+          plan?: SubscriptionPlan;
+          status?: "active" | "expired" | "cancelled";
+          billing_cycle?: BillingCycle | null;
+          current_period_start?: string | null;
+          current_period_end?: string | null;
+          midtrans_order_id?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "subscriptions_tenant_id_fkey";
+            columns: ["tenant_id"];
+            isOneToOne: true;
+            referencedRelation: "tenants";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      billing_intents: {
+        Row: {
+          id: string;
+          tenant_id: string;
+          plan: "pro" | "bisnis";
+          billing_cycle: BillingCycle;
+          amount: number;
+          status: BillingStatus;
+          midtrans_order_id: string | null;
+          midtrans_token: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          tenant_id: string;
+          plan: "pro" | "bisnis";
+          billing_cycle: BillingCycle;
+          amount: number;
+          status?: BillingStatus;
+          midtrans_order_id?: string | null;
+          midtrans_token?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          tenant_id?: string;
+          plan?: "pro" | "bisnis";
+          billing_cycle?: BillingCycle;
+          amount?: number;
+          status?: BillingStatus;
+          midtrans_order_id?: string | null;
+          midtrans_token?: string | null;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "billing_intents_tenant_id_fkey";
+            columns: ["tenant_id"];
+            isOneToOne: false;
+            referencedRelation: "tenants";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
     };
     Views: {
       [_ in never]: never;
@@ -444,3 +538,5 @@ export type StaffInsert = Database["public"]["Tables"]["staff"]["Insert"];
 export type BookingInsert = Database["public"]["Tables"]["bookings"]["Insert"];
 export type CustomerInsert = Database["public"]["Tables"]["customers"]["Insert"];
 export type PortfolioInsert = Database["public"]["Tables"]["portfolios"]["Insert"];
+export type Subscription = Database["public"]["Tables"]["subscriptions"]["Row"];
+export type BillingIntent = Database["public"]["Tables"]["billing_intents"]["Row"];

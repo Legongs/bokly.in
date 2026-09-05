@@ -1,10 +1,11 @@
 import React from "react";
-import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getAuthTenantId } from "@/lib/auth";
 import { getTenantAnalytics } from "@/lib/actions/analytics.actions";
 import { AnalyticsView } from "@/components/dashboard/analytics-view";
 import { getBusinessDictionary } from "@/lib/business-dictionary";
+import { getTenantSubscription } from "@/lib/subscription";
+import { UpsellBanner } from "@/components/dashboard/upsell-banner";
 
 export const metadata = {
   title: "Analisis Usaha | bukly.in",
@@ -13,15 +14,31 @@ export const metadata = {
 
 export default async function AnalyticsPage() {
   const supabase = await createClient();
-
-  // 1. Ambil sesi user aktif
   const tenantId = await getAuthTenantId();
 
-  // 2. Ambil data analitik dan profil tenant
+  // Cek subscription — analytics hanya untuk Pro & Bisnis
+  const subscription = await getTenantSubscription(tenantId);
+  if (subscription.plan === "free") {
+    return (
+      <main className="p-4 sm:p-6 pb-24">
+        <div className="mb-6">
+          <h1 className="text-2xl font-extrabold text-stone-900">Analisis Usaha</h1>
+          <p className="text-sm text-stone-500 mt-1">Pantau performa bisnis dan layanan terlaris.</p>
+        </div>
+        <UpsellBanner
+          feature="Analisis Usaha"
+          requiredPlan="pro"
+          description="Lihat tren pendapatan 30 hari, layanan paling laris, dan status reservasi — semua dalam satu dashboard."
+        />
+      </main>
+    );
+  }
+
+  // Ambil data analitik dan profil tenant
   const analyticsRes = await getTenantAnalytics(tenantId);
   const { data: tenant } = await supabase.from("tenants").select("business_type").eq("id", tenantId).single();
   const dict = getBusinessDictionary(tenant?.business_type);
-  
+
   if (!analyticsRes.success || !analyticsRes.data) {
     return (
       <main className="min-h-[80vh] flex items-center justify-center p-6">

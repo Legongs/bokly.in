@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import type { Staff } from "@/types/database.types";
 import type { ActionResponse } from "./tenant.actions";
+import { canPerformAction } from "@/lib/subscription";
 
 // ── Schemas ───────────────────────────────────────────────────────────────────
 
@@ -94,6 +95,12 @@ export async function createStaff(payload: StaffPayload): Promise<ActionResponse
 
     if (!tenantData) {
       return { success: false, error: "Data outlet tidak ditemukan" };
+    }
+
+    // Cek limit staf sesuai paket (free: 1, pro: 5, bisnis: unlimited)
+    const check = await canPerformAction(tenantData.id, "add_staff");
+    if (!check.allowed) {
+      return { success: false, error: check.reason ?? "Limit staf sudah tercapai." };
     }
 
     const { data, error } = await supabase

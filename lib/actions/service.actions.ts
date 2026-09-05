@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import type { Service } from "@/types/database.types";
 import type { ActionResponse } from "./tenant.actions";
+import { canPerformAction } from "@/lib/subscription";
 
 const serviceSchema = z.object({
   id: z.string().uuid().optional(),
@@ -39,7 +40,13 @@ export async function createService(payload: unknown): Promise<ActionResponse<Se
       return { success: false, error: "Eh, kamu belum login nih." };
     }
 
-    const tenantId = authData.user.id; // tenant_id sama dengan user_id
+    const tenantId = authData.user.id;
+
+    // Cek limit layanan sesuai paket
+    const check = await canPerformAction(tenantId, "add_service");
+    if (!check.allowed) {
+      return { success: false, error: check.reason ?? "Limit layanan sudah tercapai." };
+    }
 
     const { data, error } = await supabase
       .from("services")

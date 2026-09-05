@@ -7,6 +7,7 @@ import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { sendTelegramNotification } from "@/lib/telegram";
 import type { Booking, PaymentStatus } from "@/types/database.types";
 import type { ActionResponse } from "./tenant.actions";
+import { canPerformAction } from "@/lib/subscription";
 
 // Re-export ActionResponse agar komponen lain bisa import dari satu tempat
 export type { ActionResponse };
@@ -179,6 +180,13 @@ export async function submitBooking(
 
   try {
     const supabase = await createClient();
+
+    // --- 0.5. Cek Kuota Subscription (plan free: maks 30 booking/bulan) ---
+    const quotaCheck = await canPerformAction(parsed.data.tenant_id, "add_booking");
+    if (!quotaCheck.allowed) {
+      return { success: false, error: quotaCheck.reason ?? "Kuota booking bulan ini sudah habis." };
+    }
+
     let finalStaffId = parsed.data.staff_id || null;
 
     // --- 1. Ambil Data Tenant & Service ---

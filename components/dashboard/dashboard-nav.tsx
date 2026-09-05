@@ -12,6 +12,7 @@ import {
   BarChart3,
   Users,
   Settings,
+  Crown,
   X,
   LogOut,
 } from "lucide-react";
@@ -40,6 +41,7 @@ const BOTTOM_NAV_ITEMS = (serviceLabel: string) => [
 const MORE_ITEMS = (staffLabel: string) => [
   { label: "Analisis",   href: "/dashboard/analytics", icon: BarChart3 },
   { label: staffLabel,   href: "/dashboard/staff",     icon: Users     },
+  { label: "Langganan",  href: "/dashboard/billing",   icon: Crown     },
   { label: "Pengaturan", href: "/dashboard/settings",  icon: Settings  },
 ];
 
