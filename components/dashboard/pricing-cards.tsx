@@ -83,11 +83,17 @@ export function PricingCards({ currentSubscription, prices, midtransClientConfig
 
       window.snap?.pay(res.data.snapToken, {
         onSuccess: () => {
-          toast.success("Pembayaran berhasil! Paket kamu sedang diaktifkan 🎉");
-          setTimeout(() => window.location.reload(), 2000);
+          toast.success("Pembayaran berhasil! Mengalihkan ke halaman status...");
+          window.location.href = `/payment/success?order_id=${res.data.orderId || ""}`;
         },
-        onPending: () => toast.info("Pembayaran tertunda. Selesaikan pembayaranmu ya."),
-        onError: () => toast.error("Pembayaran gagal. Coba lagi."),
+        onPending: () => {
+          toast.info("Pembayaran menunggu verifikasi...");
+          window.location.href = `/payment/success?status=pending&order_id=${res.data.orderId || ""}`;
+        },
+        onError: () => {
+          toast.error("Pembayaran tidak berhasil diselesaikan.");
+          window.location.href = `/payment/failed?order_id=${res.data.orderId || ""}`;
+        },
         onClose: () => setLoadingPlan(null),
       });
     });

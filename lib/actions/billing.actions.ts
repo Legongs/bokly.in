@@ -133,9 +133,9 @@ export async function createBillingIntent(
           email: user.email,
         },
         callbacks: {
-          finish: `${process.env.NEXT_PUBLIC_APP_URL ?? "https://buklyid.vercel.app"}/dashboard/billing?payment=success`,
-          error: `${process.env.NEXT_PUBLIC_APP_URL ?? "https://buklyid.vercel.app"}/dashboard/billing?payment=error`,
-          pending: `${process.env.NEXT_PUBLIC_APP_URL ?? "https://buklyid.vercel.app"}/dashboard/billing?payment=pending`,
+          finish: `${process.env.NEXT_PUBLIC_APP_URL ?? "https://bukly.id"}/payment/success`,
+          error: `${process.env.NEXT_PUBLIC_APP_URL ?? "https://bukly.id"}/payment/failed`,
+          pending: `${process.env.NEXT_PUBLIC_APP_URL ?? "https://bukly.id"}/payment/success?status=pending`,
         },
       }),
     });
