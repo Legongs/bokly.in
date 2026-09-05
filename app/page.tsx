@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/ui/logo";
+import { ScrollObserver } from "@/components/ui/scroll-observer";
 
 export const metadata: Metadata = {
   title: "bukly.id | Bikin Web Booking Usahamu dalam 1 Menit — Gratis",
@@ -192,25 +193,8 @@ export default function HomePage() {
         .reveal-right.visible { opacity: 1; transform: translateX(0); }
       `}</style>
 
-      {/* ─── Scroll-reveal Script (Vanilla JS, no library) ──────────────── */}
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `
-            if (typeof window !== 'undefined') {
-              document.addEventListener('DOMContentLoaded', function() {
-                var observer = new IntersectionObserver(function(entries) {
-                  entries.forEach(function(entry) {
-                    if (entry.isIntersecting) { entry.target.classList.add('visible'); }
-                  });
-                }, { threshold: 0.12 });
-                document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach(function(el) {
-                  observer.observe(el);
-                });
-              });
-            }
-          `,
-        }}
-      />
+      {/* ─── Scroll-reveal Script ────────────────────────────────────────── */}
+      <ScrollObserver />
 
       {/* ─── NAVIGATION ───────────────────────────────────────────────────── */}
       <header className="border-b border-stone-200/80 bg-[#FAFAF7]/90 backdrop-blur-md sticky top-0 z-50">
