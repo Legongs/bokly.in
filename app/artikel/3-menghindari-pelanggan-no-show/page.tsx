@@ -24,6 +24,9 @@ export default function Article3Page() {
           <h1 className="text-3xl sm:text-4xl font-extrabold text-stone-900 mb-8 leading-tight">
             Strategi Ampuh Menghadapi Pelanggan 'No-Show' (Hit & Run)
           </h1>
+          <div className="w-full h-64 sm:h-96 bg-stone-100 rounded-3xl mb-12 flex items-center justify-center border border-stone-200 overflow-hidden">
+            <img src="/images/artikel-3.jpg" alt="Ilustrasi Aplikasi Kalender" className="w-full h-full object-cover" />
+          </div>
 
           <div className="prose prose-stone max-w-none prose-p:leading-relaxed prose-headings:font-bold prose-orange">
             <p>

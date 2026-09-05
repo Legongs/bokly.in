@@ -84,8 +84,8 @@ export default function ArticleDetailPage() {
             </p>
           </div>
 
-          <div className="w-full h-64 sm:h-96 bg-stone-100 rounded-3xl mb-12 flex items-center justify-center border border-stone-200">
-            <span className="text-stone-400 font-medium">[Ilustrasi Artikel]</span>
+          <div className="w-full h-64 sm:h-96 bg-stone-100 rounded-3xl mb-12 flex items-center justify-center border border-stone-200 overflow-hidden">
+            <img src="/images/artikel-1.jpg" alt="Ilustrasi Salon Kecantikan" className="w-full h-full object-cover" />
           </div>
 
           <p>
