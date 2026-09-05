@@ -1,42 +1,15 @@
 "use server";
 
-import { createClient } from "@supabase/supabase-js";
-import { createServerClient } from "@supabase/ssr";
-import { cookies } from "next/headers";
-import { Database } from "@/types/database.types";
+import { createClient, createAdminClient } from "@/lib/supabase/server";
 
 async function verifySuperAdmin() {
-  const cookieStore = await cookies();
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return cookieStore.get(name)?.value;
-        },
-      },
-    }
-  );
-
+  const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   const superAdminEmail = process.env.SUPERADMIN_EMAIL;
 
   if (!user || !superAdminEmail || user.email !== superAdminEmail) {
     throw new Error("Unauthorized: Superadmin access required.");
   }
-}
-
-// Menggunakan Service Role Key agar bisa menembus RLS dan membaca semua data
-function getAdminClient() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-  if (!supabaseUrl || !supabaseServiceKey) {
-    throw new Error("Missing Supabase admin environment variables.");
-  }
-
-  return createClient<Database>(supabaseUrl, supabaseServiceKey);
 }
 
 const PLAN_PRICES = {
@@ -47,7 +20,7 @@ const PLAN_PRICES = {
 
 export async function getPlatformStats() {
   await verifySuperAdmin();
-  const supabase = getAdminClient();
+  const supabase = createAdminClient();
 
   // Ambil semua tenants
   const { data: tenants, error: tenantsError } = await supabase
@@ -86,7 +59,7 @@ export async function getPlatformStats() {
 
 export async function getAllTenants() {
   await verifySuperAdmin();
-  const supabase = getAdminClient();
+  const supabase = createAdminClient();
 
   const { data: tenants, error } = await supabase
     .from("tenants")
