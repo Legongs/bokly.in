@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { 
@@ -21,10 +21,30 @@ import { Logo } from "@/components/ui/logo";
 
 function PaymentFailedContent() {
   const searchParams = useSearchParams();
-  const orderId = searchParams.get("order_id") || "buklyid-" + Math.floor(100000 + Math.random() * 900000);
+  const orderIdParam = searchParams.get("order_id");
   const reasonParam = searchParams.get("reason") || searchParams.get("status_message");
 
+  const [orderId, setOrderId] = useState(orderIdParam || "buklyid-TRX-FAILED");
+  const [currentDate, setCurrentDate] = useState("");
   const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    if (orderIdParam) {
+      setOrderId(orderIdParam);
+    } else {
+      setOrderId(`buklyid-${Math.floor(100000 + Math.random() * 900000)}`);
+    }
+
+    setCurrentDate(
+      new Date().toLocaleDateString("id-ID", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      })
+    );
+  }, [orderIdParam]);
 
   const handleCopy = () => {
     if (orderId) {
@@ -33,14 +53,6 @@ function PaymentFailedContent() {
       setTimeout(() => setCopied(false), 2000);
     }
   };
-
-  const currentDate = new Date().toLocaleDateString("id-ID", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
 
   return (
     <div className="min-h-screen bg-[#f7f7fb] flex flex-col justify-between font-sans text-stone-900">
