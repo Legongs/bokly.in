@@ -43,9 +43,12 @@ export async function createService(payload: unknown): Promise<ActionResponse<Se
     const tenantId = authData.user.id;
 
     // Cek limit layanan sesuai paket
-    const check = await canPerformAction(tenantId, "add_service");
-    if (!check.allowed) {
-      return { success: false, error: check.reason ?? "Limit layanan sudah tercapai." };
+    const quotaCheck = await canPerformAction(tenantId, "add_service");
+    if (!quotaCheck.allowed) {
+      return {
+        success: false,
+        error: quotaCheck.reason ?? "Kuota layanan paket Gratis sudah penuh (maks. 3). Upgrade ke Pro untuk layanan tak terbatas.",
+      };
     }
 
     const { data, error } = await supabase

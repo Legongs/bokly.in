@@ -98,9 +98,12 @@ export async function createStaff(payload: StaffPayload): Promise<ActionResponse
     }
 
     // Cek limit staf sesuai paket (free: 1, pro: 5, bisnis: unlimited)
-    const check = await canPerformAction(tenantData.id, "add_staff");
-    if (!check.allowed) {
-      return { success: false, error: check.reason ?? "Limit staf sudah tercapai." };
+    const quotaCheck = await canPerformAction(tenantData.id, "add_staff");
+    if (!quotaCheck.allowed) {
+      return {
+        success: false,
+        error: quotaCheck.reason ?? "Kuota staf paket Gratis sudah penuh (maks. 1). Upgrade ke Pro untuk hingga 5 staf.",
+      };
     }
 
     const { data, error } = await supabase
