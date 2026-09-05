@@ -1,5 +1,6 @@
 import { getPlatformStats, getAllTenants, getAllVouchers } from "@/lib/actions/superadmin.actions";
 import { getDynamicPricing } from "@/lib/subscription";
+import { getMidtransConfig } from "@/lib/midtrans";
 import { Users, Store, TrendingUp, Activity } from "lucide-react";
 import { SuperadminClient } from "./superadmin-client";
 
@@ -10,6 +11,7 @@ export default async function SuperAdminDashboard() {
   const prices = await getDynamicPricing();
   const vouchersRes = await getAllVouchers();
   const vouchers = vouchersRes.success && vouchersRes.data ? vouchersRes.data : [];
+  const midtransConfig = await getMidtransConfig();
 
   return (
     <div className="space-y-6">
@@ -55,6 +57,7 @@ export default async function SuperAdminDashboard() {
         tenants={tenants as any} 
         prices={prices} 
         vouchers={vouchers} 
+        midtransConfig={midtransConfig}
       />
     </div>
   );

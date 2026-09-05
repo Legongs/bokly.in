@@ -213,6 +213,23 @@ export async function updatePricingConfig(prices: any): Promise<ActionResponse<n
   }
 }
 
+// ── App Settings (Midtrans Config) ───────────────────────────────────────────
+export async function updateMidtransConfig(config: any): Promise<ActionResponse<null>> {
+  await verifySuperAdmin();
+  try {
+    const supabase = createAdminClient();
+    const { error } = await supabase
+      .from("app_settings")
+      .upsert({ id: "midtrans_config", value: config });
+      
+    if (error) return { success: false, error: "Gagal menyimpan pengaturan Midtrans." };
+    revalidatePath("/superadmin");
+    return { success: true, data: null };
+  } catch {
+    return { success: false, error: "Terjadi gangguan sistem." };
+  }
+}
+
 // ── Vouchers ──────────────────────────────────────────────────────────────────
 export async function getAllVouchers(): Promise<ActionResponse<any[]>> {
   await verifySuperAdmin();

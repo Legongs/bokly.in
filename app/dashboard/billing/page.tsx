@@ -2,6 +2,7 @@ import React from "react";
 import { createClient } from "@/lib/supabase/server";
 import { getAuthTenantId } from "@/lib/auth";
 import { getTenantSubscription, getDynamicPricing } from "@/lib/subscription";
+import { getMidtransClientConfig } from "@/lib/actions/billing.actions";
 import { PricingCards } from "@/components/dashboard/pricing-cards";
 import { Crown, CheckCircle2, Clock, AlertTriangle } from "lucide-react";
 import Link from "next/link";
@@ -28,6 +29,7 @@ export default async function BillingPage() {
   const tenantId = await getAuthTenantId();
   const subscription = await getTenantSubscription(tenantId);
   const prices = await getDynamicPricing();
+  const midtransClientConfig = await getMidtransClientConfig();
 
   const isActive = subscription.status === "active";
   const isPaid = subscription.plan !== "free";
@@ -105,7 +107,7 @@ export default async function BillingPage() {
       {/* Section 2 — Pricing cards */}
       <div>
         <p className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-6">Pilih Paket</p>
-        <PricingCards currentSubscription={subscription} prices={prices} />
+        <PricingCards currentSubscription={subscription} prices={prices} midtransClientConfig={midtransClientConfig} />
       </div>
 
       {/* Catatan kecil */}

@@ -5,15 +5,18 @@ import { Users, Settings, Tag } from "lucide-react";
 import { TenantTable } from "./tenant-table";
 import { PricingSettings } from "./pricing-settings";
 import { VoucherManager } from "./voucher-manager";
+import { MidtransSettings } from "./midtrans-settings";
+import { CreditCard } from "lucide-react";
 
 interface SuperadminClientProps {
   tenants: any[];
   prices: any;
   vouchers: any[];
+  midtransConfig: any;
 }
 
-export function SuperadminClient({ tenants, prices, vouchers }: SuperadminClientProps) {
-  const [activeTab, setActiveTab] = useState<"tenants" | "pricing" | "vouchers">("tenants");
+export function SuperadminClient({ tenants, prices, vouchers, midtransConfig }: SuperadminClientProps) {
+  const [activeTab, setActiveTab] = useState<"tenants" | "pricing" | "vouchers" | "payment">("tenants");
 
   return (
     <div className="space-y-6">
@@ -52,6 +55,17 @@ export function SuperadminClient({ tenants, prices, vouchers }: SuperadminClient
           <Tag className="w-4 h-4" />
           Voucher Promo
         </button>
+        <button
+          onClick={() => setActiveTab("payment")}
+          className={`flex items-center gap-2 px-4 py-2.5 text-sm font-bold border-b-2 transition-colors ${
+            activeTab === "payment"
+              ? "border-indigo-600 text-indigo-700"
+              : "border-transparent text-stone-500 hover:text-stone-700 hover:border-stone-300"
+          }`}
+        >
+          <CreditCard className="w-4 h-4" />
+          Gateway Payment
+        </button>
       </div>
 
       {/* Tab Content */}
@@ -59,6 +73,7 @@ export function SuperadminClient({ tenants, prices, vouchers }: SuperadminClient
         {activeTab === "tenants" && <TenantTable tenants={tenants} />}
         {activeTab === "pricing" && <PricingSettings initialPrices={prices} />}
         {activeTab === "vouchers" && <VoucherManager initialVouchers={vouchers} />}
+        {activeTab === "payment" && <MidtransSettings initialConfig={midtransConfig} />}
       </div>
     </div>
   );

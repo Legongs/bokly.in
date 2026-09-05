@@ -12,6 +12,10 @@ import type { PlanPricesType } from "@/lib/subscription";
 interface PricingCardsProps {
   currentSubscription: Subscription;
   prices: PlanPricesType;
+  midtransClientConfig: {
+    clientKey: string;
+    isProduction: boolean;
+  };
 }
 
 const FEATURES = {
@@ -46,7 +50,7 @@ declare global {
   }
 }
 
-export function PricingCards({ currentSubscription, prices }: PricingCardsProps) {
+export function PricingCards({ currentSubscription, prices, midtransClientConfig }: PricingCardsProps) {
   const [isYearly, setIsYearly] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [loadingPlan, setLoadingPlan] = useState<"pro" | "bisnis" | null>(null);
@@ -68,10 +72,10 @@ export function PricingCards({ currentSubscription, prices }: PricingCardsProps)
       if (!window.snap) {
         await new Promise<void>((resolve) => {
           const script = document.createElement("script");
-          script.src = process.env.NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION === "true"
+          script.src = midtransClientConfig.isProduction
             ? "https://app.midtrans.com/snap/snap.js"
             : "https://app.sandbox.midtrans.com/snap/snap.js";
-          script.setAttribute("data-client-key", process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY ?? "");
+          script.setAttribute("data-client-key", midtransClientConfig.clientKey || "");
           script.onload = () => resolve();
           document.body.appendChild(script);
         });

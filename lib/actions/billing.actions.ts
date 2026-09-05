@@ -7,12 +7,7 @@ import { PLAN_PRICES, getDynamicPricing } from "@/lib/subscription";
 import type { ActionResponse } from "@/lib/actions/tenant.actions";
 import type { BillingCycle, SubscriptionPlan } from "@/types/database.types";
 
-// ── Constants ─────────────────────────────────────────────────────────────────
-const MIDTRANS_SERVER_KEY = process.env.MIDTRANS_SERVER_KEY ?? "";
-const IS_PRODUCTION = process.env.MIDTRANS_IS_PRODUCTION === "true";
-const MIDTRANS_SNAP_URL = IS_PRODUCTION
-  ? "https://app.midtrans.com/snap/v1/transactions"
-  : "https://app.sandbox.midtrans.com/snap/v1/transactions";
+import { getMidtransConfig } from "@/lib/midtrans";
 
 // ── Schemas ───────────────────────────────────────────────────────────────────
 const createBillingIntentSchema = z.object({
@@ -105,6 +100,12 @@ export async function createBillingIntent(
     }
 
     // Panggil Midtrans Snap API
+    const midtransConfig = await getMidtransConfig();
+    const MIDTRANS_SERVER_KEY = midtransConfig.serverKey;
+    const MIDTRANS_SNAP_URL = midtransConfig.isProduction
+      ? "https://app.midtrans.com/snap/v1/transactions"
+      : "https://app.sandbox.midtrans.com/snap/v1/transactions";
+
     const authHeader = `Basic ${Buffer.from(`${MIDTRANS_SERVER_KEY}:`).toString("base64")}`;
     const planLabel = parsed.data.plan === "pro" ? "Paket Pro" : "Paket Bisnis";
     const cycleLabel = parsed.data.billingCycle === "monthly" ? "Bulanan" : "Tahunan";
@@ -172,6 +173,10 @@ export async function handleMidtransWebhook(payload: unknown): Promise<void> {
 
   const p = payload as Record<string, string>;
   const { order_id, status_code, gross_amount, signature_key, transaction_status, fraud_status } = p;
+
+  // Ambil konfigurasi server key
+  const midtransConfig = await getMidtransConfig();
+  const MIDTRANS_SERVER_KEY = midtransConfig.serverKey;
 
   // Verifikasi signature: SHA512(orderId + statusCode + grossAmount + serverKey)
   const expectedSignature = createHash("sha512")
@@ -258,4 +263,16 @@ export async function handleMidtransWebhook(payload: unknown): Promise<void> {
   } catch (err) {
     console.error("[Webhook] Error memproses webhook:", err);
   }
+}
+
+// ── getMidtransClientConfig ───────────────────────────────────────────────────
+/**
+ * Dapatkan konfigurasi Midtrans untuk client (tanpa membocorkan serverKey).
+ */
+export async function getMidtransClientConfig() {
+  const config = await getMidtransConfig();
+  return {
+    clientKey: config.clientKey,
+    isProduction: config.isProduction,
+  };
 }
