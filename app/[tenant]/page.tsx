@@ -105,19 +105,45 @@ export default async function TenantPage({ params }: TenantPageProps) {
   const dictionary = getSectorDictionary(tenantData.business_type);
   const templateType = inferTemplateFromType(tenantData.business_type);
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": tenantData.business_name,
+    "image": tenantData.hero_image_url || tenantData.logo_url || "https://bukly.id/icon.jpg",
+    "url": `https://bukly.id/${tenantSlug}`,
+    "telephone": tenantData.whatsapp_number ? `+${tenantData.whatsapp_number}` : undefined,
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": tenantData.address || "Indonesia",
+      "addressCountry": "ID"
+    },
+    "description": tenantData.welcome_message || `Booking online resmi untuk ${tenantData.business_name}`
+  };
+
   // Render template berdasarkan jenis bisnis
+  let TemplateComponent;
   switch (templateType) {
-    case "beauty":
-      return <BeautyTemplate tenant={tenantData} services={services} staffList={staffList} portfolios={portfolios} dictionary={dictionary} />;
-    case "barber":
-      return <BarberTemplate tenant={tenantData} services={services} staffList={staffList} portfolios={portfolios} dictionary={dictionary} />;
-    case "auto":
-      return <AutoTemplate tenant={tenantData} services={services} staffList={staffList} portfolios={portfolios} dictionary={dictionary} />;
-    case "health":
-      return <HealthTemplate tenant={tenantData} services={services} staffList={staffList} portfolios={portfolios} dictionary={dictionary} />;
-    case "space":
-      return <SpaceTemplate tenant={tenantData} services={services} staffList={staffList} portfolios={portfolios} dictionary={dictionary} />;
-    default:
-      return <DefaultTemplate tenant={tenantData} services={services} staffList={staffList} portfolios={portfolios} dictionary={dictionary} />;
+    case "beauty": TemplateComponent = BeautyTemplate; break;
+    case "barber": TemplateComponent = BarberTemplate; break;
+    case "auto": TemplateComponent = AutoTemplate; break;
+    case "health": TemplateComponent = HealthTemplate; break;
+    case "space": TemplateComponent = SpaceTemplate; break;
+    default: TemplateComponent = DefaultTemplate; break;
   }
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <TemplateComponent 
+        tenant={tenantData} 
+        services={services} 
+        staffList={staffList} 
+        portfolios={portfolios} 
+        dictionary={dictionary} 
+      />
+    </>
+  );
 }
