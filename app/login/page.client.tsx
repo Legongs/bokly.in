@@ -205,7 +205,7 @@ export default function LoginPage() {
               <Coffee className="w-7 h-7" />
             </div>
             <h2 className="text-3xl font-extrabold text-stone-900 leading-tight tracking-tight mb-3">
-              Selamat datang kembali, Juragan!
+              Juragan balik! Yuk cek jadwal hari ini.
             </h2>
             <p className="text-stone-600 leading-relaxed font-medium">
               Cek jadwal hari ini, santai sejenak, dan siap-siap sambut pelanggan yang udah antre.
