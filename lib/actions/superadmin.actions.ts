@@ -1,7 +1,31 @@
 "use server";
 
 import { createClient } from "@supabase/supabase-js";
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
 import { Database } from "@/types/database.types";
+
+async function verifySuperAdmin() {
+  const cookieStore = await cookies();
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return cookieStore.get(name)?.value;
+        },
+      },
+    }
+  );
+
+  const { data: { user } } = await supabase.auth.getUser();
+  const superAdminEmail = process.env.SUPERADMIN_EMAIL;
+
+  if (!user || !superAdminEmail || user.email !== superAdminEmail) {
+    throw new Error("Unauthorized: Superadmin access required.");
+  }
+}
 
 // Menggunakan Service Role Key agar bisa menembus RLS dan membaca semua data
 function getAdminClient() {
@@ -22,6 +46,7 @@ const PLAN_PRICES = {
 };
 
 export async function getPlatformStats() {
+  await verifySuperAdmin();
   const supabase = getAdminClient();
 
   // Ambil semua tenants
@@ -60,6 +85,7 @@ export async function getPlatformStats() {
 }
 
 export async function getAllTenants() {
+  await verifySuperAdmin();
   const supabase = getAdminClient();
 
   const { data: tenants, error } = await supabase
