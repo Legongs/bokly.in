@@ -42,7 +42,7 @@ export function BarberTemplate({ tenant, services, staffList, portfolios, dictio
             {tenant.logo_url ? (
               <img src={tenant.logo_url} alt={tenant.business_name} className="w-full h-full object-cover" />
             ) : (
-              <Scissors className={`w-10 h-10 ${colors.highlight.replace('text-', 'text-')}`} /> // Using highlight color text
+              <Scissors className={`w-10 h-10 ${colors.highlight}`} /> // Using highlight color text
             )}
           </div>
           

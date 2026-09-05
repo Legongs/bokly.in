@@ -11,11 +11,11 @@ export function SpaceTemplate({ tenant, services, staffList, portfolios, diction
   
   // Revised earthy, bright, airy palette instead of dark mode
   const colors = {
-    blue: { bg: "bg-slate-50", card: "bg-white", border: "border-slate-200", text: "text-slate-900", highlight: "bg-slate-100" },
-    teal: { bg: "bg-teal-50", card: "bg-white", border: "border-teal-100", text: "text-teal-900", highlight: "bg-teal-100" },
-    rose: { bg: "bg-rose-50", card: "bg-white", border: "border-rose-100", text: "text-rose-900", highlight: "bg-rose-100" },
-    violet: { bg: "bg-violet-50", card: "bg-white", border: "border-violet-100", text: "text-violet-900", highlight: "bg-violet-100" },
-    orange: { bg: "bg-orange-50", card: "bg-white", border: "border-orange-100", text: "text-orange-900", highlight: "bg-orange-100" },
+    blue: { bg: "bg-blue-50", card: "bg-white", border: "border-blue-100", text: "text-blue-900", highlight: "bg-blue-100", gradientTo: "to-blue-50" },
+    teal: { bg: "bg-teal-50", card: "bg-white", border: "border-teal-100", text: "text-teal-900", highlight: "bg-teal-100", gradientTo: "to-teal-50" },
+    rose: { bg: "bg-rose-50", card: "bg-white", border: "border-rose-100", text: "text-rose-900", highlight: "bg-rose-100", gradientTo: "to-rose-50" },
+    violet: { bg: "bg-violet-50", card: "bg-white", border: "border-violet-100", text: "text-violet-900", highlight: "bg-violet-100", gradientTo: "to-violet-50" },
+    orange: { bg: "bg-orange-50", card: "bg-white", border: "border-orange-100", text: "text-orange-900", highlight: "bg-orange-100", gradientTo: "to-orange-50" },
   }[themeColor as keyof typeof colors] || colors.blue;
 
   const jsonLd = {
@@ -35,7 +35,7 @@ export function SpaceTemplate({ tenant, services, staffList, portfolios, diction
         {tenant.hero_image_url ? (
           <>
             <img src={tenant.hero_image_url} alt="Space" className="w-full h-full object-cover opacity-80 mix-blend-overlay" />
-            <div className={`absolute inset-0 bg-gradient-to-b from-transparent to-${colors.bg.split('-')[1]}-50`} />
+            <div className={`absolute inset-0 bg-gradient-to-b from-transparent ${colors.gradientTo}`} />
           </>
         ) : (
           <div className="absolute inset-0 bg-gradient-to-b from-stone-200/50 to-transparent" />

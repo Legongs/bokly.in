@@ -11,11 +11,11 @@ export function BeautyTemplate({ tenant, services, staffList, portfolios, dictio
   
   // Base color maps
   const colors = {
-    rose: { bg: "bg-rose-50", text: "text-rose-900", accent: "bg-rose-500", light: "bg-rose-100", border: "border-rose-100" },
-    teal: { bg: "bg-teal-50", text: "text-teal-900", accent: "bg-teal-500", light: "bg-teal-100", border: "border-teal-100" },
-    violet: { bg: "bg-violet-50", text: "text-violet-900", accent: "bg-violet-500", light: "bg-violet-100", border: "border-violet-100" },
-    orange: { bg: "bg-orange-50", text: "text-orange-900", accent: "bg-orange-500", light: "bg-orange-100", border: "border-orange-100" },
-    blue: { bg: "bg-blue-50", text: "text-blue-900", accent: "bg-blue-500", light: "bg-blue-100", border: "border-blue-100" },
+    rose: { bg: "bg-rose-50", text: "text-rose-900", accent: "bg-rose-500", light: "bg-rose-100", border: "border-rose-100", textDark: "text-rose-700" },
+    teal: { bg: "bg-teal-50", text: "text-teal-900", accent: "bg-teal-500", light: "bg-teal-100", border: "border-teal-100", textDark: "text-teal-700" },
+    violet: { bg: "bg-violet-50", text: "text-violet-900", accent: "bg-violet-500", light: "bg-violet-100", border: "border-violet-100", textDark: "text-violet-700" },
+    orange: { bg: "bg-orange-50", text: "text-orange-900", accent: "bg-orange-500", light: "bg-orange-100", border: "border-orange-100", textDark: "text-orange-700" },
+    blue: { bg: "bg-blue-50", text: "text-blue-900", accent: "bg-blue-500", light: "bg-blue-100", border: "border-blue-100", textDark: "text-blue-700" },
   }[themeColor as keyof typeof colors] || colors.rose;
 
   const jsonLd = {
@@ -32,7 +32,7 @@ export function BeautyTemplate({ tenant, services, staffList, portfolios, dictio
       
       {/* ── Minimal Centered Header ── */}
       <header className="py-6 px-4 flex flex-col items-center justify-center text-center gap-3">
-        <div className={`w-16 h-16 rounded-full ${colors.light} flex items-center justify-center text-${themeColor}-700 shadow-sm overflow-hidden border-2 border-white`}>
+        <div className={`w-16 h-16 rounded-full ${colors.light} flex items-center justify-center ${colors.textDark} shadow-sm overflow-hidden border-2 border-white`}>
           {tenant.logo_url ? (
             <img src={tenant.logo_url} alt={tenant.business_name} className="w-full h-full object-cover" />
           ) : (
