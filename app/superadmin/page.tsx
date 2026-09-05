@@ -108,13 +108,13 @@ export default async function SuperAdminDashboard() {
                   </tr>
                 );
               })}
-              {tenants.length === 0 && (
+              {tenants.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="px-6 py-12 text-center text-stone-500">
                     Belum ada tenant yang terdaftar.
                   </td>
                 </tr>
-              )}
+              ) : null}
             </tbody>
           </table>
         </div>
