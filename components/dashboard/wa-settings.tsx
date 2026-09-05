@@ -103,7 +103,7 @@ export function WaSettings({ tenant }: WaSettingsProps) {
                 </span>
 
                 <p className="text-sm text-stone-600 leading-relaxed mb-4">
-                  Sistem bukly.in akan otomatis mengirimkan pesan konfirmasi tagihan ke nomor WhatsApp pelanggan di latar belakang menggunakan layanan Fonnte sesaat setelah booking sukses.
+                  Sistem bukly.id akan otomatis mengirimkan pesan konfirmasi tagihan ke nomor WhatsApp pelanggan di latar belakang menggunakan layanan Fonnte sesaat setelah booking sukses.
                 </p>
 
                 <div className="space-y-3 mt-auto">

@@ -6,7 +6,7 @@ import { SettingsTabs } from "@/components/dashboard/settings-tabs";
 import type { Tenant } from "@/types/database.types";
 
 export const metadata = {
-  title: "Pengaturan Toko | Dashboard bukly.in",
+  title: "Pengaturan Toko | Dashboard bukly.id",
   description: "Kelola profil toko, WhatsApp, dan notifikasi Telegram Anda.",
 };
 

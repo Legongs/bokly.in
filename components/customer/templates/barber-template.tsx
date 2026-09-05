@@ -22,7 +22,7 @@ export function BarberTemplate({ tenant, services, staffList, portfolios, dictio
     "@type": "HealthAndBeautyBusiness",
     "name": tenant.business_name,
     "telephone": tenant.whatsapp_number,
-    "url": `https://bukly.in/${tenant.slug}`,
+    "url": `https://bukly.id/${tenant.slug}`,
   };
 
   return (
@@ -130,11 +130,11 @@ export function BarberTemplate({ tenant, services, staffList, portfolios, dictio
 
       <footer className="mt-20 text-center border-t border-stone-200 pt-10 font-sans">
         <p className="text-xs font-bold uppercase tracking-[0.2em] text-stone-400 mb-4">Sistem Antrean Didukung Oleh</p>
-        <a href="https://bukly.in" target="_blank" rel="noopener noreferrer" className="inline-block hover:opacity-80 transition-all duration-200 grayscale opacity-70 hover:grayscale-0 hover:opacity-100">
+        <a href="https://bukly.id" target="_blank" rel="noopener noreferrer" className="inline-block hover:opacity-80 transition-all duration-200 grayscale opacity-70 hover:grayscale-0 hover:opacity-100">
           <Logo className="text-2xl block" />
         </a>
         <div className="mt-8 flex justify-center">
-          <a href="https://bukly.in" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center bg-teal-600 text-white text-xs font-bold px-6 py-3 rounded-full hover:bg-teal-700 transition-all duration-200 shadow-lg shadow-teal-600/20 active:scale-95">
+          <a href="https://bukly.id" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center bg-teal-600 text-white text-xs font-bold px-6 py-3 rounded-full hover:bg-teal-700 transition-all duration-200 shadow-lg shadow-teal-600/20 active:scale-95">
             Mau Web Reservasi Gratis? Yuk Bikin!
           </a>
         </div>

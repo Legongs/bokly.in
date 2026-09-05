@@ -1,4 +1,4 @@
-# Database Schema & Rules (bukly.in)
+# Database Schema & Rules (bukly.id)
 
 Selalu patuhi aturan skema pangkalan data dan praktik keamanan Supabase di bawah ini saat memodifikasi entitas basis data.
 

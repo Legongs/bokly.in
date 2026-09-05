@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   title: "Artikel & Tips Bisnis Jasa UMKM",
   description: "Kumpulan artikel, tips, dan strategi untuk meningkatkan pelanggan dan mengelola bisnis Barbershop, Salon, Klinik, dan Bengkel Anda.",
   openGraph: {
-    title: "Artikel & Tips Bisnis Jasa UMKM | bukly.in",
+    title: "Artikel & Tips Bisnis Jasa UMKM | bukly.id",
     description: "Kumpulan artikel, tips, dan strategi untuk meningkatkan pelanggan dan mengelola bisnis Jasa.",
   },
 };
@@ -52,7 +52,7 @@ export default function ArticleIndexPage() {
       {/* Navigation */}
       <header className="border-b border-stone-200 bg-stone-50/80 backdrop-blur-md sticky top-0 z-50">
         <nav className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between" aria-label="Main Navigation">
-          <Link href="/" className="flex items-center gap-2" aria-label="Beranda bukly.in">
+          <Link href="/" className="flex items-center gap-2" aria-label="Beranda bukly.id">
             <div className="w-8 h-8 rounded-xl bg-teal-600 flex items-center justify-center text-white shadow-sm shadow-teal-600/20">
               <Calendar className="w-4 h-4" />
             </div>
@@ -142,7 +142,7 @@ export default function ArticleIndexPage() {
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <Calendar className="w-5 h-5 text-teal-600" />
-            <span className="font-extrabold text-stone-900">bukly.in</span>
+            <span className="font-extrabold text-stone-900">bukly.id</span>
           </div>
           <p className="text-xs text-stone-500 font-medium text-center md:text-right">
             © {new Date().getFullYear()} Dibuat untuk memajukan UMKM Jasa Indonesia.

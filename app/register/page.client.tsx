@@ -303,7 +303,7 @@ export default function RegisterPageClient() {
                 ) : (
                   <div className="mt-2 p-3 bg-stone-50 border border-stone-200 rounded-xl flex flex-col gap-1">
                     <p className="text-[11px] font-medium text-stone-500">🔗 Toko kamu akan bisa diakses di:</p>
-                    <p className="text-sm font-bold text-teal-700 break-all">bukly.in/{form.slug || "url-toko-kamu"}</p>
+                    <p className="text-sm font-bold text-teal-700 break-all">bukly.id/{form.slug || "url-toko-kamu"}</p>
                   </div>
                 )}
               </div>
@@ -418,7 +418,7 @@ export default function RegisterPageClient() {
               balas chat satu-satu.
             </h2>
             <p className="text-stone-600 leading-relaxed font-medium">
-              Ribuan usaha jasa udah pakai bukly.in buat ngunci jadwal tanpa bentrok. Tinggal share link, beres!
+              Ribuan usaha jasa udah pakai bukly.id buat ngunci jadwal tanpa bentrok. Tinggal share link, beres!
             </p>
           </div>
           

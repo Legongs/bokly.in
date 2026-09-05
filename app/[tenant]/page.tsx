@@ -25,19 +25,19 @@ export async function generateMetadata({ params }: TenantPageProps): Promise<Met
 
   if (!res.success || !res.data) {
     return {
-      title: "Outlet Tidak Ditemukan | bukly.in",
+      title: "Outlet Tidak Ditemukan | bukly.id",
       description: "Halaman reservasi tidak ditemukan.",
     };
   }
 
   const { business_name } = res.data;
   return {
-    title: `Reservasi ${business_name} | bukly.in`,
-    description: `Pesan slot reservasi online di ${business_name} dengan mudah, cepat, dan bebas antri melalui bukly.in.`,
+    title: `Reservasi ${business_name} | bukly.id`,
+    description: `Pesan slot reservasi online di ${business_name} dengan mudah, cepat, dan bebas antri melalui bukly.id.`,
     openGraph: {
       title: `Reservasi ${business_name}`,
       description: `Booking online di ${business_name} — cepat, aman, tanpa antri.`,
-      siteName: "bukly.in",
+      siteName: "bukly.id",
     },
   };
 }

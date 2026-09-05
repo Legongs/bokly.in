@@ -32,7 +32,7 @@ const FEATURES = {
     "Semua fitur Pro",
     "Staf tak terbatas",
     "Verifikasi pembayaran otomatis",
-    "Hapus branding bukly.in",
+    "Hapus branding bukly.id",
     "Support priority WhatsApp",
   ],
 };

@@ -8,7 +8,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Langganan | bukly.in",
+  title: "Langganan | bukly.id",
   description: "Kelola paket berlangganan dan upgrade fitur untuk usahamu.",
 };
 
@@ -93,7 +93,7 @@ export default async function BillingPage() {
             <p className="text-xs text-stone-400">
               Untuk membatalkan atau mengelola metode pembayaran, hubungi{" "}
               <Link href="https://wa.me/6281234567890" className="text-teal-600 hover:underline font-medium">
-                support Bukly.in
+                support Bukly.id
               </Link>
               .
             </p>

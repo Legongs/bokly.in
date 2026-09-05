@@ -61,7 +61,7 @@ export function DefaultTemplate({ tenant, services, staffList, portfolios, dicti
     "@type": "LocalBusiness",
     "name": tenant.business_name,
     "telephone": tenant.whatsapp_number,
-    "url": `https://bukly.in/${tenant.slug}`,
+    "url": `https://bukly.id/${tenant.slug}`,
     "makesOffer": services.map((s) => ({
       "@type": "Offer",
       "itemOffered": {
@@ -134,7 +134,7 @@ export function DefaultTemplate({ tenant, services, staffList, portfolios, dicti
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className={`${tenant.hero_image_url ? 'text-white/80' : currentTheme.textSub} text-[10px] sm:text-xs font-bold uppercase tracking-[0.25em] mb-2 sm:mb-3 drop-shadow-sm`}>
-                  bukly.in/{tenant.slug}
+                  bukly.id/{tenant.slug}
                 </p>
                 <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight leading-[1.1] mb-3 sm:mb-4 drop-shadow-md text-white">
                   {tenant.business_name}
@@ -205,14 +205,14 @@ export function DefaultTemplate({ tenant, services, staffList, portfolios, dicti
         {/* ── Footer Watermark ── */}
         <footer className="mt-16 pb-8 text-center border-t border-stone-200 pt-8">
           <p className="text-xs font-bold uppercase tracking-widest text-stone-400 mb-2">Powered by</p>
-          <a href="https://bukly.in" target="_blank" rel="noopener noreferrer" className="inline-block hover:opacity-80 transition-opacity">
+          <a href="https://bukly.id" target="_blank" rel="noopener noreferrer" className="inline-block hover:opacity-80 transition-opacity">
             <Logo className="text-2xl" />
           </a>
           <p className="text-[11px] text-stone-400 mt-4 max-w-xs mx-auto leading-relaxed">
-            Halaman reservasi otomatis ini dibuat menggunakan <a href="https://bukly.in" target="_blank" rel="noopener noreferrer" className="font-semibold text-teal-600 hover:underline">bukly.in</a>. Buat milik Anda sekarang, gratis!
+            Halaman reservasi otomatis ini dibuat menggunakan <a href="https://bukly.id" target="_blank" rel="noopener noreferrer" className="font-semibold text-teal-600 hover:underline">bukly.id</a>. Buat milik Anda sekarang, gratis!
           </p>
           <div className="mt-8 flex justify-center">
-            <a href="https://bukly.in" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center bg-teal-600 text-white text-xs font-bold px-6 py-3 rounded-full hover:bg-teal-700 transition-all duration-200 shadow-lg shadow-teal-600/20 active:scale-95">
+            <a href="https://bukly.id" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center bg-teal-600 text-white text-xs font-bold px-6 py-3 rounded-full hover:bg-teal-700 transition-all duration-200 shadow-lg shadow-teal-600/20 active:scale-95">
               Mau Web Reservasi Gratis? Yuk Bikin!
             </a>
           </div>

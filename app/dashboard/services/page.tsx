@@ -6,7 +6,7 @@ import { ServiceList } from "@/components/dashboard/service-list";
 import { getBusinessDictionary } from "@/lib/business-dictionary";
 
 export const metadata = {
- title: "Daftar Layanan | Dashboard bukly.in",
+ title: "Daftar Layanan | Dashboard bukly.id",
  description: "Kelola harga, durasi pengerjaan, dan detail layanan tokomu.",
 };
 

@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     description: "Pelajari strategi pemasaran digital yang terbukti ampuh menarik pelanggan baru ke salon kecantikan Anda.",
     type: "article",
     publishedTime: "2025-07-14T08:00:00Z",
-    authors: ["Tim bukly.in"],
+    authors: ["Tim bukly.id"],
   },
 };
 
@@ -22,14 +22,14 @@ export default function ArticleDetailPage() {
     "@type": "Article",
     "headline": "5 Cara Jitu Meningkatkan Jumlah Pelanggan Salon Anda di Era Digital",
     "image": [
-      "https://bukly.in/og-image.jpg"
+      "https://bukly.id/og-image.jpg"
     ],
     "datePublished": "2025-07-14T08:00:00+08:00",
     "dateModified": "2025-07-14T08:00:00+08:00",
     "author": [{
         "@type": "Organization",
-        "name": "bukly.in",
-        "url": "https://bukly.in"
+        "name": "bukly.id",
+        "url": "https://bukly.id"
       }]
   };
 
@@ -43,7 +43,7 @@ export default function ArticleDetailPage() {
       {/* Navigation */}
       <header className="border-b border-stone-200 bg-white/80 backdrop-blur-md sticky top-0 z-50">
         <nav className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between" aria-label="Main Navigation">
-          <Link href="/" className="flex items-center gap-2" aria-label="Beranda bukly.in">
+          <Link href="/" className="flex items-center gap-2" aria-label="Beranda bukly.id">
             <div className="w-8 h-8 rounded-xl bg-teal-600 flex items-center justify-center text-white shadow-sm shadow-teal-600/20">
               <Calendar className="w-4 h-4" />
             </div>
@@ -104,7 +104,7 @@ export default function ArticleDetailPage() {
 
           <h2>2. Gunakan Sistem Booking Online (Reservasi Digital)</h2>
           <p>
-            Pelanggan sangat benci menunggu di ruang tunggu yang penuh, atau harus menelepon hanya untuk bertanya "jam berapa yang kosong?". Dengan menggunakan <strong>sistem reservasi online</strong> seperti <a href="/">bukly.in</a>, pelanggan bisa melihat sendiri jam berapa salon Anda kosong dan memesan jadwal langsung dari HP mereka 24 jam penuh.
+            Pelanggan sangat benci menunggu di ruang tunggu yang penuh, atau harus menelepon hanya untuk bertanya "jam berapa yang kosong?". Dengan menggunakan <strong>sistem reservasi online</strong> seperti <a href="/">bukly.id</a>, pelanggan bisa melihat sendiri jam berapa salon Anda kosong dan memesan jadwal langsung dari HP mereka 24 jam penuh.
           </p>
           <blockquote>
             "Kemudahan memesan jadwal adalah salah satu alasan terbesar pelanggan generasi Z dan Milenial memilih sebuah salon."
@@ -136,7 +136,7 @@ export default function ArticleDetailPage() {
           <div className="bg-teal-50 border border-teal-100 rounded-3xl p-8 text-center sm:text-left flex flex-col sm:flex-row items-center justify-between gap-6">
             <div>
               <h3 className="text-xl font-bold text-teal-900 m-0 mb-2">Siap mendigitalisasi salon Anda?</h3>
-              <p className="text-teal-700 m-0 text-sm">Gunakan bukly.in gratis dan buat halaman booking Anda sendiri dalam 1 menit.</p>
+              <p className="text-teal-700 m-0 text-sm">Gunakan bukly.id gratis dan buat halaman booking Anda sendiri dalam 1 menit.</p>
             </div>
             <Link href="/register" className="w-full sm:w-auto">
               <Button className="bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl whitespace-nowrap w-full sm:w-auto">
@@ -152,7 +152,7 @@ export default function ArticleDetailPage() {
         <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <Calendar className="w-5 h-5 text-teal-600" />
-            <span className="font-extrabold text-stone-900">bukly.in</span>
+            <span className="font-extrabold text-stone-900">bukly.id</span>
           </div>
           <p className="text-xs text-stone-500 font-medium text-center md:text-right">
             © {new Date().getFullYear()} Dibuat untuk memajukan UMKM Jasa Indonesia.

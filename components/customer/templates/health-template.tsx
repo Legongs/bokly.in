@@ -21,7 +21,7 @@ export function HealthTemplate({ tenant, services, staffList, portfolios, dictio
     "@type": "MedicalClinic",
     "name": tenant.business_name,
     "telephone": tenant.whatsapp_number,
-    "url": `https://bukly.in/${tenant.slug}`,
+    "url": `https://bukly.id/${tenant.slug}`,
   };
 
   return (
@@ -132,11 +132,11 @@ export function HealthTemplate({ tenant, services, staffList, portfolios, dictio
 
         <footer className="mt-12 text-center pt-8 border-t border-slate-200">
           <p className="text-xs font-semibold text-slate-400 mb-2">Sistem Informasi Registrasi disediakan oleh</p>
-          <a href="https://bukly.in" target="_blank" rel="noopener noreferrer" className="inline-block hover:opacity-80 transition-opacity">
+          <a href="https://bukly.id" target="_blank" rel="noopener noreferrer" className="inline-block hover:opacity-80 transition-opacity">
             <Logo className="text-xl" />
           </a>
           <div className="mt-8 flex justify-center">
-            <a href="https://bukly.in" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center bg-teal-600 text-white text-xs font-bold px-6 py-3 rounded-full hover:bg-teal-700 transition-all duration-200 shadow-lg shadow-teal-600/20 active:scale-95">
+            <a href="https://bukly.id" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center bg-teal-600 text-white text-xs font-bold px-6 py-3 rounded-full hover:bg-teal-700 transition-all duration-200 shadow-lg shadow-teal-600/20 active:scale-95">
               Mau Web Reservasi Gratis? Yuk Bikin!
             </a>
           </div>

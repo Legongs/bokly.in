@@ -1,5 +1,5 @@
 {
-  "name": "buklyin-app",
+  "name": "buklyid-app",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
+    "@sentry/nextjs": "^10.73.0",
     "@supabase/ssr": "^0.12.5",
     "@supabase/supabase-js": "^2.113.0",
     "@tabler/icons-react": "^3.46.0",

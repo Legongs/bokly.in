@@ -11,13 +11,7 @@ interface SiteSettingsProps {
   tenant: Tenant;
 }
 
-const THEME_OPTIONS = [
-  { id: "teal", label: "Hijau Sage (Sage)", colorClass: "bg-teal-500" },
-  { id: "rose", label: "Terakota (Warm)", colorClass: "bg-rose-500" },
-  { id: "orange", label: "Jeruk Hangat", colorClass: "bg-orange-500" },
-  { id: "violet", label: "Ungu Lavender", colorClass: "bg-violet-500" },
-  { id: "blue", label: "Biru Pastel", colorClass: "bg-blue-500" },
-] as const;
+
 
 export function SiteSettings({ tenant }: SiteSettingsProps) {
   const [siteData, setSiteData] = useState({
@@ -38,9 +32,7 @@ export function SiteSettings({ tenant }: SiteSettingsProps) {
     setSiteData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleThemeChange = (themeId: string) => {
-    setSiteData((prev) => ({ ...prev, theme_color: themeId }));
-  };
+
 
   const handleSiteSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -75,43 +67,7 @@ export function SiteSettings({ tenant }: SiteSettingsProps) {
       )}
 
       <form onSubmit={handleSiteSubmit} className="space-y-6">
-        {/* Theme Selection */}
-        <div className="space-y-3">
-          <label className="flex items-center gap-2 text-sm font-semibold text-stone-900">
-            <Palette className="w-4 h-4 text-stone-500" />
-            Tema Warna / Template Halaman
-          </label>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-            {THEME_OPTIONS.map((theme) => {
-              const isSelected = siteData.theme_color === theme.id;
-              return (
-                <button
-                  key={theme.id}
-                  type="button"
-                  onClick={() => handleThemeChange(theme.id)}
-                  className={`relative flex flex-col items-center justify-center p-3 rounded-2xl border-2 transition-all overflow-hidden ${
-                    isSelected
-                      ? "border-stone-900 bg-stone-50 ring-4 ring-stone-900/5 shadow-sm"
-                      : "border-stone-100 hover:border-stone-300 hover:bg-stone-50"
-                  }`}
-                >
-                  <div className={`w-8 h-8 rounded-full mb-2 shadow-inner ${theme.colorClass}`} />
-                  <span className={`text-[11px] font-bold tracking-wide text-center leading-tight ${
-                    isSelected ? "text-stone-900" : "text-stone-500"
-                  }`}>
-                    {theme.label}
-                  </span>
-                  
-                  {isSelected && (
-                    <div className="absolute top-2 right-2 text-stone-900">
-                      <Check className="w-3.5 h-3.5" />
-                    </div>
-                  )}
-                </button>
-              );
-            })}
-          </div>
-        </div>
+
 
         <div>
           <label className="flex items-center gap-2 text-sm font-semibold text-stone-900 mb-2">

@@ -7,7 +7,7 @@ import { getServicesByTenant } from "@/lib/actions/tenant.actions";
 import { StaffList } from "@/components/dashboard/staff-list";
 
 export const metadata = {
-  title: "Kelola Tim & Pegawai | bukly.in",
+  title: "Kelola Tim & Pegawai | bukly.id",
 };
 
 export default async function StaffPage() {

@@ -440,7 +440,7 @@ export async function handleBookingSuccess(
 
     const tenant = bookingData.tenants as any;
     const service = bookingData.services as any;
-    const portalUrl = `https://bukly.in/${tenant.slug}/booking/${bookingData.manage_token}`;
+    const portalUrl = `https://bukly.id/${tenant.slug}/booking/${bookingData.manage_token}`;
 
     const messageText = `Halo ${tenant.business_name},\n\nSaya ${bookingData.customer_name} ingin konfirmasi booking:\n\nLayanan: ${service.name}\nTanggal: ${bookingData.booking_date}\nJam: ${bookingData.start_time.slice(0,5)}\n\nCek status: ${portalUrl}\n\nTerima kasih!`;
     const encodedMessage = encodeURIComponent(messageText);
@@ -695,7 +695,7 @@ export async function proposeReschedule(
     revalidatePath("/[slug]/booking/[token]", "page");
 
     // Format pesan WA
-    const portalUrl = `https://bukly.in/${tenant.slug}/booking/${bookingData.manage_token}`;
+    const portalUrl = `https://bukly.id/${tenant.slug}/booking/${bookingData.manage_token}`;
     let messageText = "";
     let targetWa = "";
 

@@ -29,7 +29,7 @@ export default function LoginPage() {
     if (typeof window !== "undefined") {
       const urlParams = new URLSearchParams(window.location.search);
       if (urlParams.get("demo") === "true") {
-        setEmail("demo@bukly.in");
+        setEmail("demo@bukly.id");
         setPassword("Demo123456!");
         setIsDemoMode(true);
       }

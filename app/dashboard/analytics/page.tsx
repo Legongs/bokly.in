@@ -8,7 +8,7 @@ import { getTenantSubscription } from "@/lib/subscription";
 import { UpsellBanner } from "@/components/dashboard/upsell-banner";
 
 export const metadata = {
-  title: "Analisis Usaha | bukly.in",
+  title: "Analisis Usaha | bukly.id",
   description: "Pantau performa bisnis dan cari tahu apa yang paling disukai pelangganmu.",
 };
 

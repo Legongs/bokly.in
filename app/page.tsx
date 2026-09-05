@@ -27,9 +27,9 @@ import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/ui/logo";
 
 export const metadata: Metadata = {
-  title: "bukly.in | Bikin Web Booking Usahamu dalam 1 Menit — Gratis",
+  title: "bukly.id | Bikin Web Booking Usahamu dalam 1 Menit — Gratis",
   description:
-    "Capek balas chat booking satu-satu? bukly.in bikin halaman reservasi online otomatis buat Barbershop, Salon, Klinik, Bengkel & UMKM jasa lainnya. Pelanggan atur jadwal sendiri, kamu fokus kerja.",
+    "Capek balas chat booking satu-satu? bukly.id bikin halaman reservasi online otomatis buat Barbershop, Salon, Klinik, Bengkel & UMKM jasa lainnya. Pelanggan atur jadwal sendiri, kamu fokus kerja.",
   keywords: [
     "aplikasi booking online gratis",
     "sistem reservasi barbershop",
@@ -38,14 +38,14 @@ export const metadata: Metadata = {
     "web booking otomatis",
     "aplikasi antrean online",
     "reservasi klinik online",
-    "bukly.in",
+    "bukly.id",
   ],
   openGraph: {
-    title: "bukly.in — Web Booking Otomatis untuk UMKM Jasa",
+    title: "bukly.id — Web Booking Otomatis untuk UMKM Jasa",
     description:
       "Gak perlu balas chat booking lagi. Buat halaman reservasi online usahamu dalam 1 menit, gratis. Pelanggan pilih jadwal sendiri, notif langsung ke WA-mu.",
-    url: "https://bukly.in",
-    siteName: "bukly.in",
+    url: "https://bukly.id",
+    siteName: "bukly.id",
     locale: "id_ID",
     type: "website",
   },
@@ -57,8 +57,8 @@ const jsonLd = {
   "@graph": [
     {
       "@type": "SoftwareApplication",
-      name: "bukly.in",
-      url: "https://bukly.in",
+      name: "bukly.id",
+      url: "https://bukly.id",
       applicationCategory: "BusinessApplication",
       operatingSystem: "All",
       offers: {
@@ -79,21 +79,21 @@ const jsonLd = {
     },
     {
       "@type": "WebSite",
-      name: "bukly.in",
-      url: "https://bukly.in",
+      name: "bukly.id",
+      url: "https://bukly.id",
       potentialAction: {
         "@type": "SearchAction",
         target: {
           "@type": "EntryPoint",
-          urlTemplate: "https://bukly.in/artikel?q={search_term_string}",
+          urlTemplate: "https://bukly.id/artikel?q={search_term_string}",
         },
         "query-input": "required name=search_term_string",
       },
     },
     {
       "@type": "Organization",
-      name: "bukly.in",
-      url: "https://bukly.in",
+      name: "bukly.id",
+      url: "https://bukly.id",
       description:
         "Platform reservasi online untuk UMKM jasa di Indonesia. Membantu barbershop, salon, klinik, dan usaha jasa lain mengelola jadwal pelanggan secara otomatis.",
       areaServed: "ID",
@@ -104,10 +104,10 @@ const jsonLd = {
       mainEntity: [
         {
           "@type": "Question",
-          name: "Apakah bukly.in gratis?",
+          name: "Apakah bukly.id gratis?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Ya, fitur dasar bukly.in 100% gratis. Kamu sudah bisa bikin halaman booking, atur layanan dan jadwal, serta terima reservasi pelanggan tanpa biaya langganan bulanan.",
+            text: "Ya, fitur dasar bukly.id 100% gratis. Kamu sudah bisa bikin halaman booking, atur layanan dan jadwal, serta terima reservasi pelanggan tanpa biaya langganan bulanan.",
           },
         },
         {
@@ -115,12 +115,12 @@ const jsonLd = {
           name: "Apakah pelanggan perlu install aplikasi untuk booking?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Tidak perlu. Pelanggan cukup buka link unik usahamu (contoh: bukly.in/salon-siska) langsung di browser HP mereka. Tidak ada aplikasi yang perlu diunduh.",
+            text: "Tidak perlu. Pelanggan cukup buka link unik usahamu (contoh: bukly.id/salon-siska) langsung di browser HP mereka. Tidak ada aplikasi yang perlu diunduh.",
           },
         },
         {
           "@type": "Question",
-          name: "Usaha apa saja yang cocok pakai bukly.in?",
+          name: "Usaha apa saja yang cocok pakai bukly.id?",
           acceptedAnswer: {
             "@type": "Answer",
             text: "Barbershop, Salon Kecantikan, Nail Art, Bengkel, Klinik Dokter, Studio Foto, Jasa Laundry, dan semua usaha jasa yang butuh manajemen jadwal antrean.",
@@ -128,7 +128,7 @@ const jsonLd = {
         },
         {
           "@type": "Question",
-          name: "Berapa lama waktu setup bukly.in?",
+          name: "Berapa lama waktu setup bukly.id?",
           acceptedAnswer: {
             "@type": "Answer",
             text: "Kurang dari 5 menit. Daftar akun, isi nama usahamu, jam operasional, dan daftar layanan — halaman booking langsung aktif dan bisa disebarkan ke pelanggan.",
@@ -214,13 +214,10 @@ export default function HomePage() {
       <header className="border-b border-stone-200/80 bg-[#FAFAF7]/90 backdrop-blur-md sticky top-0 z-50">
         <nav
           className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between"
-          aria-label="Navigasi Utama bukly.in"
+          aria-label="Navigasi Utama bukly.id"
         >
-          <Link href="/" className="flex items-center gap-2" aria-label="Beranda bukly.in">
-            <div className="w-8 h-8 rounded-xl bg-teal-600 flex items-center justify-center text-white shadow-sm shadow-teal-600/25">
-              <Calendar className="w-4 h-4" />
-            </div>
-            <Logo className="text-lg" />
+          <Link href="/" className="flex items-center gap-2" aria-label="Beranda bukly.id">
+            <Logo className="text-2xl" />
           </Link>
 
           <ul className="hidden md:flex items-center gap-7 text-sm font-semibold text-stone-500">
@@ -233,12 +230,12 @@ export default function HomePage() {
 
           <div className="flex items-center gap-2">
             <Link href="/login">
-              <Button variant="ghost" size="sm" className="text-stone-600 hover:text-stone-900 hover:bg-stone-100 font-semibold transition-all duration-200" aria-label="Masuk ke Dashboard bukly.in">
+              <Button variant="ghost" size="sm" className="text-stone-600 hover:text-stone-900 hover:bg-stone-100 font-semibold transition-all duration-200" aria-label="Masuk ke Dashboard bukly.id">
                 Masuk
               </Button>
             </Link>
             <Link href="/register">
-              <Button size="sm" className="bg-teal-600 text-white font-bold hover:bg-teal-700 shadow-sm shadow-teal-600/20 transition-all duration-200" aria-label="Daftar gratis bukly.in">
+              <Button size="sm" className="bg-teal-600 text-white font-bold hover:bg-teal-700 shadow-sm shadow-teal-600/20 transition-all duration-200" aria-label="Daftar gratis bukly.id">
                 Coba Gratis
                 <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
               </Button>
@@ -282,7 +279,7 @@ export default function HomePage() {
                 {[
                   "Aktif dalam 5 menit, tanpa perlu coding",
                   "Gratis — tidak ada biaya tersembunyi",
-                  "Link unik usahamu: bukly.in/nama-usahamu",
+                  "Link unik usahamu: bukly.id/nama-usahamu",
                 ].map((item) => (
                   <li key={item} className="flex items-center gap-2.5">
                     <CheckCircle2 className="w-4 h-4 text-teal-600 flex-shrink-0" />
@@ -320,7 +317,7 @@ export default function HomePage() {
                   </div>
                   <div className="flex-1 mx-3 bg-white rounded-md px-3 py-1 text-xs text-stone-400 font-mono border border-stone-200 flex items-center gap-1.5">
                     <span className="text-teal-600">🔒</span>
-                    bukly.in/salon-keren
+                    bukly.id/salon-keren
                   </div>
                 </div>
 
@@ -421,7 +418,7 @@ export default function HomePage() {
         <section className="py-16 sm:py-20 max-w-6xl mx-auto px-4">
           <div className="reveal text-center mb-12">
             <h2 className="text-2xl sm:text-3xl font-extrabold text-stone-900">Dari barbershop sampai klinik — semua bisa pakai</h2>
-            <p className="text-stone-500 mt-3 max-w-xl mx-auto text-sm sm:text-base">Asal usahamu butuh jadwal antrean, bukly.in siap bantu. Sesederhana itu.</p>
+            <p className="text-stone-500 mt-3 max-w-xl mx-auto text-sm sm:text-base">Asal usahamu butuh jadwal antrean, bukly.id siap bantu. Sesederhana itu.</p>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
@@ -454,7 +451,7 @@ export default function HomePage() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-6">
                 {[
                   { step: "01", icon: Store, title: "Buat akun & atur profil usaha", desc: "Daftar gratis, tulis nama usahamu, jam buka, dan masukin daftar layanan beserta harganya. Selesai dalam hitungan menit.", color: "bg-teal-600" },
-                  { step: "02", icon: MessageCircle, title: "Bagikan link-mu ke pelanggan", desc: "Taruh bukly.in/nama-usahamu di bio Instagram, WhatsApp story, atau langsung chat ke pelanggan setia.", color: "bg-teal-500" },
+                  { step: "02", icon: MessageCircle, title: "Bagikan link-mu ke pelanggan", desc: "Taruh bukly.id/nama-usahamu di bio Instagram, WhatsApp story, atau langsung chat ke pelanggan setia.", color: "bg-teal-500" },
                   { step: "03", icon: Bell, title: "Duduk manis, notif masuk sendiri", desc: "Pelanggan booking kapan saja — tengah malam pun bisa. Kamu terima notifikasi di WA, jadwal masuk otomatis ke dashboard.", color: "bg-teal-400" },
                 ].map((step, i) => (
                   <div key={i} className="reveal flex flex-col items-center md:items-start text-center md:text-left" style={{ transitionDelay: `${i * 120}ms` }}>
@@ -486,7 +483,7 @@ export default function HomePage() {
         <section id="fitur" className="py-16 sm:py-24 scroll-mt-16" aria-labelledby="fitur-heading">
           <div className="max-w-6xl mx-auto px-4">
             <div className="reveal text-center max-w-2xl mx-auto mb-16">
-              <h2 id="fitur-heading" className="text-2xl sm:text-3xl font-extrabold text-stone-900">Kenapa ribuan UMKM milih bukly.in?</h2>
+              <h2 id="fitur-heading" className="text-2xl sm:text-3xl font-extrabold text-stone-900">Kenapa ribuan UMKM milih bukly.id?</h2>
               <p className="text-stone-500 mt-4 text-sm sm:text-base">Bukan soal fitur terbanyak — tapi yang paling berguna buat usahamu. Simpel, dan langsung kerasa manfaatnya.</p>
             </div>
 
@@ -549,7 +546,7 @@ export default function HomePage() {
                       <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center">
                         <MessageCircle className="w-4 h-4 text-white" />
                       </div>
-                      <div><p className="text-xs font-bold text-stone-800">bukly.in Bot</p><p className="text-xs text-green-600">● Online</p></div>
+                      <div><p className="text-xs font-bold text-stone-800">bukly.id Bot</p><p className="text-xs text-green-600">● Online</p></div>
                     </div>
                     {[
                       { msg: "Hei Rina! 👋 Jangan lupa, besok kamu ada jadwal keriting jam 10:30 di Salon Keren By Aurel.", time: "Kemarin 18:00", out: false },
@@ -671,9 +668,9 @@ export default function HomePage() {
             </div>
             <div className="space-y-4">
               {[
-                { q: "Apakah bukly.in benar-benar gratis?", a: "Iya, gratis beneran. Fitur dasar (bikin halaman booking, atur jadwal, terima reservasi) tidak dipungut biaya apapun. Tidak ada biaya tersembunyi atau masa trial yang tiba-tiba berakhir." },
-                { q: "Berapa lama setup awal bukly.in?", a: "Paling lama 5 menit. Daftar akun, isi nama usahamu, jam operasional, dan daftar layanan — halaman booking langsung aktif dan siap dibagikan ke pelanggan." },
-                { q: "Pelanggan perlu install aplikasi dulu?", a: "Nggak perlu sama sekali. Pelanggan cukup klik link yang kamu bagikan (kayak bukly.in/nama-usahamu), halaman langsung terbuka di browser HP mereka. Sesimpel buka link biasa." },
+                { q: "Apakah bukly.id benar-benar gratis?", a: "Iya, gratis beneran. Fitur dasar (bikin halaman booking, atur jadwal, terima reservasi) tidak dipungut biaya apapun. Tidak ada biaya tersembunyi atau masa trial yang tiba-tiba berakhir." },
+                { q: "Berapa lama setup awal bukly.id?", a: "Paling lama 5 menit. Daftar akun, isi nama usahamu, jam operasional, dan daftar layanan — halaman booking langsung aktif dan siap dibagikan ke pelanggan." },
+                { q: "Pelanggan perlu install aplikasi dulu?", a: "Nggak perlu sama sekali. Pelanggan cukup klik link yang kamu bagikan (kayak bukly.id/nama-usahamu), halaman langsung terbuka di browser HP mereka. Sesimpel buka link biasa." },
                 { q: "Cocok buat usaha apa saja?", a: "Semua usaha jasa yang butuh manajemen jadwal: Barbershop, Salon Kecantikan, Nail Art, Klinik & Dokter, Bengkel, Studio Foto, Kelas privat, Laundry, dan lainnya." },
                 { q: "Gimana kalau mau ganti jam atau tutup di hari tertentu?", a: "Bisa banget, lewat dashboard Settings. Atur jam buka, jam istirahat, dan blokir tanggal tertentu buat hari libur. Sistem otomatis menyesuaikan slot yang tampil ke pelanggan." },
               ].map((faq, i) => (
@@ -722,7 +719,7 @@ export default function HomePage() {
             </div>
           </div>
           <div className="mt-10 pt-6 border-t border-stone-800 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-stone-600">
-            <p>© {new Date().getFullYear()} bukly.in — Dibuat untuk UMKM Jasa Indonesia.</p>
+            <p>© {new Date().getFullYear()} bukly.id — Dibuat untuk UMKM Jasa Indonesia.</p>
             <p>Reservasi online yang manusiawi.</p>
           </div>
         </div>

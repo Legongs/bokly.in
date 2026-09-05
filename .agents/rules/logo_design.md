@@ -1,14 +1,14 @@
 ---
-description: Aturan baku untuk desain logo dan identitas visual bukly.in
+description: Aturan baku untuk desain logo dan identitas visual bukly.id
 ---
 
-# Aturan Desain Logo bukly.in
+# Aturan Desain Logo bukly.id
 
-Ketika mengimplementasikan logo atau membuat aset visual untuk merek **bukly.in**, aturan berikut wajib ditaati secara ketat:
+Ketika mengimplementasikan logo atau membuat aset visual untuk merek **bukly.id**, aturan berikut wajib ditaati secara ketat:
 
 ## 1. Tipografi & Teks
 - Logo adalah tipe *wordmark* murni (berbasis teks).
-- **Penulisan**: Wajib menggunakan huruf kecil semua: `bukly.in`. **Dilarang keras** menggunakan huruf kapital (seperti `Bukly.in` atau `BUKLY.IN`).
+- **Penulisan**: Wajib menggunakan huruf kecil semua: `bukly.id`. **Dilarang keras** menggunakan huruf kapital (seperti `Bukly.id` atau `BUKLY.ID`).
 - **Font**: Gunakan *font* sans-serif geometris yang sangat tebal dan bersih (seperti Poppins, Plus Jakarta Sans, atau `font-extrabold` bawaan Tailwind).
 - **Spasi Huruf (Kerning)**: Rapat / *tight* (misal menggunakan `tracking-tighter` di Tailwind).
 

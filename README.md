@@ -1,34 +1,57 @@
-# bukly.in
-Aplikasi reservasi online gratis untuk Barbershop, Salon, Klinik, Bengkel, dan UMKM Jasa Indonesia. Buat halaman booking dalam 1 menit tanpa coding.
+# bukly.id
 
-## Features
-- **Halaman booking unik per usaha** (misal: bukly.in/salon-siska)
-- **Notifikasi otomatis ke WhatsApp** (menggunakan integrasi Fonnte)
-- **Dashboard manajemen jadwal** (real-time slot locking)
-- **Analytics Dashboard** (pendapatan bulanan, layanan terlaris)
-- **Portfolio Gallery**
+[bukly.id](https://bukly.id) adalah platform SaaS *multi-tenant* yang memungkinkan UMKM jasa di Indonesia (seperti Barbershop, Salon, Bengkel, dan Klinik) untuk membuat halaman *booking* online otomatis mereka sendiri dalam hitungan menit.
+
+Tidak perlu *coding*, dan tidak perlu instal aplikasi. Pelanggan bisa melakukan reservasi langsung dari *browser* dengan sistem manajemen jadwal *anti-bentrok*.
 
 ## Tech Stack
-- Next.js 14+ (App Router)
-- Tailwind CSS
-- Supabase (Database & Auth & Storage)
-- Fonnte API (WhatsApp Gateway)
+- **Framework:** Next.js 16 (App Router) dengan Turbopack
+- **Language:** TypeScript
+- **Styling:** Tailwind CSS v4 & class-variance-authority (cva)
+- **Database & Auth:** Supabase (PostgreSQL, Row Level Security, Auth, Storage)
+- **Validation:** Zod
+- **Icons:** Lucide React
+- **Payments:** Midtrans (Sandbox/Production)
+- **Error Tracking:** Sentry (Opsional)
 
-## Local Development
+## Persyaratan Sistem
+Pastikan kamu telah menginstal:
+- [Node.js](https://nodejs.org/en/) (Disarankan versi 20 LTS atau terbaru)
+- [npm](https://www.npmjs.com/)
+- (Opsional) [Supabase CLI](https://supabase.com/docs/guides/cli) jika kamu ingin menjalankan *database* secara lokal atau melakukan sinkronisasi *migration*.
 
-```bash
-npm install
-npm run dev
-```
+## Cara Menjalankan Lokal (Development)
 
-Pastikan kamu memiliki file `.env.local` yang berisi kredensial Supabase dan Fonnte API.
+1. **Clone Repositori**
+   ```bash
+   git clone <URL_REPO_INI>
+   cd buklyin
+   ```
 
-```env
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-# Fonnte API Key (jika menggunakan central bot)
-FONNTE_API_KEY=your_fonnte_api_key
-```
+2. **Instal Dependensi**
+   ```bash
+   npm install
+   ```
 
-## Production Deployment
-Proyek ini dikonfigurasi untuk berjalan mulus di Vercel. Pastikan memindahkan environment variables ke project settings di Vercel sebelum deploy.
+3. **Konfigurasi Environment Variables**
+   - Salin file `.env.example` menjadi `.env.local`:
+     ```bash
+     cp .env.example .env.local
+     ```
+   - Buka `.env.local` dan isi kredensial Supabase, Midtrans, dan kunci SSO Google milikmu (atau minta akses *linked project* dari tim).
+   - Masukkan email pribadimu di `SUPERADMIN_EMAIL` untuk mengakses halaman `/superadmin`.
+
+4. **Jalankan *Development Server***
+   ```bash
+   npm run dev
+   ```
+   Aplikasi akan berjalan di [http://localhost:3000](http://localhost:3000).
+
+## Panduan Arsitektur
+Sebelum melakukan kontribusi, sangat disarankan untuk membaca pedoman arsitektur yang kami terapkan secara ketat:
+- [Backend & Security (docs/backend.md)](docs/backend.md)
+- [Database Schema & Migration (docs/db_schema.md)](docs/db_schema.md)
+- [UI/UX & Copywriting (docs/ui_ux.md)](docs/ui_ux.md)
+
+## Lisensi
+Hak Cipta (c) bukly.id. Seluruh hak dilindungi.

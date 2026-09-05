@@ -42,7 +42,7 @@ export async function createBillingIntent(
     }
 
     const amount = PLAN_PRICES[parsed.data.plan][parsed.data.billingCycle === "monthly" ? "monthly" : "yearly"];
-    const orderId = `buklyin-${user.id.slice(0, 8)}-${Date.now()}`;
+    const orderId = `buklyid-${user.id.slice(0, 8)}-${Date.now()}`;
 
     // Insert billing intent ke DB
     const { data: intentData, error: insertError } = await supabase
@@ -83,16 +83,16 @@ export async function createBillingIntent(
             id: `${parsed.data.plan}-${parsed.data.billingCycle}`,
             price: amount,
             quantity: 1,
-            name: `bukly.in ${planLabel} ${cycleLabel}`,
+            name: `bukly.id ${planLabel} ${cycleLabel}`,
           },
         ],
         customer_details: {
           email: user.email,
         },
         callbacks: {
-          finish: `${process.env.NEXT_PUBLIC_APP_URL ?? "https://buklyin.vercel.app"}/dashboard/billing?payment=success`,
-          error: `${process.env.NEXT_PUBLIC_APP_URL ?? "https://buklyin.vercel.app"}/dashboard/billing?payment=error`,
-          pending: `${process.env.NEXT_PUBLIC_APP_URL ?? "https://buklyin.vercel.app"}/dashboard/billing?payment=pending`,
+          finish: `${process.env.NEXT_PUBLIC_APP_URL ?? "https://buklyid.vercel.app"}/dashboard/billing?payment=success`,
+          error: `${process.env.NEXT_PUBLIC_APP_URL ?? "https://buklyid.vercel.app"}/dashboard/billing?payment=error`,
+          pending: `${process.env.NEXT_PUBLIC_APP_URL ?? "https://buklyid.vercel.app"}/dashboard/billing?payment=pending`,
         },
       }),
     });

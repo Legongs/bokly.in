@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useTransition } from "react";
-import { Loader2, Store, Phone, MessageCircle, Link as LinkIcon, CheckCircle2, AlertCircle } from "lucide-react";
+import { Loader2, Store, Phone, MessageCircle, Link as LinkIcon, CheckCircle2, AlertCircle, Save } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { updateTenantSettings } from "@/lib/actions/tenant.actions";

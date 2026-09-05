@@ -36,7 +36,7 @@ export interface BookingResult {
   name: string;
 }
 
-const LS_KEY = "buklyin_pending_booking";
+const LS_KEY = "buklyid_pending_booking";
 
 /** useBookingFlow — mengelola seluruh state dan logika alur pemesanan. */
 export function useBookingFlow({

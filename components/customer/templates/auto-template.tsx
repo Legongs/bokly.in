@@ -22,7 +22,7 @@ export function AutoTemplate({ tenant, services, staffList, portfolios, dictiona
     "@type": "AutoRepair",
     "name": tenant.business_name,
     "telephone": tenant.whatsapp_number,
-    "url": `https://bukly.in/${tenant.slug}`,
+    "url": `https://bukly.id/${tenant.slug}`,
   };
 
   return (
@@ -44,7 +44,7 @@ export function AutoTemplate({ tenant, services, staffList, portfolios, dictiona
               {tenant.business_name}
             </h1>
             <p className={`text-sm ${colors.highlight} font-bold tracking-widest uppercase mt-1`}>
-              bukly.in/{tenant.slug}
+              bukly.id/{tenant.slug}
             </p>
           </div>
         </div>
@@ -125,11 +125,11 @@ export function AutoTemplate({ tenant, services, staffList, portfolios, dictiona
 
       <footer className="mt-16 pb-8 text-center pt-8 border-t border-stone-200">
         <p className="text-xs font-bold uppercase tracking-widest text-stone-400 mb-2">Sistem Antrean Disediakan Oleh</p>
-        <a href="https://bukly.in" target="_blank" rel="noopener noreferrer" className="inline-block hover:opacity-80 transition-all duration-200 bg-white px-4 py-2 rounded-xl shadow-sm border border-stone-200">
+        <a href="https://bukly.id" target="_blank" rel="noopener noreferrer" className="inline-block hover:opacity-80 transition-all duration-200 bg-white px-4 py-2 rounded-xl shadow-sm border border-stone-200">
           <Logo className="text-xl block" />
         </a>
         <div className="mt-8 flex justify-center">
-          <a href="https://bukly.in" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center bg-teal-600 text-white text-xs font-bold px-6 py-3 rounded-full hover:bg-teal-700 transition-all duration-200 shadow-lg shadow-teal-600/20 active:scale-95">
+          <a href="https://bukly.id" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center bg-teal-600 text-white text-xs font-bold px-6 py-3 rounded-full hover:bg-teal-700 transition-all duration-200 shadow-lg shadow-teal-600/20 active:scale-95">
             Mau Web Reservasi Gratis? Yuk Bikin!
           </a>
         </div>

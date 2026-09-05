@@ -13,26 +13,26 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://bukly.in'),
+  metadataBase: new URL('https://bukly.id'),
   title: {
-    default: "bukly.in | Aplikasi Reservasi Online UMKM Indonesia",
-    template: "%s | bukly.in",
+    default: "bukly.id | Aplikasi Reservasi Online UMKM Indonesia",
+    template: "%s | bukly.id",
   },
   description: "Aplikasi booking jadwal dan reservasi online gratis untuk Barbershop, Salon, Klinik, dan Jasa UMKM lainnya. Biarkan pelanggan atur jadwal sendiri 24/7.",
   keywords: ["aplikasi booking", "reservasi online", "jadwal salon", "booking barbershop", "sistem reservasi", "aplikasi umkm"],
-  authors: [{ name: "bukly.in" }],
-  creator: "bukly.in",
+  authors: [{ name: "bukly.id" }],
+  creator: "bukly.id",
   openGraph: {
     type: "website",
     locale: "id_ID",
-    url: "https://bukly.in",
-    title: "bukly.in | Aplikasi Reservasi Online UMKM",
+    url: "https://bukly.id",
+    title: "bukly.id | Aplikasi Reservasi Online UMKM",
     description: "Tinggalkan cara lama. Bikin web reservasi otomatis untuk usahamu dalam 1 menit. Cocok untuk Salon, Barbershop, Klinik, dan Bengkel.",
-    siteName: "bukly.in",
+    siteName: "bukly.id",
   },
   twitter: {
     card: "summary_large_image",
-    title: "bukly.in | Bikin Web Booking Otomatis",
+    title: "bukly.id | Bikin Web Booking Otomatis",
     description: "Bikin halaman reservasi usahamu sendiri dalam 1 menit. Tanpa ribet balas chat satu-satu.",
   },
   robots: {
