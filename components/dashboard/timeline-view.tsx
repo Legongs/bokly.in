@@ -21,33 +21,48 @@ interface TimelineViewProps {
  isPendingColumn?: boolean;
 }
 
-function StatusBadge({ status }: { status: Booking["payment_status"] }) {
- switch (status) {
- case "approved":
- return (
- <Badge className="bg-teal-50 text-teal-700 hover:bg-teal-100 border border-teal-200/50 shadow-none">
- Disetujui
- </Badge>
- );
- case "completed":
- return (
- <Badge className="bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200/50 shadow-none">
- Lunas
- </Badge>
- );
- case "rejected":
- return (
- <Badge className="bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200/50 shadow-none">
- Ditolak
- </Badge>
- );
- default:
- return (
- <Badge className="bg-orange-50 text-orange-700 hover:bg-orange-100 border border-orange-200/50 shadow-none">
- Pending
- </Badge>
- );
- }
+function StatusBadge({ booking }: { booking: BookingWithService }) {
+  if (booking.payment_status === "rejected") {
+    return <Badge className="bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200/50 shadow-none">Ditolak</Badge>;
+  }
+  if (booking.payment_status === "pending") {
+    return <Badge className="bg-orange-50 text-orange-700 hover:bg-orange-100 border border-orange-200/50 shadow-none">Pending</Badge>;
+  }
+
+  // Approved or Completed status -> Calculate time-based status
+  const now = new Date();
+  const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+  const [startH, startM] = booking.start_time.split(':').map(Number);
+  const [endH, endM] = booking.end_time.split(':').map(Number);
+  const startMinutes = startH * 60 + startM;
+  const endMinutes = endH * 60 + endM;
+
+  const bookingDate = new Date(booking.date);
+  const isToday = bookingDate.toDateString() === now.toDateString();
+  const isPastDate = bookingDate < new Date(now.setHours(0, 0, 0, 0));
+
+  if (isPastDate || (isToday && currentMinutes > endMinutes)) {
+    return (
+      <Badge className="bg-teal-100 text-teal-700 border border-teal-200 shadow-none gap-1 px-2.5">
+        <CheckCircle2 className="w-3 h-3" /> Selesai
+      </Badge>
+    );
+  }
+
+  if (isToday && currentMinutes >= startMinutes && currentMinutes <= endMinutes) {
+    return (
+      <Badge className="bg-blue-100 text-blue-700 border border-blue-200 shadow-none gap-1.5 px-2.5">
+        <span className="w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse" /> Berlangsung
+      </Badge>
+    );
+  }
+
+  return (
+    <Badge className="bg-stone-100 text-stone-500 border border-stone-200 shadow-none gap-1 px-2.5">
+      <Clock className="w-3 h-3" /> Akan datang
+    </Badge>
+  );
 }
 
 function BookingCard({ booking, isPendingColumn }: { booking: BookingWithService, isPendingColumn?: boolean }) {
@@ -79,7 +94,7 @@ function BookingCard({ booking, isPendingColumn }: { booking: BookingWithService
           {booking.start_time.slice(0, 5)} – {booking.end_time.slice(0, 5)}
         </span>
       </div>
-      <StatusBadge status={booking.payment_status} />
+      <StatusBadge booking={booking} />
     </div>
 
     {/* Body: Info Pelanggan */}

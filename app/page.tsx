@@ -533,7 +533,7 @@ export default function HomePage() {
                     <MessageCircle className="w-3.5 h-3.5" />WhatsApp Reminder
                   </div>
                   <h3 className="text-2xl font-extrabold text-stone-900 leading-snug">Pelanggan lupa jadwal?<br />Kita yang ingetin.</h3>
-                  <p className="mt-4 text-stone-500 leading-relaxed text-sm sm:text-base">Notifikasi otomatis dikirim ke WhatsApp pelanggan H-1 sebelum jadwal. Kamu juga dapat notif setiap ada booking baru masuk. Gak ada lagi pelanggan yang ujug-ujug ngilang.</p>
+                  <p className="mt-4 text-stone-500 leading-relaxed text-sm sm:text-base">Notifikasi WhatsApp dikirim H-1 sebelum jadwal*. Kamu juga dapat notif setiap ada booking masuk. Gak ada lagi pelanggan yang ujug-ujug ngilang.</p>
                   <ul className="mt-6 space-y-3">
                     {["Reminder otomatis H-1 ke pelanggan via WA", "Notif instan ke admin setiap booking masuk", "Pesan konfirmasi langsung ke HP pelanggan"].map((f) => (
                       <li key={f} className="flex items-start gap-2.5 text-sm text-stone-600">
@@ -541,6 +541,7 @@ export default function HomePage() {
                       </li>
                     ))}
                   </ul>
+                  <p className="mt-4 text-[11px] text-stone-400 leading-tight">*Pengiriman otomatis menggunakan integrasi API Fonnte (memerlukan akun Fonnte). Tersedia juga opsi kirim manual gratis.</p>
                 </div>
                 <div className="reveal-left md:order-1">
                   <div className="bg-[#ECF5EC] rounded-2xl p-5 border border-green-200 max-w-xs mx-auto">
@@ -584,15 +585,11 @@ export default function HomePage() {
                 </div>
                 <div className="reveal-right">
                   <div className="bg-stone-50 border border-stone-200 rounded-2xl p-6">
-                    <p className="text-sm font-bold text-stone-700 mb-4">Booking Minggu Ini</p>
-                    <div className="flex items-end gap-2 h-28 mb-2">
-                      {[
-                        { day: "Sen", val: 40 }, { day: "Sel", val: 65 }, { day: "Rab", val: 50 },
-                        { day: "Kam", val: 85 }, { day: "Jum", val: 100 }, { day: "Sab", val: 90 }, { day: "Min", val: 30 },
-                      ].map((d) => (
-                        <div key={d.day} className="flex-1 flex flex-col items-center gap-1">
-                          <div className="w-full rounded-t-md bg-teal-500" style={{ height: `${d.val}%` }} />
-                          <span className="text-[10px] text-stone-400 font-medium">{d.day}</span>
+                    <p className="text-sm font-bold text-stone-700 mb-4">Pendapatan 30 Hari</p>
+                    <div className="flex items-end gap-1 h-28 mb-2">
+                      {[40, 55, 45, 60, 80, 75, 50, 65, 85, 95, 70, 80, 100, 90, 60, 75, 85, 95].map((val, i) => (
+                        <div key={i} className="flex-1 flex flex-col items-center justify-end h-full">
+                          <div className="w-full rounded-t-sm bg-teal-500" style={{ height: `${val}%` }} />
                         </div>
                       ))}
                     </div>
