@@ -22,6 +22,8 @@ import {
   CalendarCheck2,
   Smile,
   BarChart2,
+  Camera,
+  User,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/ui/logo";
@@ -221,7 +223,8 @@ export default function HomePage() {
           </Link>
 
           <ul className="hidden md:flex items-center gap-7 text-sm font-semibold text-stone-500">
-            <li><Link href="#storefront" className="hover:text-teal-600 transition-colors duration-200">Storefront</Link></li>
+            <li><Link href="#storefront" className="hover:text-teal-600 transition-colors duration-200">Aplikasi Booking</Link></li>
+            <li><Link href="#demo" className="hover:text-teal-600 transition-colors duration-200">Demo</Link></li>
             <li><Link href="#cara-kerja" className="hover:text-teal-600 transition-colors duration-200">Cara Kerja</Link></li>
             <li><Link href="#fitur" className="hover:text-teal-600 transition-colors duration-200">Fitur</Link></li>
             <li><Link href="#testimoni" className="hover:text-teal-600 transition-colors duration-200">Cerita Pengguna</Link></li>
@@ -413,6 +416,36 @@ export default function HomePage() {
             </div>
           </div>
         </div>
+
+        {/* ─── DEMO SECTION ─────────────────────────────────────────────── */}
+        <section id="demo" className="py-16 sm:py-20 max-w-6xl mx-auto px-4 scroll-mt-16 bg-stone-50/50">
+          <div className="reveal text-center mb-12">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-stone-900">Lihat Contoh Storefront</h2>
+            <p className="text-stone-500 mt-3 max-w-xl mx-auto text-sm sm:text-base">Pilih jenis usahamu dan lihat bagaimana pelanggan akan melakukan booking.</p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[
+              { id: "demo-barbershop", name: "Barbershop", desc: "Tema maskulin, vintage & tegas", icon: Scissors, color: "text-amber-700", bg: "bg-amber-100" },
+              { id: "demo-fisioterapi", name: "Klinik Fisioterapi", desc: "Tema medis, bersih & profesional", icon: Stethoscope, color: "text-blue-700", bg: "bg-blue-100" },
+              { id: "demo-auto-detailing", name: "Auto Detailing", desc: "Tema industrial & mekanikal", icon: Car, color: "text-slate-700", bg: "bg-slate-200" },
+              { id: "demo-studio-foto", name: "Studio Foto", desc: "Tema minimalis & estetik", icon: Camera, color: "text-emerald-700", bg: "bg-emerald-100" },
+              { id: "demo-kelas-yoga", name: "Kelas Yoga", desc: "Tema wellness, lembut & tenang", icon: User, color: "text-rose-700", bg: "bg-rose-100" },
+            ].map((demo, i) => (
+              <Link key={demo.id} href={`/${demo.id}`} target="_blank" className="block reveal group" style={{ transitionDelay: `${i * 100}ms` }}>
+                <div className="bg-white rounded-2xl p-6 border border-stone-200 hover:border-teal-400 hover:shadow-lg hover:shadow-teal-100 transition-all duration-300 h-full flex flex-col">
+                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${demo.bg} mb-4 group-hover:scale-110 transition-transform`}>
+                    <demo.icon className={`w-6 h-6 ${demo.color}`} />
+                  </div>
+                  <h3 className="font-bold text-lg text-stone-900 mb-1">{demo.name}</h3>
+                  <p className="text-sm text-stone-500 flex-1">{demo.desc}</p>
+                  <div className="mt-4 flex items-center text-teal-600 font-semibold text-sm group-hover:text-teal-700">
+                    Buka Demo <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
 
         {/* ─── USE CASES ─────────────────────────────────────────────────── */}
         <section className="py-16 sm:py-20 max-w-6xl mx-auto px-4">

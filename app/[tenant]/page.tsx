@@ -18,21 +18,31 @@ interface TenantPageProps {
   params: Promise<{ tenant: string }>;
 }
 
+import { getDemoTenant } from "@/lib/demo-data";
+
 // ── Dynamic Metadata (SEO per-tenant) ─────────────────────────────────────────
 export async function generateMetadata({ params }: TenantPageProps): Promise<Metadata> {
   const { tenant: slug } = await params;
-  const res = await getTenantBySlug(slug);
+  
+  // Handle demo static routes
+  const demoData = getDemoTenant(slug);
+  let business_name = "";
 
-  if (!res.success || !res.data) {
-    return {
-      title: "Outlet Tidak Ditemukan | bukly.id",
-      description: "Halaman reservasi tidak ditemukan.",
-    };
+  if (demoData) {
+    business_name = demoData.tenant.business_name;
+  } else {
+    const res = await getTenantBySlug(slug);
+    if (!res.success || !res.data) {
+      return {
+        title: "Outlet Tidak Ditemukan | bukly.id",
+        description: "Halaman reservasi tidak ditemukan.",
+      };
+    }
+    business_name = res.data.business_name;
   }
 
-  const { business_name } = res.data;
   return {
-    title: `Reservasi ${business_name} | bukly.id`,
+    title: `Booking Online ${business_name}`,
     description: `Pesan slot reservasi online di ${business_name} dengan mudah, cepat, dan bebas antri melalui bukly.id.`,
     openGraph: {
       title: `Reservasi ${business_name}`,
@@ -45,69 +55,69 @@ export async function generateMetadata({ params }: TenantPageProps): Promise<Met
 // ── Page Router ───────────────────────────────────────────────────────────────
 export default async function TenantPage({ params }: TenantPageProps) {
   const { tenant: tenantSlug } = await params;
-  const res = await getTenantBySlug(tenantSlug);
+  
+  let tenantData: any = null;
+  let services: any[] = [];
+  let staffList: any[] = [];
+  let portfolios: any[] = [];
 
-  // ── Not found / inactive ────────────────────────────────────────────────────
-  if (!res.success || !res.data) {
-    return (
-      <main className="min-h-screen flex items-center justify-center p-4 bg-stone-50 ">
-        <div className="max-w-sm w-full bg-white border-none rounded-[2rem] p-8 text-center shadow-md shadow-stone-200/50">
-          <div className="w-16 h-16 bg-stone-50 border border-stone-100 rounded-3xl flex items-center justify-center mx-auto mb-5 text-stone-300 rotate-3">
-            <Store className="w-8 h-8" />
+  const demoData = getDemoTenant(tenantSlug);
+  
+  if (demoData) {
+    tenantData = demoData.tenant;
+    services = demoData.services;
+    staffList = demoData.staff;
+    portfolios = demoData.portfolios;
+  } else {
+    const res = await getTenantBySlug(tenantSlug);
+    if (!res.success || !res.data) {
+      return (
+        <main className="min-h-screen flex items-center justify-center p-4 bg-stone-50 ">
+          <div className="max-w-sm w-full bg-white border-none rounded-[2rem] p-8 text-center shadow-md shadow-stone-200/50">
+            <div className="w-16 h-16 bg-stone-50 border border-stone-100 rounded-3xl flex items-center justify-center mx-auto mb-5 text-stone-300 rotate-3">
+              <Store className="w-8 h-8" />
+            </div>
+            <h1 className="text-xl font-bold text-stone-800 ">
+              Yah, Outlet Nggak Ketemu
+            </h1>
+            <p className="text-sm text-stone-500 mt-3 leading-relaxed">
+              Pastikan link yang kamu klik sudah benar, atau outlet ini mungkin sudah tutup.
+            </p>
           </div>
-          <h1 className="text-xl font-bold text-stone-800 ">
-            Yah, Outlet Nggak Ketemu
-          </h1>
-          <p className="text-sm text-stone-500 mt-2">
-            Outlet <span className="font-semibold text-stone-700 ">@{tenantSlug}</span> kayaknya lagi tutup atau URL-nya salah ketik nih.
-          </p>
-        </div>
-      </main>
-    );
+        </main>
+      );
+    }
+    tenantData = res.data;
+    const tenantId = tenantData.id;
+
+    // Ambil data pendukung secara paralel
+    const [svcsRes, staffRes, portRes] = await Promise.all([
+      getServicesByTenant(tenantId),
+      getStaffByTenant(tenantId),
+      getPortfoliosByTenant(tenantId),
+    ]);
+    
+    services = svcsRes.data || [];
+    staffList = staffRes.data || [];
+    portfolios = portRes.data || [];
   }
 
-  const tenant = res.data;
+  const dictionary = getSectorDictionary(tenantData.business_type);
+  const templateType = inferTemplateFromType(tenantData.business_type);
 
-  // Intelligent Template Matcher:
-  // If business_sector is missing, try to infer it from user's custom typed business_type
-  let activeSector = tenant.business_sector as string | null;
-  if (!activeSector && tenant.business_type) {
-    activeSector = inferTemplateFromType(tenant.business_type);
-  }
-
-  // Fetch daftar layanan terpisah sesuai arsitektur modular tenant.actions.ts
-  const servicesRes = await getServicesByTenant(tenant.id);
-  const services = servicesRes.data ?? [];
-
-  const staffRes = await getStaffByTenant(tenant.id);
-  const staff = staffRes.success && staffRes.data ? staffRes.data : [];
-
-  const portfolioRes = await getPortfoliosByTenant(tenant.id);
-  const portfolios = portfolioRes.success && portfolioRes.data ? portfolioRes.data : [];
-
-  const dict = getSectorDictionary(activeSector);
-
-  const templateProps = {
-    tenant,
-    services,
-    staffList: staff,
-    portfolios,
-    dictionary: dict,
-  };
-
-  // Route to specific template based on active sector
-  switch (activeSector) {
+  // Render template berdasarkan jenis bisnis
+  switch (templateType) {
     case "beauty":
-      return <BeautyTemplate {...templateProps} />;
+      return <BeautyTemplate tenant={tenantData} services={services} staffList={staffList} portfolios={portfolios} dictionary={dictionary} />;
     case "barber":
-      return <BarberTemplate {...templateProps} />;
+      return <BarberTemplate tenant={tenantData} services={services} staffList={staffList} portfolios={portfolios} dictionary={dictionary} />;
     case "auto":
-      return <AutoTemplate {...templateProps} />;
+      return <AutoTemplate tenant={tenantData} services={services} staffList={staffList} portfolios={portfolios} dictionary={dictionary} />;
     case "health":
-      return <HealthTemplate {...templateProps} />;
+      return <HealthTemplate tenant={tenantData} services={services} staffList={staffList} portfolios={portfolios} dictionary={dictionary} />;
     case "space":
-      return <SpaceTemplate {...templateProps} />;
+      return <SpaceTemplate tenant={tenantData} services={services} staffList={staffList} portfolios={portfolios} dictionary={dictionary} />;
     default:
-      return <DefaultTemplate {...templateProps} />;
+      return <DefaultTemplate tenant={tenantData} services={services} staffList={staffList} portfolios={portfolios} dictionary={dictionary} />;
   }
 }

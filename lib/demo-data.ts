@@ -1,0 +1,198 @@
+import type { Tenant, Service, Staff, Portfolio } from "@/types/database.types";
+
+export const DEMO_TENANTS: Record<string, {
+  tenant: any;
+  services: any[];
+  staff: any[];
+  portfolios: any[];
+}> = {
+  "demo-barbershop": {
+    tenant: {
+      id: "demo-barbershop",
+      business_name: "The Gentleman's Cut",
+      slug: "demo-barbershop",
+      business_type: "barbershop",
+      whatsapp_number: "6281234567890",
+      instagram_handle: "@gentlemanscut",
+      address: "Jl. Senopati No. 45, Kebayoran Baru, Jakarta Selatan",
+      welcome_message: "Potongan rambut klasik untuk pria modern. Duduk, rileks, dan biarkan kami mengurus gaya Anda.",
+      cancellation_policy: "Pembatalan maksimal H-1. DP hangus untuk No-Show.",
+      hero_image_url: "/images/artikel-2.jpg",
+      logo_url: "",
+      theme_color: "orange",
+      timezone: "Asia/Jakarta",
+      created_at: new Date().toISOString(),
+      weekly_schedule: {
+        monday: { isOpen: true, open: "09:00", close: "21:00" },
+        tuesday: { isOpen: true, open: "09:00", close: "21:00" },
+        wednesday: { isOpen: true, open: "09:00", close: "21:00" },
+        thursday: { isOpen: true, open: "09:00", close: "21:00" },
+        friday: { isOpen: true, open: "09:00", close: "21:00" },
+        saturday: { isOpen: true, open: "10:00", close: "22:00" },
+        sunday: { isOpen: true, open: "10:00", close: "22:00" },
+      },
+    },
+    services: [
+      { id: "s1", name: "Premium Haircut", duration_minutes: 45, price: 150000, category: "Haircut" },
+      { id: "s2", name: "Beard Trim & Shape", duration_minutes: 30, price: 80000, category: "Beard" },
+      { id: "s3", name: "Gentleman's Package (Haircut + Beard)", duration_minutes: 75, price: 200000, category: "Package" },
+    ],
+    staff: [
+      { id: "st1", name: "Bima", role: "Master Barber", image_url: "", staff_services: [{ service_id: "s1" }, { service_id: "s2" }, { service_id: "s3" }] },
+      { id: "st2", name: "Reza", role: "Senior Barber", image_url: "", staff_services: [{ service_id: "s1" }, { service_id: "s2" }] },
+    ],
+    portfolios: [],
+  },
+  "demo-fisioterapi": {
+    tenant: {
+      id: "demo-fisioterapi",
+      business_name: "Sehat Sentosa Physio",
+      slug: "demo-fisioterapi",
+      business_type: "clinic",
+      whatsapp_number: "6281234567891",
+      instagram_handle: "@sehatsentosaphysio",
+      address: "Gedung Medika Lt 3, Jl. Sudirman, Jakarta Pusat",
+      welcome_message: "Pulihkan mobilitas Anda bersama terapis bersertifikat kami.",
+      cancellation_policy: "Harap konfirmasi kedatangan 2 jam sebelumnya.",
+      hero_image_url: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&q=80",
+      logo_url: "",
+      theme_color: "blue",
+      timezone: "Asia/Jakarta",
+      created_at: new Date().toISOString(),
+      weekly_schedule: {
+        monday: { isOpen: true, open: "08:00", close: "17:00" },
+        tuesday: { isOpen: true, open: "08:00", close: "17:00" },
+        wednesday: { isOpen: true, open: "08:00", close: "17:00" },
+        thursday: { isOpen: true, open: "08:00", close: "17:00" },
+        friday: { isOpen: true, open: "08:00", close: "17:00" },
+        saturday: { isOpen: true, open: "08:00", close: "13:00" },
+        sunday: { isOpen: false, open: "00:00", close: "00:00" },
+      },
+    },
+    services: [
+      { id: "s1", name: "Konsultasi & Penilaian Awal", duration_minutes: 30, price: 200000, category: "Konsultasi" },
+      { id: "s2", name: "Sesi Fisioterapi Intensif", duration_minutes: 60, price: 350000, category: "Terapi" },
+      { id: "s3", name: "Sports Massage / Recovery", duration_minutes: 45, price: 250000, category: "Recovery" },
+    ],
+    staff: [
+      { id: "st1", name: "Dr. Andi", role: "Lead Physiotherapist", image_url: "", staff_services: [{ service_id: "s1" }, { service_id: "s2" }] },
+      { id: "st2", name: "Siti", role: "Sports Therapist", image_url: "", staff_services: [{ service_id: "s2" }, { service_id: "s3" }] },
+    ],
+    portfolios: [],
+  },
+  "demo-auto-detailing": {
+    tenant: {
+      id: "demo-auto-detailing",
+      business_name: "Kinclong Auto Detailing",
+      slug: "demo-auto-detailing",
+      business_type: "workshop",
+      whatsapp_number: "6281234567892",
+      instagram_handle: "@kinclongauto",
+      address: "Jl. MT Haryono No. 88, Jakarta Timur",
+      welcome_message: "Kembalikan kilau mobil kesayangan Anda seperti baru keluar dari dealer.",
+      cancellation_policy: "DP 50% diwajibkan untuk layanan Coating.",
+      hero_image_url: "https://images.unsplash.com/photo-1601362840469-51e4d8d58785?auto=format&fit=crop&q=80",
+      logo_url: "",
+      theme_color: "slate",
+      timezone: "Asia/Jakarta",
+      created_at: new Date().toISOString(),
+      weekly_schedule: {
+        monday: { isOpen: true, open: "09:00", close: "18:00" },
+        tuesday: { isOpen: true, open: "09:00", close: "18:00" },
+        wednesday: { isOpen: true, open: "09:00", close: "18:00" },
+        thursday: { isOpen: true, open: "09:00", close: "18:00" },
+        friday: { isOpen: true, open: "09:00", close: "18:00" },
+        saturday: { isOpen: true, open: "09:00", close: "18:00" },
+        sunday: { isOpen: true, open: "10:00", close: "15:00" },
+      },
+    },
+    services: [
+      { id: "s1", name: "Premium Wash & Wax", duration_minutes: 90, price: 250000, category: "Washing" },
+      { id: "s2", name: "Interior Deep Cleaning", duration_minutes: 180, price: 500000, category: "Interior" },
+      { id: "s3", name: "Nano Ceramic Coating (Medium Car)", duration_minutes: 480, price: 2500000, category: "Coating" },
+    ],
+    staff: [
+      { id: "st1", name: "Workshop Area 1", role: "Bay 1", image_url: "", staff_services: [{ service_id: "s1" }, { service_id: "s2" }] },
+      { id: "st2", name: "Workshop Area 2 (Coating)", role: "Bay 2", image_url: "", staff_services: [{ service_id: "s3" }] },
+    ],
+    portfolios: [],
+  },
+  "demo-studio-foto": {
+    tenant: {
+      id: "demo-studio-foto",
+      business_name: "Lensa Studio",
+      slug: "demo-studio-foto",
+      business_type: "studio",
+      whatsapp_number: "6281234567893",
+      instagram_handle: "@lensastudio",
+      address: "Ruko Kemang Pratama, Bekasi",
+      welcome_message: "Abadikan momen berharga Anda di studio foto berstandar profesional kami.",
+      cancellation_policy: "Reschedule maksimal H-2.",
+      hero_image_url: "https://images.unsplash.com/photo-1598463131707-160a26e855c8?auto=format&fit=crop&q=80",
+      logo_url: "",
+      theme_color: "emerald",
+      timezone: "Asia/Jakarta",
+      created_at: new Date().toISOString(),
+      weekly_schedule: {
+        monday: { isOpen: false, open: "00:00", close: "00:00" },
+        tuesday: { isOpen: true, open: "10:00", close: "20:00" },
+        wednesday: { isOpen: true, open: "10:00", close: "20:00" },
+        thursday: { isOpen: true, open: "10:00", close: "20:00" },
+        friday: { isOpen: true, open: "10:00", close: "20:00" },
+        saturday: { isOpen: true, open: "09:00", close: "21:00" },
+        sunday: { isOpen: true, open: "09:00", close: "21:00" },
+      },
+    },
+    services: [
+      { id: "s1", name: "Sewa Studio (Per Jam)", duration_minutes: 60, price: 150000, category: "Rental" },
+      { id: "s2", name: "Sesi Foto Keluarga / Wisuda", duration_minutes: 60, price: 350000, category: "Package" },
+      { id: "s3", name: "Pre-Wedding Indoor", duration_minutes: 180, price: 1500000, category: "Package" },
+    ],
+    staff: [
+      { id: "st1", name: "Studio A (Tema Putih)", role: "Ruangan", image_url: "", staff_services: [{ service_id: "s1" }, { service_id: "s2" }, { service_id: "s3" }] },
+      { id: "st2", name: "Studio B (Tema Vintage)", role: "Ruangan", image_url: "", staff_services: [{ service_id: "s1" }, { service_id: "s2" }] },
+    ],
+    portfolios: [],
+  },
+  "demo-kelas-yoga": {
+    tenant: {
+      id: "demo-kelas-yoga",
+      business_name: "Zen Yoga Space",
+      slug: "demo-kelas-yoga",
+      business_type: "fitness",
+      whatsapp_number: "6281234567894",
+      instagram_handle: "@zenyogaspace",
+      address: "Jl. Raya Ubud, Bali",
+      welcome_message: "Temukan kedamaian dan keseimbangan tubuh Anda di kelas kami.",
+      cancellation_policy: "Pendaftaran kelas bersifat final.",
+      hero_image_url: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&q=80",
+      logo_url: "",
+      theme_color: "rose",
+      timezone: "Asia/Makassar",
+      created_at: new Date().toISOString(),
+      weekly_schedule: {
+        monday: { isOpen: true, open: "06:00", close: "20:00" },
+        tuesday: { isOpen: true, open: "06:00", close: "20:00" },
+        wednesday: { isOpen: true, open: "06:00", close: "20:00" },
+        thursday: { isOpen: true, open: "06:00", close: "20:00" },
+        friday: { isOpen: true, open: "06:00", close: "20:00" },
+        saturday: { isOpen: true, open: "07:00", close: "12:00" },
+        sunday: { isOpen: false, open: "00:00", close: "00:00" },
+      },
+    },
+    services: [
+      { id: "s1", name: "Morning Vinyasa Flow", duration_minutes: 60, price: 75000, category: "Morning Class" },
+      { id: "s2", name: "Sunset Yin Yoga", duration_minutes: 75, price: 85000, category: "Evening Class" },
+      { id: "s3", name: "Private 1-on-1 Session", duration_minutes: 60, price: 300000, category: "Private" },
+    ],
+    staff: [
+      { id: "st1", name: "Nadine", role: "Yoga Instructor", image_url: "", staff_services: [{ service_id: "s1" }, { service_id: "s2" }, { service_id: "s3" }] },
+      { id: "st2", name: "Putri", role: "Yoga Instructor", image_url: "", staff_services: [{ service_id: "s1" }, { service_id: "s2" }] },
+    ],
+    portfolios: [],
+  },
+};
+
+export function getDemoTenant(slug: string) {
+  return DEMO_TENANTS[slug] || null;
+}
