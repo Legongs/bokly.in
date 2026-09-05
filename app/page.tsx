@@ -404,7 +404,7 @@ export default function HomePage() {
         {/* ─── DEMO SECTION ─────────────────────────────────────────────── */}
         <section id="demo" className="py-16 sm:py-20 max-w-6xl mx-auto px-4 scroll-mt-16 bg-stone-50/50">
           <div className="reveal text-center mb-12">
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-stone-900">Lihat Contoh Storefront</h2>
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-stone-900">Lihat Contoh Halaman Booking</h2>
             <p className="text-stone-500 mt-3 max-w-xl mx-auto text-sm sm:text-base">Pilih jenis usahamu dan lihat bagaimana pelanggan akan melakukan booking.</p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
