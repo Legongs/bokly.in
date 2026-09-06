@@ -4,52 +4,53 @@ import { StoreBadge } from "../store-badge";
 import { BookingFlow } from "@/components/customer/booking-flow";
 import { PortfolioGallery } from "@/components/customer/portfolio-gallery";
 import { Logo } from "@/components/ui/logo";
+import { SafeImage } from "@/components/ui/safe-image";
+import { StorefrontJsonLd } from "./shared/storefront-jsonld";
+import { getWhatsAppUrl } from "./shared/whatsapp-link";
+import { StorefrontFooter } from "./shared/storefront-footer";
 import type { StorefrontTemplateProps } from "./types";
 
 export function HealthTemplate({ tenant, services, staffList, portfolios, dictionary }: StorefrontTemplateProps) {
-  const themeColor = (tenant as any).theme_color || "teal";
+  const themeColor = tenant.theme_color || "teal";
   
-  const colors = {
+  const themeOptions = {
     teal: { text: "text-teal-700", bg: "bg-teal-50", border: "border-teal-100", highlight: "bg-teal-600" },
     blue: { text: "text-blue-700", bg: "bg-blue-50", border: "border-blue-100", highlight: "bg-blue-600" },
     rose: { text: "text-rose-700", bg: "bg-rose-50", border: "border-rose-100", highlight: "bg-rose-600" },
     orange: { text: "text-orange-700", bg: "bg-orange-50", border: "border-orange-100", highlight: "bg-orange-600" },
     violet: { text: "text-violet-700", bg: "bg-violet-50", border: "border-violet-100", highlight: "bg-violet-600" },
-  }[themeColor as keyof typeof colors] || colors.teal;
-
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "MedicalClinic",
-    "name": tenant.business_name,
-    "telephone": tenant.whatsapp_number,
-    "url": `https://bukly.id/${tenant.slug}`,
   };
+  const colors = themeOptions[themeColor as keyof typeof themeOptions] || themeOptions.teal;
 
   return (
-    <main className="min-h-screen bg-slate-50 text-slate-800 pb-40 md:pb-20 font-sans">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+    <main className="min-h-screen bg-slate-50 text-slate-800 pb-56 md:pb-24 font-sans">
+      <StorefrontJsonLd tenant={tenant} schemaType="MedicalClinic" />
       
-      {/* ── Clean Medical Header ── */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
-        <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className={`w-10 h-10 rounded-lg ${colors.bg} ${colors.text} flex items-center justify-center`}>
-              {tenant.logo_url ? (
-                <img src={tenant.logo_url} alt={tenant.business_name} className="w-full h-full object-cover rounded-lg" />
-              ) : (
-                <Stethoscope className="w-6 h-6" />
-              )}
+      {/* ── Premium Medical Header ── */}
+      <header className="bg-teal-950 text-teal-50 border-b-4 border-teal-900 relative shadow-xl">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-teal-900 via-teal-950 to-black opacity-60 mix-blend-overlay" />
+        <div className="relative z-10 max-w-4xl mx-auto px-4 py-8 md:py-12 flex flex-col md:flex-row items-center md:items-start justify-between gap-6">
+          <div className="flex flex-col md:flex-row items-center md:items-start gap-5 text-center md:text-left">
+            <div className={`w-20 h-20 rounded-2xl ${colors.bg} ${colors.text} flex flex-shrink-0 items-center justify-center shadow-lg border-2 border-teal-700`}>
+              <SafeImage 
+                src={tenant.logo_url || undefined} 
+                alt={tenant.business_name} 
+                className="w-full h-full object-cover rounded-2xl"
+                fallback={<Stethoscope className="w-10 h-10" />}
+              />
             </div>
             <div>
-              <h1 className="text-lg font-bold text-slate-900 tracking-tight leading-tight">
+              <h1 className="text-2xl md:text-3xl font-bold text-teal-50 tracking-tight leading-tight drop-shadow-sm">
                 {tenant.business_name}
               </h1>
-              <p className="text-xs text-slate-500 font-medium">Layanan Medis & Profesional</p>
+              <p className="text-sm text-teal-200 font-medium mt-1">Layanan Medis & Profesional</p>
+              {tenant.is_verified && (
+                <div className="flex items-center justify-center md:justify-start gap-2 mt-3 bg-teal-900/50 py-1.5 px-3 rounded-full border border-teal-800/50 w-fit mx-auto md:mx-0">
+                  <ShieldCheck className={`w-4 h-4 text-emerald-400`} />
+                  <span className="text-xs font-semibold text-teal-100 uppercase tracking-wider">Terdaftar di bukly.id</span>
+                </div>
+              )}
             </div>
-          </div>
-          <div className="hidden sm:flex items-center gap-2">
-            <ShieldCheck className={`w-5 h-5 ${colors.text}`} />
-            <span className="text-sm font-semibold text-slate-600">Terverifikasi</span>
           </div>
         </div>
       </header>
@@ -58,11 +59,17 @@ export function HealthTemplate({ tenant, services, staffList, portfolios, dictio
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
           <div className="md:col-span-2 space-y-6">
-            {tenant.hero_image_url && (
-              <div className="w-full h-48 rounded-2xl overflow-hidden shadow-sm border border-slate-200">
-                <img src={tenant.hero_image_url} alt="Klinik" className="w-full h-full object-cover" />
-              </div>
-            )}
+            <div className="w-full h-48 rounded-2xl overflow-hidden shadow-sm border border-slate-200 relative">
+              {tenant.hero_image_url ? (
+                <SafeImage src={tenant.hero_image_url} alt="Klinik" className="w-full h-full object-cover" />
+              ) : (
+                <div className={`absolute inset-0 ${colors.bg} flex items-center justify-center overflow-hidden`}>
+                  <div className={`absolute -top-10 -right-10 w-40 h-40 ${colors.highlight} rounded-full blur-3xl opacity-10`} />
+                  <div className={`absolute -bottom-10 -left-10 w-32 h-32 ${colors.highlight} rounded-full blur-2xl opacity-10`} />
+                  <Stethoscope className={`w-12 h-12 ${colors.text} opacity-20`} />
+                </div>
+              )}
+            </div>
             
             <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
               <h2 className="text-xl font-bold text-slate-800 mb-3">Tentang Kami</h2>
@@ -77,7 +84,7 @@ export function HealthTemplate({ tenant, services, staffList, portfolios, dictio
               <h3 className="text-sm font-bold text-slate-800 mb-4">Informasi Kontak</h3>
               
               <div className="space-y-4">
-                <a href={`https://wa.me/${tenant.whatsapp_number.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer" 
+                <a href={getWhatsAppUrl(tenant.whatsapp_number)} target="_blank" rel="noopener noreferrer" 
                    className="flex items-start gap-3 group">
                   <div className={`p-2 rounded-lg ${colors.bg} ${colors.text} group-hover:scale-105 transition-transform`}>
                     <MessageCircle className="w-4 h-4" />
@@ -117,7 +124,6 @@ export function HealthTemplate({ tenant, services, staffList, portfolios, dictio
 
         {portfolios.length > 0 && (
           <div className="mb-10">
-
             <PortfolioGallery portfolios={portfolios} />
           </div>
         )}
@@ -132,17 +138,7 @@ export function HealthTemplate({ tenant, services, staffList, portfolios, dictio
           </div>
         </div>
 
-        <footer className="mt-12 text-center pt-8 border-t border-slate-200">
-          <p className="text-xs font-semibold text-slate-400 mb-2">Sistem Informasi Registrasi disediakan oleh</p>
-          <a href="https://bukly.id" target="_blank" rel="noopener noreferrer" className="inline-block hover:opacity-80 transition-opacity">
-            <Logo className="text-xl" />
-          </a>
-          <div className="mt-8 flex justify-center">
-            <a href="https://bukly.id" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center bg-teal-600 text-white text-xs font-bold px-6 py-3 rounded-full hover:bg-teal-700 transition-all duration-200 shadow-lg shadow-teal-600/20 active:scale-95">
-              Mau Web Reservasi Gratis? Yuk Bikin!
-            </a>
-          </div>
-        </footer>
+        <StorefrontFooter variant="default" />
       </div>
     </main>
   );

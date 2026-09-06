@@ -4,6 +4,10 @@ import { BookingFlow } from "@/components/customer/booking-flow";
 import { PortfolioGallery } from "@/components/customer/portfolio-gallery";
 import { StoreBadge } from "@/components/customer/store-badge";
 import { Logo } from "@/components/ui/logo";
+import { SafeImage } from "@/components/ui/safe-image";
+import { StorefrontJsonLd } from "./shared/storefront-jsonld";
+import { getWhatsAppUrl } from "./shared/whatsapp-link";
+import { StorefrontFooter } from "./shared/storefront-footer";
 import type { StorefrontTemplateProps } from "./types";
 
 export function DefaultTemplate({ tenant, services, staffList, portfolios, dictionary }: StorefrontTemplateProps) {
@@ -46,7 +50,7 @@ export function DefaultTemplate({ tenant, services, staffList, portfolios, dicti
     },
   };
 
-  const themeColor = (tenant as any).theme_color || dictionary.themeColor || "teal";
+  const themeColor = tenant.theme_color || dictionary.themeColor || "teal";
   const currentTheme = themeStyles[themeColor] || themeStyles["teal"];
 
   const IconComponent = {
@@ -57,42 +61,23 @@ export function DefaultTemplate({ tenant, services, staffList, portfolios, dicti
     Store
   }[dictionary.iconName] || Store;
 
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "LocalBusiness",
-    "name": tenant.business_name,
-    "telephone": tenant.whatsapp_number,
-    "url": `https://bukly.id/${tenant.slug}`,
-    "makesOffer": services.map((s) => ({
-      "@type": "Offer",
-      "itemOffered": {
-        "@type": "Service",
-        "name": s.name,
-      },
-      "price": s.price,
-      "priceCurrency": "IDR",
-    })),
-  };
-
   return (
-    <main className="min-h-screen bg-stone-50 pb-40 md:pb-20">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+    <main className="min-h-screen bg-stone-50 pb-56 md:pb-24">
+      <StorefrontJsonLd tenant={tenant} schemaType="LocalBusiness" services={services} />
       
-      {/* ── Sticky Tenant Header ── */}
-      <header className="sticky top-0 z-40 bg-white/70 backdrop-blur-xl border-b border-stone-100 shadow-sm shadow-stone-100/50">
+      {/* ── Sticky Premium Header ── */}
+      <header className="sticky top-0 z-40 bg-indigo-950/95 backdrop-blur-xl border-b border-indigo-900 shadow-md">
         <div className="max-w-lg mx-auto px-4 h-16 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
-            <div className={`w-9 h-9 rounded-2xl ${currentTheme.bgLogo} flex items-center justify-center text-white flex-shrink-0 shadow-sm overflow-hidden`}>
-              {tenant.logo_url ? (
-                <img src={tenant.logo_url} alt={tenant.business_name} className="w-full h-full object-cover" />
-              ) : (
-                <IconComponent className="w-4 h-4" />
-              )}
+            <div className={`w-9 h-9 rounded-2xl ${currentTheme.bgLogo} flex items-center justify-center text-white flex-shrink-0 shadow-sm overflow-hidden border border-indigo-800`}>
+              <SafeImage 
+                src={tenant.logo_url || undefined} 
+                alt={tenant.business_name} 
+                className="w-full h-full object-cover"
+                fallback={<IconComponent className="w-4 h-4" />}
+              />
             </div>
-            <span className="font-extrabold text-sm text-stone-800 truncate tracking-tight">
+            <span className="font-extrabold text-sm text-indigo-50 truncate tracking-tight drop-shadow-sm">
               {tenant.business_name}
             </span>
           </div>
@@ -106,14 +91,9 @@ export function DefaultTemplate({ tenant, services, staffList, portfolios, dicti
         >
           {/* Background Image Layer */}
           {tenant.hero_image_url && (
-            <div 
-              className="absolute inset-0 z-0 transition-transform duration-700 group-hover:scale-105"
-              style={{
-                backgroundImage: `url(${tenant.hero_image_url})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center'
-              }}
-            />
+            <div className="absolute inset-0 z-0 transition-transform duration-700 group-hover:scale-105">
+              <SafeImage src={tenant.hero_image_url} alt="Hero" className="w-full h-full object-cover" />
+            </div>
           )}
 
           {/* Gradient Overlay for Text Readability */}
@@ -150,7 +130,7 @@ export function DefaultTemplate({ tenant, services, staffList, portfolios, dicti
 
             <div className="mt-6 sm:mt-8 flex flex-wrap items-center gap-2 sm:gap-3 text-sm">
               <a
-                href={`https://wa.me/${tenant.whatsapp_number.replace(/\D/g, "")}`}
+                href={getWhatsAppUrl(tenant.whatsapp_number)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 bg-white/20 hover:bg-white/30 backdrop-blur-md transition-all duration-300 rounded-full px-4 py-2 border border-white/20 shadow-sm"
@@ -199,26 +179,13 @@ export function DefaultTemplate({ tenant, services, staffList, portfolios, dicti
         )}
 
         {/* ── Portfolio Gallery ── */}
-        <PortfolioGallery portfolios={portfolios} />
+        {portfolios.length > 0 && <PortfolioGallery portfolios={portfolios} />}
 
         {/* ── Booking Flow ── */}
         <BookingFlow tenant={tenant} services={services} staffList={staffList} dictionary={dictionary} />
 
         {/* ── Footer Watermark ── */}
-        <footer className="mt-16 pb-8 text-center border-t border-stone-200 pt-8">
-          <p className="text-xs font-bold uppercase tracking-widest text-stone-400 mb-2">Powered by</p>
-          <a href="https://bukly.id" target="_blank" rel="noopener noreferrer" className="inline-block hover:opacity-80 transition-opacity">
-            <Logo className="text-2xl" />
-          </a>
-          <p className="text-[11px] text-stone-400 mt-4 max-w-xs mx-auto leading-relaxed">
-            Halaman reservasi otomatis ini dibuat menggunakan <a href="https://bukly.id" target="_blank" rel="noopener noreferrer" className="font-semibold text-teal-600 hover:underline">bukly.id</a>. Buat milik Anda sekarang, gratis!
-          </p>
-          <div className="mt-8 flex justify-center">
-            <a href="https://bukly.id" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center bg-teal-600 text-white text-xs font-bold px-6 py-3 rounded-full hover:bg-teal-700 transition-all duration-200 shadow-lg shadow-teal-600/20 active:scale-95">
-              Mau Web Reservasi Gratis? Yuk Bikin!
-            </a>
-          </div>
-        </footer>
+        <StorefrontFooter variant="default" />
       </div>
     </main>
   );

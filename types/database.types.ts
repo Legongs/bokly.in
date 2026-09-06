@@ -27,7 +27,8 @@ export interface Database {
           bank_account_number: string | null;
           bank_account_name: string | null;
           is_active: boolean;
-          theme_color: string;
+          is_verified?: boolean;
+          theme_color: string | null;
           business_sector: Database["public"]["Enums"]["business_sector_enum"] | null;
           template_id: string;
           open_time: string;
@@ -63,7 +64,8 @@ export interface Database {
           bank_account_number?: string | null;
           bank_account_name?: string | null;
           is_active?: boolean;
-          theme_color?: string;
+          is_verified?: boolean;
+          theme_color?: string | null;
           business_sector?: Database["public"]["Enums"]["business_sector_enum"] | null;
           template_id?: string;
           open_time?: string;
@@ -100,7 +102,8 @@ export interface Database {
           bank_account_number?: string | null;
           bank_account_name?: string | null;
           is_active?: boolean;
-          theme_color?: string;
+          is_verified?: boolean;
+          theme_color?: string | null;
           business_sector?: Database["public"]["Enums"]["business_sector_enum"] | null;
           template_id?: string;
           open_time?: string;
@@ -137,6 +140,11 @@ export interface Database {
           dp_amount: number;
           max_capacity: number;
           category?: string | null;
+          // Kolom baru (Migration 00015) — durasi fleksibel untuk sektor space
+          is_flexible_duration: boolean;
+          min_duration_minutes: number | null;
+          max_duration_minutes: number | null;
+          duration_step_minutes: number | null;
         };
         Insert: {
           id?: string;
@@ -148,6 +156,10 @@ export interface Database {
           dp_amount?: number;
           max_capacity?: number;
           category?: string | null;
+          is_flexible_duration?: boolean;
+          min_duration_minutes?: number | null;
+          max_duration_minutes?: number | null;
+          duration_step_minutes?: number | null;
         };
         Update: {
           id?: string;
@@ -159,6 +171,10 @@ export interface Database {
           dp_amount?: number;
           max_capacity?: number;
           category?: string | null;
+          is_flexible_duration?: boolean;
+          min_duration_minutes?: number | null;
+          max_duration_minutes?: number | null;
+          duration_step_minutes?: number | null;
         };
         Relationships: [
           {
@@ -344,6 +360,16 @@ export interface Database {
           manage_token: string;
           manage_token_expires_at: string | null;
           created_at: string;
+          // Kolom baru (Migration 00013)
+          resource_id: string | null;
+          vehicle_brand: string | null;
+          vehicle_type: string | null;
+          vehicle_plate: string | null;
+          complaint_notes: string | null;
+          consultation_type: string | null;
+          // Generated columns — read-only, tidak bisa di-insert/update langsung
+          slot_owner_id: string | null;
+          slot_range: string | null; // tsrange direpresentasikan sebagai string di JS
         };
         Insert: {
           id?: string;
@@ -364,6 +390,13 @@ export interface Database {
           manage_token?: string;
           manage_token_expires_at?: string | null;
           created_at?: string;
+          resource_id?: string | null;
+          vehicle_brand?: string | null;
+          vehicle_type?: string | null;
+          vehicle_plate?: string | null;
+          complaint_notes?: string | null;
+          consultation_type?: string | null;
+          // slot_owner_id dan slot_range adalah GENERATED — tidak bisa di-insert
         };
         Update: {
           id?: string;
@@ -384,6 +417,13 @@ export interface Database {
           manage_token?: string;
           manage_token_expires_at?: string | null;
           created_at?: string;
+          resource_id?: string | null;
+          vehicle_brand?: string | null;
+          vehicle_type?: string | null;
+          vehicle_plate?: string | null;
+          complaint_notes?: string | null;
+          consultation_type?: string | null;
+          // slot_owner_id dan slot_range adalah GENERATED — tidak bisa di-update
         };
         Relationships: [
           {
@@ -412,6 +452,89 @@ export interface Database {
             columns: ["customer_id"];
             isOneToOne: false;
             referencedRelation: "customers";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      resources: {
+        Row: {
+          id: string;
+          tenant_id: string;
+          name: string;
+          resource_type: string;
+          capacity: number | null;
+          price_per_hour: number | null;
+          is_active: boolean;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          tenant_id: string;
+          name: string;
+          resource_type?: string;
+          capacity?: number | null;
+          price_per_hour?: number | null;
+          is_active?: boolean;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          tenant_id?: string;
+          name?: string;
+          resource_type?: string;
+          capacity?: number | null;
+          price_per_hour?: number | null;
+          is_active?: boolean;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "resources_tenant_id_fkey";
+            columns: ["tenant_id"];
+            isOneToOne: false;
+            referencedRelation: "tenants";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      booking_items: {
+        Row: {
+          id: string;
+          booking_id: string;
+          service_id: string;
+          price: number;
+          duration_minutes: number;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          booking_id: string;
+          service_id: string;
+          price: number;
+          duration_minutes: number;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          booking_id?: string;
+          service_id?: string;
+          price?: number;
+          duration_minutes?: number;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "booking_items_booking_id_fkey";
+            columns: ["booking_id"];
+            isOneToOne: false;
+            referencedRelation: "bookings";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "booking_items_service_id_fkey";
+            columns: ["service_id"];
+            isOneToOne: false;
+            referencedRelation: "services";
             referencedColumns: ["id"];
           }
         ];
@@ -594,12 +717,16 @@ export type StaffWithServices = Staff & { staff_services?: { service_id: string 
 export type Booking = Database["public"]["Tables"]["bookings"]["Row"];
 export type Customer = Database["public"]["Tables"]["customers"]["Row"];
 export type Portfolio = Database["public"]["Tables"]["portfolios"]["Row"];
+export type Resource = Database["public"]["Tables"]["resources"]["Row"];
+export type BookingItem = Database["public"]["Tables"]["booking_items"]["Row"];
 export type TenantInsert = Database["public"]["Tables"]["tenants"]["Insert"];
 export type ServiceInsert = Database["public"]["Tables"]["services"]["Insert"];
 export type StaffInsert = Database["public"]["Tables"]["staff"]["Insert"];
 export type BookingInsert = Database["public"]["Tables"]["bookings"]["Insert"];
 export type CustomerInsert = Database["public"]["Tables"]["customers"]["Insert"];
 export type PortfolioInsert = Database["public"]["Tables"]["portfolios"]["Insert"];
+export type ResourceInsert = Database["public"]["Tables"]["resources"]["Insert"];
+export type BookingItemInsert = Database["public"]["Tables"]["booking_items"]["Insert"];
 export type Subscription = Database["public"]["Tables"]["subscriptions"]["Row"];
 export type BillingIntent = Database["public"]["Tables"]["billing_intents"]["Row"];
 export type AppSettings = Database["public"]["Tables"]["app_settings"]["Row"];

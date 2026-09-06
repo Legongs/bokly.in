@@ -1,64 +1,62 @@
 import React from "react";
-import { Store, Car, MessageCircle, MapPin, AtSign, Info } from "lucide-react";
+import { Car, MessageCircle, MapPin, AtSign, Info } from "lucide-react";
 import { StoreBadge } from "../store-badge";
 import { BookingFlow } from "@/components/customer/booking-flow";
 import { PortfolioGallery } from "@/components/customer/portfolio-gallery";
 import { Logo } from "@/components/ui/logo";
+import { SafeImage } from "@/components/ui/safe-image";
+import { StorefrontJsonLd } from "./shared/storefront-jsonld";
+import { getWhatsAppUrl } from "./shared/whatsapp-link";
+import { StorefrontFooter } from "./shared/storefront-footer";
 import type { StorefrontTemplateProps } from "./types";
 
 export function AutoTemplate({ tenant, services, staffList, portfolios, dictionary }: StorefrontTemplateProps) {
-  const themeColor = (tenant as any).theme_color || "orange";
+  const themeColor = tenant.theme_color || "orange";
   
   // Revised earthy, warm palette instead of neon dark mode
-  const colors = {
+  const themeOptions = {
     orange: { bg: "bg-orange-50", card: "bg-white", text: "text-amber-900", highlight: "text-orange-700", border: "border-orange-200" },
     teal: { bg: "bg-stone-100", card: "bg-white", text: "text-stone-900", highlight: "text-teal-700", border: "border-teal-200" },
     blue: { bg: "bg-blue-50", card: "bg-white", text: "text-slate-900", highlight: "text-blue-700", border: "border-blue-200" },
     rose: { bg: "bg-rose-50", card: "bg-white", text: "text-rose-900", highlight: "text-rose-700", border: "border-rose-200" },
     violet: { bg: "bg-stone-100", card: "bg-white", text: "text-stone-900", highlight: "text-violet-700", border: "border-violet-200" },
-  }[themeColor as keyof typeof colors] || colors.orange;
-
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "AutoRepair",
-    "name": tenant.business_name,
-    "telephone": tenant.whatsapp_number,
-    "url": `https://bukly.id/${tenant.slug}`,
   };
+  const colors = themeOptions[themeColor as keyof typeof themeOptions] || themeOptions.orange;
 
   return (
-    <main className={`min-h-screen ${colors.bg} text-stone-800 pb-40 md:pb-20 font-sans tracking-wide`}>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+    <main className={`min-h-screen ${colors.bg} text-stone-800 pb-56 md:pb-24 font-sans tracking-wide`}>
+      <StorefrontJsonLd tenant={tenant} schemaType="AutoRepair" />
       
-      {/* ── Asymmetric Earthy Header ── */}
-      <header className={`border-b-4 ${colors.border} bg-white p-6 md:p-10 shadow-sm flex flex-col md:flex-row items-center justify-between gap-8`}>
+      {/* ── Premium Auto Header ── */}
+      <header className={`border-b-4 ${colors.border} bg-slate-900 p-6 md:p-10 shadow-xl flex flex-col md:flex-row items-center justify-between gap-8 text-slate-50`}>
         <div className="flex items-center gap-5 w-full md:w-auto">
           <div className={`w-16 h-16 rounded-2xl ${colors.bg} border-2 ${colors.border} flex items-center justify-center ${colors.highlight} shadow-inner`}>
-            {tenant.logo_url ? (
-              <img src={tenant.logo_url} alt={tenant.business_name} className="w-full h-full object-cover rounded-2xl" />
-            ) : (
-              <Car className="w-8 h-8" />
-            )}
+            <SafeImage 
+              src={tenant.logo_url || undefined} 
+              alt={tenant.business_name} 
+              className="w-full h-full object-cover rounded-2xl"
+              fallback={<Car className="w-8 h-8" />}
+            />
           </div>
           <div>
-            <h1 className="text-2xl md:text-3xl font-black text-stone-800 uppercase tracking-tighter">
+            <h1 className="text-2xl md:text-3xl font-black text-slate-50 uppercase tracking-tighter drop-shadow-sm">
               {tenant.business_name}
             </h1>
-            <p className={`text-sm ${colors.highlight} font-bold tracking-widest uppercase mt-1`}>
+            <p className={`text-sm ${colors.highlight} font-bold tracking-widest uppercase mt-1 drop-shadow-sm brightness-125`}>
               bukly.id/{tenant.slug}
             </p>
           </div>
         </div>
         
         <div className="flex gap-3 w-full md:w-auto justify-start md:justify-end">
-          <a href={`https://wa.me/${tenant.whatsapp_number.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer" 
-             className={`flex items-center justify-center gap-2 px-6 py-3 bg-stone-100 hover:bg-stone-200 text-stone-800 border-2 border-stone-200 rounded-xl transition-all duration-200 active:scale-95 shadow-sm font-semibold`}>
-            <MessageCircle className="w-5 h-5" />
+          <a href={getWhatsAppUrl(tenant.whatsapp_number)} target="_blank" rel="noopener noreferrer" 
+             className={`flex items-center justify-center gap-2 px-6 py-3 bg-slate-800 hover:bg-slate-700 text-slate-50 border border-slate-700 rounded-xl transition-all duration-200 active:scale-95 shadow-md font-semibold`}>
+            <MessageCircle className="w-5 h-5 text-emerald-400" />
             <span className="hidden md:inline">Tanya Kami</span>
           </a>
           {tenant.instagram_handle && (
             <a href={`https://instagram.com/${tenant.instagram_handle.replace('@', '')}`} target="_blank" rel="noopener noreferrer" 
-               className={`flex items-center justify-center w-14 h-14 bg-stone-100 hover:bg-stone-200 text-stone-800 border-2 border-stone-200 rounded-xl transition-all duration-200 active:scale-95 shadow-sm`}>
+               className={`flex items-center justify-center w-14 h-14 bg-slate-800 hover:bg-slate-700 text-slate-50 border border-slate-700 rounded-xl transition-all duration-200 active:scale-95 shadow-md`}>
               <AtSign className="w-5 h-5" />
             </a>
           )}
@@ -70,11 +68,17 @@ export function AutoTemplate({ tenant, services, staffList, portfolios, dictiona
         
         {/* Left Column: Info & Content */}
         <div className="w-full md:w-1/3 flex flex-col gap-6">
-          {tenant.hero_image_url && (
-            <div className={`w-full h-48 md:h-64 ${colors.card} border-4 ${colors.border} rounded-2xl overflow-hidden relative shadow-sm`}>
-              <img src={tenant.hero_image_url} alt="Hero" className="w-full h-full object-cover" />
-            </div>
-          )}
+          <div className={`w-full h-48 md:h-64 ${colors.card} border-4 ${colors.border} rounded-2xl overflow-hidden relative shadow-sm`}>
+            {tenant.hero_image_url ? (
+              <SafeImage src={tenant.hero_image_url} alt="Hero" className="w-full h-full object-cover" />
+            ) : (
+              <div className="absolute inset-0 bg-slate-100 flex items-center justify-center overflow-hidden">
+                <div className={`absolute top-0 right-0 w-64 h-64 ${colors.bg} rounded-full blur-3xl opacity-50 transform translate-x-1/2 -translate-y-1/2`} />
+                <div className={`absolute bottom-0 left-0 w-48 h-48 ${colors.border} rounded-full blur-2xl opacity-40 transform -translate-x-1/2 translate-y-1/2`} />
+                <Car className={`w-16 h-16 ${colors.highlight} opacity-20`} />
+              </div>
+            )}
+          </div>
 
           {tenant.welcome_message && (
             <div className={`bg-white border-l-4 ${colors.border} p-6 shadow-sm rounded-r-2xl`}>
@@ -125,17 +129,7 @@ export function AutoTemplate({ tenant, services, staffList, portfolios, dictiona
 
       </div>
 
-      <footer className="mt-16 pb-8 text-center pt-8 border-t border-stone-200">
-        <p className="text-xs font-bold uppercase tracking-widest text-stone-400 mb-2">Sistem Antrean Disediakan Oleh</p>
-        <a href="https://bukly.id" target="_blank" rel="noopener noreferrer" className="inline-block hover:opacity-80 transition-all duration-200 bg-white px-4 py-2 rounded-xl shadow-sm border border-stone-200">
-          <Logo className="text-xl block" />
-        </a>
-        <div className="mt-8 flex justify-center">
-          <a href="https://bukly.id" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center bg-teal-600 text-white text-xs font-bold px-6 py-3 rounded-full hover:bg-teal-700 transition-all duration-200 shadow-lg shadow-teal-600/20 active:scale-95">
-            Mau Web Reservasi Gratis? Yuk Bikin!
-          </a>
-        </div>
-      </footer>
+      <StorefrontFooter variant="auto" />
     </main>
   );
 }
