@@ -139,6 +139,9 @@ export interface Database {
           name: string;
           duration_minutes: number;
           buffer_minutes: number;
+          specialty_tag: string | null;
+          is_female_only: boolean;
+          service_category: string;
           price: number;
           dp_amount: number;
           max_capacity: number;
@@ -155,6 +158,9 @@ export interface Database {
           name: string;
           duration_minutes: number;
           buffer_minutes?: number;
+          specialty_tag?: string | null;
+          is_female_only?: boolean;
+          service_category?: string;
           price: number;
           dp_amount?: number;
           max_capacity?: number;
@@ -170,6 +176,9 @@ export interface Database {
           name?: string;
           duration_minutes?: number;
           buffer_minutes?: number;
+          specialty_tag?: string | null;
+          is_female_only?: boolean;
+          service_category?: string;
           price?: number;
           dp_amount?: number;
           max_capacity?: number;
@@ -834,6 +843,42 @@ export interface Database {
         Relationships: [
           {
             foreignKeyName: "push_subscriptions_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          }
+        ]
+      };
+
+      tenant_facilities: {
+        Row: {
+          id: string;
+          tenant_id: string;
+          facility_type: string;
+          is_available: boolean;
+          created_at: string;
+          updated_at: string;
+        }
+        Insert: {
+          id?: string;
+          tenant_id: string;
+          facility_type: string;
+          is_available?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        }
+        Update: {
+          id?: string;
+          tenant_id?: string;
+          facility_type?: string;
+          is_available?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tenant_facilities_tenant_id_fkey"
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "tenants"
