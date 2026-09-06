@@ -16,7 +16,7 @@ export default async function ServicesPage() {
 
   const { data: tenant } = await supabase
     .from("tenants")
-    .select("business_type")
+    .select("business_type, business_sector")
     .eq("id", tenantId)
    .single();
 
@@ -37,7 +37,7 @@ export default async function ServicesPage() {
  </p>
  </div>
 
- <ServiceList services={services} dictionary={dict} />
+ <ServiceList services={services} dictionary={dict} businessSector={tenant?.business_sector || tenant?.business_type || undefined} />
  </div>
  );
 }

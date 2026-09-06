@@ -66,6 +66,17 @@ function ServiceCard({
 
       <div className="flex-1 min-w-0">
         <h4 className="font-semibold text-sm text-stone-900 leading-snug">{service.name}</h4>
+        {/* Specialty tag badge — beauty sector */}
+        {(service as any).specialty_tag && (
+          <span className="inline-block mt-1 px-2 py-0.5 rounded-full bg-pink-100 text-pink-700 text-[10px] font-bold">
+            {(service as any).specialty_tag}
+          </span>
+        )}
+        {(service as any).is_female_only && (
+          <span className="inline-flex items-center gap-1 ml-1.5 mt-1 px-2 py-0.5 rounded-full bg-pink-50 text-pink-600 text-[10px] font-semibold border border-pink-200">
+            ♀ Wanita
+          </span>
+        )}
         <p className="text-xs text-stone-500 mt-0.5 flex items-center gap-1">
           <Clock className="w-3 h-3" />
           {isFlexible

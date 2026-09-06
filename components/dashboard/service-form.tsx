@@ -2,7 +2,7 @@
 
 import React, { useState, useTransition } from "react";
 import { z } from "zod";
-import { Loader2, PlusCircle, Edit3, Save, X, DollarSign, Clock, ToggleLeft, ToggleRight, Info } from "lucide-react";
+import { Loader2, PlusCircle, Edit3, Save, X, DollarSign, Clock, ToggleLeft, ToggleRight, Info, Tag, Venus } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { createService, updateService } from "@/lib/actions/service.actions";
@@ -23,6 +23,10 @@ const serviceSchema = z.object({
   min_duration_minutes: z.coerce.number().min(5).max(1440).nullable().optional(),
   max_duration_minutes: z.coerce.number().min(5).max(1440).nullable().optional(),
   duration_step_minutes: z.coerce.number().min(5).max(480).default(30).optional(),
+  // Meta fields beauty (opsional)
+  specialty_tag: z.string().max(60).optional().nullable(),
+  is_female_only: z.boolean().default(false).optional(),
+  service_category: z.enum(["basic", "premium", "expert"]).optional().nullable(),
 }).superRefine((data, ctx) => {
   if (data.is_flexible_duration) {
     if (!data.min_duration_minutes) {
@@ -44,6 +48,7 @@ interface ServiceFormProps {
  onSuccess?: () => void;
  onCancel?: () => void;
  dictionary?: BusinessDictionary;
+ businessSector?: string;
 }
 
 /** Helper: label + optional help text + error */
@@ -63,7 +68,8 @@ function FieldWrap({ label, help, error, children }: {
   );
 }
 
-export function ServiceForm({ initialData, onSuccess, onCancel, dictionary }: ServiceFormProps) {
+export function ServiceForm({ initialData, onSuccess, onCancel, dictionary, businessSector }: ServiceFormProps) {
+ const isBeauty = businessSector === "beauty";
  const [isPending, startTransition] = useTransition();
  const isEdit = !!initialData;
 
@@ -80,6 +86,9 @@ export function ServiceForm({ initialData, onSuccess, onCancel, dictionary }: Se
   min_duration_minutes: (initialData as any)?.min_duration_minutes ?? null,
   max_duration_minutes: (initialData as any)?.max_duration_minutes ?? null,
   duration_step_minutes: (initialData as any)?.duration_step_minutes ?? 30,
+  specialty_tag: (initialData as any)?.specialty_tag ?? "",
+  is_female_only: (initialData as any)?.is_female_only ?? false,
+  service_category: (initialData as any)?.service_category ?? null,
  });
 
  const [fieldErrors, setFieldErrors] = useState<Partial<Record<keyof ServiceFormFields, string>>>({});
@@ -176,6 +185,55 @@ export function ServiceForm({ initialData, onSuccess, onCancel, dictionary }: Se
     disabled={isPending}
    />
   </FieldWrap>
+
+  {/* ── Beauty-only meta fields ─────────────────────────────────────── */}
+  {isBeauty && (
+   <div className="p-4 rounded-2xl border-2 border-pink-100 bg-pink-50/50 space-y-4">
+    <p className="text-xs font-bold text-pink-700 uppercase tracking-widest flex items-center gap-1.5">
+     <Tag className="w-3.5 h-3.5" /> Informasi Tambahan (Khusus Kecantikan)
+    </p>
+
+    <FieldWrap label="Keahlian / Spesialisasi (Opsional)" error={fieldErrors.specialty_tag}>
+     <input
+      type="text"
+      value={form.specialty_tag || ""}
+      onChange={(e) => updateForm("specialty_tag", e.target.value)}
+      placeholder="cth: Lash Specialist, Nail Art Expert"
+      className="w-full px-4 py-3 rounded-2xl border border-pink-200 text-sm font-medium bg-white text-stone-900 caret-indigo-600 focus:outline-none focus:ring-2 focus:ring-pink-400/30"
+      disabled={isPending}
+      maxLength={60}
+     />
+    </FieldWrap>
+
+    <FieldWrap label="Tier Layanan (Opsional)">
+     <select
+      value={form.service_category ?? ""}
+      onChange={(e) => updateForm("service_category", e.target.value || null)}
+      className="w-full px-4 py-3 rounded-2xl border border-pink-200 text-sm font-medium bg-white text-stone-900 focus:outline-none focus:ring-2 focus:ring-pink-400/30"
+      disabled={isPending}
+     >
+      <option value="">-- Pilih tier --</option>
+      <option value="basic">Basic</option>
+      <option value="premium">Premium</option>
+      <option value="expert">Expert</option>
+     </select>
+    </FieldWrap>
+
+    <label className="flex items-center gap-3 cursor-pointer">
+     <input
+      type="checkbox"
+      checked={!!form.is_female_only}
+      onChange={(e) => updateForm("is_female_only", e.target.checked)}
+      disabled={isPending}
+      className="w-4 h-4 rounded accent-pink-600"
+     />
+     <div className="flex items-center gap-1.5">
+      <Venus className="w-4 h-4 text-pink-600" />
+      <span className="text-sm font-semibold text-stone-700">Khusus pelanggan wanita</span>
+     </div>
+    </label>
+   </div>
+  )}
 
   {/* ── Toggle Durasi Fleksibel ───────────────────────────────────── */}
   <div className={`p-4 rounded-2xl border-2 transition-all ${isFlexible ? "border-indigo-200 bg-indigo-50" : "border-stone-200 bg-stone-50"}`}>

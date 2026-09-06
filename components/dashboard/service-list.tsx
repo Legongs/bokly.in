@@ -20,9 +20,10 @@ function formatCurrency(amount: number) {
 interface ServiceListProps {
  services: Service[];
  dictionary: BusinessDictionary;
+ businessSector?: string;
 }
 
-export function ServiceList({ services, dictionary }: ServiceListProps) {
+export function ServiceList({ services, dictionary, businessSector }: ServiceListProps) {
  const [editingService, setEditingService] = useState<Service | null>(null);
  const [isAdding, setIsAdding] = useState(false);
  const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -55,6 +56,7 @@ export function ServiceList({ services, dictionary }: ServiceListProps) {
  onSuccess={() => setIsAdding(false)} 
  onCancel={() => setIsAdding(false)} 
  dictionary={dictionary}
+ businessSector={businessSector}
  />
  )}
  
@@ -64,6 +66,7 @@ export function ServiceList({ services, dictionary }: ServiceListProps) {
  onSuccess={() => setEditingService(null)} 
  onCancel={() => setEditingService(null)} 
  dictionary={dictionary}
+ businessSector={businessSector}
  />
  )}
 

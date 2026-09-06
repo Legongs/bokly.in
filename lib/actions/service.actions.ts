@@ -21,6 +21,10 @@ const serviceSchema = z.object({
   min_duration_minutes: z.coerce.number().min(5).max(1440).nullable().optional(),
   max_duration_minutes: z.coerce.number().min(5).max(1440).nullable().optional(),
   duration_step_minutes: z.coerce.number().min(5).max(480).nullable().optional(),
+  // Meta fields untuk sektor beauty (semua opsional)
+  specialty_tag: z.string().max(60).optional().nullable(),
+  is_female_only: z.boolean().default(false).optional(),
+  service_category: z.enum(["basic", "premium", "expert"]).optional().nullable(),
 }).superRefine((data, ctx) => {
   if (data.is_flexible_duration) {
     if (!data.min_duration_minutes) {
@@ -83,6 +87,9 @@ export async function createService(payload: unknown): Promise<ActionResponse<Se
         min_duration_minutes: parsed.data.is_flexible_duration ? (parsed.data.min_duration_minutes ?? null) : null,
         max_duration_minutes: parsed.data.is_flexible_duration ? (parsed.data.max_duration_minutes ?? null) : null,
         duration_step_minutes: parsed.data.is_flexible_duration ? (parsed.data.duration_step_minutes ?? 30) : null,
+        specialty_tag: parsed.data.specialty_tag ?? null,
+        is_female_only: parsed.data.is_female_only ?? false,
+        service_category: parsed.data.service_category ?? null,
       })
       .select()
       .single();
@@ -132,6 +139,9 @@ export async function updateService(payload: unknown): Promise<ActionResponse<Se
         min_duration_minutes: parsed.data.is_flexible_duration ? (parsed.data.min_duration_minutes ?? null) : null,
         max_duration_minutes: parsed.data.is_flexible_duration ? (parsed.data.max_duration_minutes ?? null) : null,
         duration_step_minutes: parsed.data.is_flexible_duration ? (parsed.data.duration_step_minutes ?? 30) : null,
+        specialty_tag: parsed.data.specialty_tag ?? null,
+        is_female_only: parsed.data.is_female_only ?? false,
+        service_category: parsed.data.service_category ?? null,
       })
       .eq("id", parsed.data.id)
       .eq("tenant_id", tenantId) // strict ownership verification
