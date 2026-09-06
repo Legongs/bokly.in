@@ -28,6 +28,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/ui/logo";
 import { ScrollObserver } from "@/components/ui/scroll-observer";
+import { PricingSection } from "@/components/landing/pricing-section";
+import { getDynamicPricing, getFeatureFlagsConfig } from "@/lib/subscription";
+import { buildAllPlanFeatures } from "@/lib/plan-features";
 
 export const metadata: Metadata = {
   title: "bukly.id | Bikin Web Booking Usahamu dalam 1 Menit — Gratis",
@@ -142,7 +145,11 @@ const jsonLd = {
   ],
 };
 
-export default function HomePage() {
+export default async function HomePage() {
+  const prices = await getDynamicPricing();
+  const config = await getFeatureFlagsConfig();
+  const features = buildAllPlanFeatures(config);
+
   return (
     <div className="min-h-screen bg-[#FAFAF7] text-stone-800 flex flex-col font-sans selection:bg-indigo-600 selection:text-white">
       <script
@@ -676,6 +683,9 @@ export default function HomePage() {
             </div>
           </div>
         </section>
+
+        {/* ─── PRICING ───────────────────────────────────────────────────── */}
+        <PricingSection prices={prices} features={features} />
 
         {/* ─── FAQ ──────────────────────────────────────────────────────── */}
         <section id="faq" className="bg-white py-16 sm:py-24 scroll-mt-16" aria-labelledby="faq-heading">

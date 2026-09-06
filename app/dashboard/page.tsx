@@ -85,6 +85,7 @@ export default function DashboardPage() {
           hasStaff={staff && staff.length > 0}
           hasHeroImage={!!tenant.hero_image_url}
           hasBookings={bookings.length > 0}
+          hasSchedule={!!tenant.weekly_schedule && Object.keys(tenant.weekly_schedule).length > 0}
         />
         
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">

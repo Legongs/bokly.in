@@ -8,6 +8,7 @@ export interface CustomerPortalData {
   booking: Booking & {
     services: Service | null;
     staff: Staff | null;
+    testimonials: any[];
   };
   tenant: Tenant;
   history: Array<Booking & {
@@ -29,7 +30,7 @@ export async function getCustomerPortalData(
     // 1. Ambil data booking utama beserta relasinya
     const { data: booking, error: bookingError } = await supabase
       .from("bookings")
-      .select("*, services(*), staff(*)")
+      .select("*, services(*), staff(*), testimonials(id)")
       .eq("manage_token", token)
       .single();
 

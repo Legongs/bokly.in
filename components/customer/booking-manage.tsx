@@ -1,10 +1,11 @@
 "use client";
 
 import React, { useState, useTransition, useRef, useEffect } from "react";
-import { CheckCircle2, Clock, Calendar, AlertCircle, Store, User, UploadCloud, FileImage, ExternalLink } from "lucide-react";
+import { CheckCircle2, Clock, Calendar, AlertCircle, Store, User, UploadCloud, FileImage, ExternalLink, Star, MessageCircle } from "lucide-react";
 import type { CustomerPortalData } from "@/lib/actions/customer-portal.actions";
 import { submitPaymentProof, createMidtransToken } from "@/lib/actions/payment.actions";
 import { respondToReschedule, proposeReschedule } from "@/lib/actions/booking.actions";
+import { submitTestimonial } from "@/lib/actions/testimonial.actions";
 import { createClient } from "@/lib/supabase/client";
 import {
   Card,
@@ -21,10 +22,17 @@ export function BookingManageClient({ initialData }: { initialData: CustomerPort
   const { booking, tenant, history } = initialData;
   const router = useRouter();
 
-  // State untuk form pembayaran manual
   const [isPending, startTransition] = useTransition();
   const [file, setFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // State untuk form testimoni
+  const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState("");
+  const [isTestimonialSubmitting, setIsTestimonialSubmitting] = useState(false);
+  const [hasSubmittedTestimonial, setHasSubmittedTestimonial] = useState(false);
+  
+  const hasExistingTestimonial = booking.testimonials && booking.testimonials.length > 0;
 
   // Setup Supabase Realtime
   useEffect(() => {
@@ -70,6 +78,11 @@ export function BookingManageClient({ initialData }: { initialData: CustomerPort
   const isPendingVerification = status === "pending_verification";
   const isPendingPayment = status === "pending" || isRejected; 
   // Jika ditolak, anggap butuh bayar ulang.
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const bookingDate = new Date(booking.booking_date);
+  const isPastBooking = bookingDate < today;
 
   function formatIDR(amount: number): string {
     return new Intl.NumberFormat("id-ID", {
@@ -161,6 +174,24 @@ export function BookingManageClient({ initialData }: { initialData: CustomerPort
         toast.error(res.error || "Gagal memproses pembayaran Gateway.");
       }
     });
+  };
+
+  const handleTestimonialSubmit = async () => {
+    if (rating === 0) {
+      toast.error("Silakan berikan rating bintang terlebih dahulu.");
+      return;
+    }
+    
+    setIsTestimonialSubmitting(true);
+    const res = await submitTestimonial(booking.id, booking.manage_token, rating, comment);
+    setIsTestimonialSubmitting(false);
+
+    if (res.success) {
+      toast.success("Terima kasih atas ulasan Anda!");
+      setHasSubmittedTestimonial(true);
+    } else {
+      toast.error(res.error || "Gagal mengirim ulasan.");
+    }
   };
 
   return (
@@ -414,6 +445,52 @@ export function BookingManageClient({ initialData }: { initialData: CustomerPort
           </CardContent>
         </Card>
       </div>
+
+      {/* Testimoni Form */}
+      {isApproved && !hasExistingTestimonial && !hasSubmittedTestimonial && (
+        <div className="mt-8 px-5">
+          {isPastBooking ? (
+            <Card className="border-none shadow-sm rounded-3xl overflow-hidden bg-white">
+              <CardHeader className={`pb-4 border-b ${t.borderLight} text-center`}>
+                <CardTitle className="text-lg text-stone-900">Bagaimana pengalaman Anda?</CardTitle>
+                <p className="text-sm text-stone-500 mt-1">Ulasan Anda sangat berarti bagi kami.</p>
+              </CardHeader>
+              <CardContent className="pt-6 space-y-5">
+                <div className="flex justify-center gap-2">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      type="button"
+                      onClick={() => setRating(star)}
+                      className="focus:outline-none transition-transform hover:scale-110"
+                    >
+                      <Star className={`w-10 h-10 ${star <= rating ? "text-amber-400 fill-amber-400" : "text-stone-200"}`} />
+                    </button>
+                  ))}
+                </div>
+                <textarea
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
+                  placeholder="Ceritakan pengalaman Anda (opsional)"
+                  className="w-full rounded-2xl border border-stone-200 p-4 text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none min-h-[100px] resize-none"
+                />
+                <Button
+                  disabled={rating === 0 || isTestimonialSubmitting}
+                  onClick={handleTestimonialSubmit}
+                  className={`w-full rounded-xl shadow-sm ${t.bgPrimary} hover:opacity-90 h-12 text-base font-bold`}
+                >
+                  {isTestimonialSubmitting ? "Mengirim..." : "Kirim Ulasan"}
+                </Button>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="bg-white rounded-3xl p-6 text-center border border-stone-200 shadow-sm">
+              <MessageCircle className="w-10 h-10 text-stone-300 mx-auto mb-3" />
+              <p className="text-sm text-stone-600 font-medium">Form ulasan akan tersedia setelah tanggal jadwal layanan Anda berlalu.</p>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Riwayat Kunjungan (Hanya muncul jika ada) */}
       {history.length > 0 && (

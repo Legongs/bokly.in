@@ -28,7 +28,8 @@ export interface Database {
           bank_account_name: string | null;
           is_active: boolean;
           is_verified?: boolean;
-          theme_color: string | null;
+          theme_color: string | null
+          updated_at: string;
           business_sector: Database["public"]["Enums"]["business_sector_enum"] | null;
           template_id: string;
           open_time: string;
@@ -65,7 +66,8 @@ export interface Database {
           bank_account_name?: string | null;
           is_active?: boolean;
           is_verified?: boolean;
-          theme_color?: string | null;
+          theme_color?: string | null
+          updated_at?: string;
           business_sector?: Database["public"]["Enums"]["business_sector_enum"] | null;
           template_id?: string;
           open_time?: string;
@@ -103,7 +105,8 @@ export interface Database {
           bank_account_name?: string | null;
           is_active?: boolean;
           is_verified?: boolean;
-          theme_color?: string | null;
+          theme_color?: string | null
+          updated_at?: string;
           business_sector?: Database["public"]["Enums"]["business_sector_enum"] | null;
           template_id?: string;
           open_time?: string;
@@ -354,7 +357,10 @@ export interface Database {
           end_time: string;
           payment_status: PaymentStatus;
           proof_url: string | null;
-          is_reminder_sent: boolean;
+          is_reminder_sent: boolean
+          reminder_h1_sent: boolean
+          reminder_h2_sent: boolean
+          reminder_h3_sent: boolean;
           reschedule_request: Json | null;
           is_no_show: boolean;
           manage_token: string;
@@ -384,7 +390,10 @@ export interface Database {
           end_time: string;
           payment_status?: PaymentStatus;
           proof_url?: string | null;
-          is_reminder_sent?: boolean;
+          is_reminder_sent?: boolean
+          reminder_h1_sent?: boolean
+          reminder_h2_sent?: boolean
+          reminder_h3_sent?: boolean;
           reschedule_request?: Json | null;
           is_no_show?: boolean;
           manage_token?: string;
@@ -411,7 +420,10 @@ export interface Database {
           end_time?: string;
           payment_status?: PaymentStatus;
           proof_url?: string | null;
-          is_reminder_sent?: boolean;
+          is_reminder_sent?: boolean
+          reminder_h1_sent?: boolean
+          reminder_h2_sent?: boolean
+          reminder_h3_sent?: boolean;
           reschedule_request?: Json | null;
           is_no_show?: boolean;
           manage_token?: string;
@@ -608,6 +620,7 @@ export interface Database {
           status?: BillingStatus;
           midtrans_order_id?: string | null;
           midtrans_token?: string | null;
+          voucher_id?: string | null;
           created_at?: string;
         };
         Update: {
@@ -692,6 +705,142 @@ export interface Database {
         };
         Relationships: [];
       };
+      promotions: {
+        Row: {
+          created_at: string
+          description: string | null
+          discount_type: string
+          discount_value: number
+          end_date: string
+          id: string
+          is_active: boolean
+          start_date: string
+          tenant_id: string
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          discount_type: string
+          discount_value: number
+          end_date: string
+          id?: string
+          is_active?: boolean
+          start_date: string
+          tenant_id: string
+          title: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          discount_type?: string
+          discount_value?: number
+          end_date?: string
+          id?: string
+          is_active?: boolean
+          start_date?: string
+          tenant_id?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "promotions_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          }
+        ]
+      };
+      testimonials: {
+        Row: {
+          booking_id: string | null
+          comment: string | null
+          created_at: string
+          customer_name: string
+          id: string
+          is_featured: boolean
+          is_published: boolean
+          rating: number
+          tenant_id: string
+        }
+        Insert: {
+          booking_id?: string | null
+          comment?: string | null
+          created_at?: string
+          customer_name: string
+          id?: string
+          is_featured?: boolean
+          is_published?: boolean
+          rating: number
+          tenant_id: string
+        }
+        Update: {
+          booking_id?: string | null
+          comment?: string | null
+          created_at?: string
+          customer_name?: string
+          id?: string
+          is_featured?: boolean
+          is_published?: boolean
+          rating?: number
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "testimonials_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "testimonials_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          }
+        ]
+      };
+      push_subscriptions: {
+        Row: {
+          created_at: string | null
+          endpoint: string
+          id: string
+          keys_auth: string
+          keys_p256dh: string
+          subscription_type: string
+          tenant_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          endpoint: string
+          id?: string
+          keys_auth: string
+          keys_p256dh: string
+          subscription_type?: string
+          tenant_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          endpoint?: string
+          id?: string
+          keys_auth?: string
+          keys_p256dh?: string
+          subscription_type?: string
+          tenant_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "push_subscriptions_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          }
+        ]
+      };
     };
     Views: {
       [_ in never]: never;
@@ -731,3 +880,5 @@ export type Subscription = Database["public"]["Tables"]["subscriptions"]["Row"];
 export type BillingIntent = Database["public"]["Tables"]["billing_intents"]["Row"];
 export type AppSettings = Database["public"]["Tables"]["app_settings"]["Row"];
 export type Voucher = Database["public"]["Tables"]["vouchers"]["Row"];
+export type Promotion = Database["public"]["Tables"]["promotions"]["Row"];
+export type Testimonial = Database["public"]["Tables"]["testimonials"]["Row"];

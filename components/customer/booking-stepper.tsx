@@ -21,7 +21,7 @@ interface BookingStepperProps {
 
 export function BookingStepper({ steps, activeStep, t }: BookingStepperProps) {
   return (
-    <div className="flex items-center justify-between px-1 mb-5" role="list" aria-label="Langkah pemesanan">
+    <div className="flex items-center justify-between px-1" role="list" aria-label="Langkah pemesanan">
       {steps.map((step, idx) => {
         const stepNum   = idx + 1;
         const isDone    = stepNum < activeStep;

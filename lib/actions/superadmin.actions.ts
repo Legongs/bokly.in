@@ -3,9 +3,21 @@
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { createClient, createAdminClient } from "@/lib/supabase/server";
-import { PLAN_PRICES, getDynamicPricing } from "@/lib/subscription";
+import {
+  PLAN_PRICES,
+  getDynamicPricing,
+  getFeatureFlagsConfig,
+  DEFAULT_FEATURE_FLAGS,
+} from "@/lib/subscription";
+import type { FeatureFlagsConfig } from "@/lib/subscription";
+import {
+  getGlobalFonnteConfig,
+  maskApiKey,
+  isMaskedApiKey,
+} from "@/lib/global-wa";
+import type { GlobalFonnteConfig, MaskedGlobalFonnteConfig } from "@/lib/global-wa";
 import type { ActionResponse } from "@/lib/actions/tenant.actions";
-import type { SubscriptionPlan, BillingCycle } from "@/types/database.types";
+import type { SubscriptionPlan, BillingCycle, Json } from "@/types/database.types";
 
 // ── Auth Guard ────────────────────────────────────────────────────────────────
 async function verifySuperAdmin() {
@@ -298,6 +310,175 @@ export async function deleteVoucher(id: string): Promise<ActionResponse<null>> {
     if (error) return { success: false, error: "Gagal menghapus voucher." };
     revalidatePath("/superadmin");
     return { success: true, data: null };
+  } catch {
+    return { success: false, error: "Terjadi gangguan sistem." };
+  }
+}
+
+// ── App Settings (Feature Flags) ──────────────────────────────────────────────
+
+/**
+ * Validasi ketat sebelum nulis ke jsonb. Kalau config-nya rusak, SEMUA
+ * pengecekan kuota di app ikut rusak — jadi mending tolak simpan daripada
+ * nulis bentuk yang aneh ke database.
+ *
+ * `null` = unlimited (JSON nggak punya Infinity).
+ */
+const planConfigSchema = z.object({
+  maxBookingsPerMonth: z.number().int().min(0).max(1000000).nullable(),
+  maxServices: z.number().int().min(0).max(10000).nullable(),
+  maxStaff: z.number().int().min(0).max(10000).nullable(),
+  maxPromotions: z.number().int().min(0).max(10000).nullable(),
+  hasReminders: z.boolean(),
+  hasAnalytics: z.boolean(),
+  hasLogoUpload: z.boolean(),
+  hasRemoveBranding: z.boolean(),
+  hasAutoWaReminder: z.boolean(),
+  hasAutoWaNewBookingAlert: z.boolean(),
+  supportLevel: z.enum(["community", "email", "whatsapp"]),
+});
+
+const featureFlagsConfigSchema = z.object({
+  free: planConfigSchema,
+  pro: planConfigSchema,
+  bisnis: planConfigSchema,
+});
+
+/**
+ * Ambil feature flags buat ditampilkan di form superadmin.
+ *
+ * Dinamai ...ForAdmin supaya nggak tabrakan dengan getFeatureFlagsConfig()
+ * di lib/subscription.ts — yang itu dipakai runtime app (tanpa guard, karena
+ * pengecekan fitur jalan buat semua tenant), yang ini khusus panel superadmin
+ * dan wajib lewat verifySuperAdmin().
+ */
+export async function getFeatureFlagsForAdmin(): Promise<FeatureFlagsConfig> {
+  await verifySuperAdmin();
+  return getFeatureFlagsConfig();
+}
+
+export async function updateFeatureFlagsConfig(
+  config: FeatureFlagsConfig
+): Promise<ActionResponse<null>> {
+  await verifySuperAdmin();
+
+  const parsed = featureFlagsConfigSchema.safeParse(config);
+  if (!parsed.success) {
+    return { success: false, error: "Konfigurasi fitur tidak valid." };
+  }
+
+  return persistFeatureFlags(parsed.data);
+}
+
+/** Bagian nulis-ke-DB-nya dipisah biar bisa dipakai ulang oleh reset. */
+async function persistFeatureFlags(config: FeatureFlagsConfig): Promise<ActionResponse<null>> {
+  try {
+    const supabase = createAdminClient();
+    const { error } = await supabase
+      .from("app_settings")
+      .upsert({ id: "feature_flags_config", value: config as unknown as Json });
+
+    if (error) return { success: false, error: "Gagal menyimpan konfigurasi fitur." };
+
+    revalidatePath("/superadmin");
+    // Kartu harga di dashboard & landing page baca config yang sama —
+    // ikut di-revalidate biar teks fiturnya nggak ketinggalan.
+    revalidatePath("/dashboard/billing");
+    revalidatePath("/");
+    return { success: true, data: null };
+  } catch {
+    return { success: false, error: "Terjadi gangguan sistem." };
+  }
+}
+
+/**
+ * Balikin feature flags ke default hardcode (DEFAULT_FEATURE_FLAGS).
+ * Berguna kalau developer salah setel dan pengen mulai dari awal.
+ *
+ * Config yang baru dikembalikan ke client supaya form-nya bisa langsung
+ * nyusul tanpa perlu sinkron lewat useEffect.
+ */
+export async function resetFeatureFlagsConfig(): Promise<ActionResponse<FeatureFlagsConfig>> {
+  await verifySuperAdmin();
+
+  const res = await persistFeatureFlags(DEFAULT_FEATURE_FLAGS);
+  if (!res.success) return { success: false, error: res.error };
+
+  return { success: true, data: DEFAULT_FEATURE_FLAGS };
+}
+
+// ── App Settings (Global Fonnte / WA Otomatis) ────────────────────────────────
+
+/**
+ * Config Fonnte global versi AMAN buat client: token-nya di-mask.
+ * Jangan pernah balikin apiKey utuh ke browser — token ini punya developer
+ * dan tagihannya juga ke developer.
+ */
+export async function getGlobalFonnteConfigMasked(): Promise<MaskedGlobalFonnteConfig> {
+  await verifySuperAdmin();
+  const config = await getGlobalFonnteConfig();
+  const apiKey = config.apiKey?.trim() ?? "";
+
+  return {
+    apiKeyMasked: maskApiKey(apiKey),
+    hasApiKey: apiKey.length > 0,
+    isEnabled: config.isEnabled,
+  };
+}
+
+const globalFonnteSchema = z.object({
+  apiKey: z.string().max(500),
+  isEnabled: z.boolean(),
+});
+
+/**
+ * Simpan config Fonnte global.
+ *
+ * Aturan penting soal apiKey: kalau yang dikirim kosong ATAU masih bentuk
+ * ter-mask (mengandung bullet), token lama DIPERTAHANKAN. Tanpa ini, developer
+ * yang cuma mau geser toggle "Aktifkan" bakal nggak sengaja nimpa token asli
+ * dengan bullet dan semua WA otomatis mati diam-diam.
+ */
+export async function updateGlobalFonnteConfig(
+  config: GlobalFonnteConfig
+): Promise<ActionResponse<MaskedGlobalFonnteConfig>> {
+  await verifySuperAdmin();
+
+  const parsed = globalFonnteSchema.safeParse(config);
+  if (!parsed.success) {
+    return { success: false, error: "Konfigurasi WA otomatis tidak valid." };
+  }
+
+  try {
+    const existing = await getGlobalFonnteConfig();
+    const incoming = parsed.data.apiKey.trim();
+    const keepExisting = incoming.length === 0 || isMaskedApiKey(incoming);
+    const apiKey = keepExisting ? existing.apiKey : incoming;
+
+    if (parsed.data.isEnabled && apiKey.trim().length === 0) {
+      return {
+        success: false,
+        error: "Isi API Key Fonnte dulu sebelum mengaktifkan WA otomatis.",
+      };
+    }
+
+    const supabase = createAdminClient();
+    const { error } = await supabase
+      .from("app_settings")
+      .upsert({ id: "global_fonnte_config", value: { apiKey, isEnabled: parsed.data.isEnabled } });
+
+    if (error) return { success: false, error: "Gagal menyimpan pengaturan WA otomatis." };
+
+    revalidatePath("/superadmin");
+    // Balikin bentuk ter-mask supaya form bisa update tampilannya sendiri.
+    return {
+      success: true,
+      data: {
+        apiKeyMasked: maskApiKey(apiKey),
+        hasApiKey: apiKey.trim().length > 0,
+        isEnabled: parsed.data.isEnabled,
+      },
+    };
   } catch {
     return { success: false, error: "Terjadi gangguan sistem." };
   }

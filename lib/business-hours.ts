@@ -9,38 +9,57 @@ export type WeeklySchedule = {
   };
 };
 
+export type StoreStatus = "open" | "closed" | "closing_soon";
+
 /**
  * Mengecek apakah outlet sedang buka berdasarkan jam operasional (weekly_schedule)
  * dan zona waktu (timezone) dari tenant.
+ * Mengembalikan status: "open", "closed", atau "closing_soon" (jika sisa < 1 jam).
  */
-export function isStoreOpen(schedule: any, timezone: string = "Asia/Jakarta"): boolean {
-  if (!schedule) return true; // Default fallback kalau tenant lama belum atur jadwal
+export function getStoreStatus(schedule: any, timezone: string = "Asia/Jakarta"): StoreStatus {
+  if (!schedule || Object.keys(schedule).length === 0) return "open"; // Default fallback kalau tenant lama/baru belum atur jadwal
 
   try {
     const tz = timezone || "Asia/Jakarta";
+    const now = new Date();
     
     // Dapatkan hari saat ini di zona waktu tenant (lowercase english: monday, tuesday, etc)
-    const currentDay = formatInTimeZone(new Date(), tz, "EEEE").toLowerCase();
+    const currentDay = formatInTimeZone(now, tz, "EEEE").toLowerCase();
     
     // Dapatkan jam saat ini di zona waktu tenant (format HH:mm)
-    const currentTimeStr = formatInTimeZone(new Date(), tz, "HH:mm");
+    const currentTimeStr = formatInTimeZone(now, tz, "HH:mm");
     
     const daySchedule = schedule[currentDay];
     
-    if (!daySchedule) return false;
-    if (!daySchedule.isOpen) return false;
+    if (!daySchedule) return "closed";
+    if (!daySchedule.isOpen) return "closed";
     
-    // Cek apakah jam saat ini berada di antara openTime dan closeTime
-    const openTime = daySchedule.openTime;
-    const closeTime = daySchedule.closeTime;
+    // Cek apakah jam saat ini berada di antara open/openTime dan close/closeTime
+    // Support kedua format schema DB/demo
+    const openTime = daySchedule.openTime || daySchedule.open;
+    const closeTime = daySchedule.closeTime || daySchedule.close;
     
-    if (currentTimeStr >= openTime && currentTimeStr <= closeTime) {
-      return true;
+    if (!openTime || !closeTime) return "closed";
+    
+    if (currentTimeStr >= openTime && currentTimeStr < closeTime) {
+      // Hitung selisih jam untuk closing_soon (kurang dari 1 jam)
+      const currentMinutes = parseInt(currentTimeStr.split(":")[0]) * 60 + parseInt(currentTimeStr.split(":")[1]);
+      const closeMinutes = parseInt(closeTime.split(":")[0]) * 60 + parseInt(closeTime.split(":")[1]);
+      
+      if (closeMinutes - currentMinutes <= 60) {
+        return "closing_soon";
+      }
+      return "open";
     }
     
-    return false;
+    return "closed";
   } catch (error) {
     console.error("Error checking store hours:", error);
-    return true; // Fallback jika terjadi error parsing waktu
+    return "open"; // Fallback jika terjadi error parsing waktu
   }
+}
+
+// Retain isStoreOpen for backward compatibility elsewhere if needed
+export function isStoreOpen(schedule: any, timezone: string = "Asia/Jakarta"): boolean {
+  return getStoreStatus(schedule, timezone) !== "closed";
 }

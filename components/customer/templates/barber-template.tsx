@@ -1,6 +1,7 @@
 import React from "react";
 import { Scissors, MessageCircle, MapPin, AtSign, Info } from "lucide-react";
 import { StoreBadge } from "../store-badge";
+import { BusinessHoursCard } from "@/components/customer/business-hours-card";
 import { BookingFlow } from "@/components/customer/booking-flow";
 import { PortfolioGallery } from "@/components/customer/portfolio-gallery";
 import { Logo } from "@/components/ui/logo";
@@ -8,6 +9,8 @@ import { SafeImage } from "@/components/ui/safe-image";
 import { StorefrontJsonLd } from "./shared/storefront-jsonld";
 import { getWhatsAppUrl } from "./shared/whatsapp-link";
 import { StorefrontFooter } from "./shared/storefront-footer";
+import { TestimonialSection } from "@/components/customer/testimonial-section";
+import { PromoBanner } from "@/components/customer/promo-banner";
 import type { StorefrontTemplateProps } from "./types";
 
 export function BarberTemplate({ tenant, services, staffList, portfolios, dictionary }: StorefrontTemplateProps) {
@@ -27,6 +30,7 @@ export function BarberTemplate({ tenant, services, staffList, portfolios, dictio
   return (
     <main className={`min-h-screen ${colors.bg} ${colors.text} pb-56 md:pb-24 font-serif`}>
       <StorefrontJsonLd tenant={tenant} schemaType="HealthAndBeautyBusiness" />
+      <PromoBanner tenantId={tenant.id} />
       
       {/* ── Vintage Header ── */}
       <header className="relative bg-stone-950 text-stone-100 py-16 md:py-24 overflow-hidden shadow-xl">
@@ -135,7 +139,19 @@ export function BarberTemplate({ tenant, services, staffList, portfolios, dictio
         </div>
       </div>
 
+      <div className="my-8">
+
+
+        <BusinessHoursCard schedule={(tenant as any).weekly_schedule} timezone={tenant.timezone} />
+
+
+      </div>
+
+
+      <TestimonialSection tenantId={tenant.id} themeColor={themeColor} />
       <StorefrontFooter variant="barber" />
     </main>
   );
 }
+
+

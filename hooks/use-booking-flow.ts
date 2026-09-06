@@ -24,16 +24,19 @@ const bookingFormSchema = z.object({
 });
 
 export type BookingFormFields = z.infer<typeof bookingFormSchema>;
-export type FieldErrors = Partial<Record<keyof BookingFormFields, string>>;
+export type FieldErrors = Partial<Record<keyof BookingFormFields | "vehicle_brand" | "vehicle_type" | "vehicle_plate" | "complaint_notes" | "consultation_type", string>>;
 export type SubmitStatus = "idle" | "loading" | "offline" | "success";
 
 export interface BookingResult {
   bookingId: string;
-  service: Service;
+  services: Service[];       // array semua layanan (multi-service support)
+  service: Service;          // layanan utama/pertama — backward compat
   date: string;
   startTime: string;
   endTime: string;
   name: string;
+  totalPrice: number;
+  totalDuration: number;
 }
 
 const LS_KEY = "buklyid_pending_booking";
@@ -48,30 +51,77 @@ export function useBookingFlow({
   services: Service[];
   staffList?: Staff[];
 }) {
-  const [selectedService, setSelectedService] = useState<Service | null>(
-    services.length > 0 ? services[0] : null
+  const [selectedServices, setSelectedServices] = useState<Service[]>(
+    services.length > 0 ? [services[0]] : []
   );
-  const [selectedStaff, setSelectedStaff] = useState<Staff | null>(
+  const [selectedStaff, setSelectedStaff]   = useState<Staff | null>(
     staffList.length === 1 ? staffList[0] : null
   );
-  const [selectedDate, setSelectedDate]   = useState("");
-  const [selectedTime, setSelectedTime]   = useState("");
-  const [customerName, setCustomerName]   = useState("");
-  const [customerWa, setCustomerWa]       = useState("");
-  const [fieldErrors, setFieldErrors]     = useState<FieldErrors>({});
-  const [serverError, setServerError]     = useState<string | null>(null);
-  const [submitStatus, setSubmitStatus]   = useState<SubmitStatus>("idle");
-  const [bookingResult, setBookingResult] = useState<BookingResult | null>(null);
-  const [activeStep, setActiveStep]       = useState(1);
+  const [selectedDate, setSelectedDate]     = useState("");
+  const [selectedTime, setSelectedTime]     = useState("");
+  const [customerName, setCustomerName]     = useState("");
+  const [customerWa, setCustomerWa]         = useState("");
+  const [fieldErrors, setFieldErrors]       = useState<FieldErrors>({});
+  const [serverError, setServerError]       = useState<string | null>(null);
+  const [submitStatus, setSubmitStatus]     = useState<SubmitStatus>("idle");
+  const [bookingResult, setBookingResult]   = useState<BookingResult | null>(null);
+  const [activeStep, setActiveStep]         = useState(1);
   const [selectedCategory, setSelectedCategory] = useState("Semua");
 
+  // TASK 4: Durasi kustom untuk layanan fleksibel (sektor space)
+  const [customDuration, setCustomDuration] = useState<number | null>(null);
+
+  // TASK 3: Field khusus sektor otomotif
+  const [vehicleBrand, setVehicleBrand]     = useState("");
+  const [vehicleType, setVehicleType]       = useState("");
+  const [vehiclePlate, setVehiclePlate]     = useState("");
+  const [complaintNotes, setComplaintNotes] = useState("");
+
+  // TASK 3: Field khusus sektor kesehatan
+  const [consultationType, setConsultationType] = useState<"baru" | "lanjutan" | "">("");
+
+  // Backward compat: selectedService = layanan pertama yang dipilih
+  const selectedService = selectedServices.length > 0 ? selectedServices[0] : null;
+
+  // Apakah layanan pertama yang dipilih menggunakan durasi fleksibel?
+  const isFlexibleDuration = !!(selectedService as any)?.is_flexible_duration;
+
+  // Hitung total durasi: semua layanan + buffer layanan terakhir
+  const totalDuration = useMemo(() => {
+    if (selectedServices.length === 0) return 0;
+    if (isFlexibleDuration && customDuration !== null) {
+      // Untuk layanan fleksibel, gunakan durasi kustom yang dipilih user
+      return customDuration;
+    }
+    const sum = selectedServices.reduce((acc, svc) => acc + svc.duration_minutes, 0);
+    const lastBuffer = selectedServices[selectedServices.length - 1]?.buffer_minutes || 0;
+    return sum + lastBuffer;
+  }, [selectedServices, isFlexibleDuration, customDuration]);
+
+  // Hitung total harga semua layanan
+  const totalPrice = useMemo(() => {
+    if (selectedServices.length === 0) return 0;
+    if (isFlexibleDuration && selectedService && customDuration !== null) {
+      // Harga = price_per_jam × (durasi / 60)
+      return Number(selectedService.price) * (customDuration / 60);
+    }
+    return selectedServices.reduce((acc, svc) => acc + Number(svc.price), 0);
+  }, [selectedServices, isFlexibleDuration, selectedService, customDuration]);
+
+  // Hitung total DP (jumlah dp_amount semua layanan)
+  const totalDpAmount = useMemo(() => {
+    return selectedServices.reduce((acc, svc) => acc + Number(svc.dp_amount || 0), 0);
+  }, [selectedServices]);
+
   const filteredStaffList = useMemo(() => {
-    if (!selectedService) return staffList;
+    if (selectedServices.length === 0) return staffList;
+    // Filter staff yang bisa melakukan layanan UTAMA (pertama)
+    const primaryService = selectedServices[0];
     return staffList.filter((staff: any) => {
       if (!staff.staff_services || staff.staff_services.length === 0) return true;
-      return staff.staff_services.some((ss: any) => ss.service_id === selectedService.id);
+      return staff.staff_services.some((ss: any) => ss.service_id === primaryService.id);
     });
-  }, [staffList, selectedService]);
+  }, [staffList, selectedServices]);
 
   /** Format nomor WA dengan spasi setiap 4 digit */
   const formatWaNumber = (val: string): string => {
@@ -99,11 +149,12 @@ export function useBookingFlow({
     setActiveStep(filteredStaffList.length > 1 ? 4 : 3);
   };
 
-  /** Callback saat service dipilih */
+  /** Callback saat service dipilih (single select — TASK 4 toggle multi nanti) */
   const handleServiceSelect = (svc: Service) => {
-    setSelectedService(svc);
+    setSelectedServices([svc]);
     setSelectedDate("");
     setSelectedTime("");
+    setCustomDuration(null); // reset durasi kustom saat ganti layanan
 
     // Calculate how many staff can do this service
     const capableStaff = staffList.filter((staff: any) => {
@@ -120,6 +171,27 @@ export function useBookingFlow({
     }
 
     setActiveStep(capableStaff.length > 1 ? 2 : 3);
+  };
+
+  /** Tambah layanan tambahan ke pilihan (multi-service, TASK 2) */
+  const handleAddService = (svc: Service) => {
+    setSelectedServices((prev) => {
+      if (prev.some((s) => s.id === svc.id)) return prev; // sudah ada
+      return [...prev, svc];
+    });
+    setSelectedDate("");
+    setSelectedTime("");
+  };
+
+  /** Hapus layanan dari pilihan (kecuali layanan pertama/utama) */
+  const handleRemoveService = (svcId: string) => {
+    setSelectedServices((prev) => {
+      if (prev.length <= 1) return prev; // minimal 1 layanan
+      const filtered = prev.filter((s) => s.id !== svcId);
+      return filtered;
+    });
+    setSelectedDate("");
+    setSelectedTime("");
   };
 
   /** Callback saat staff dipilih */
@@ -142,6 +214,12 @@ export function useBookingFlow({
     setFieldErrors({});
     setServerError(null);
     setActiveStep(1);
+    setCustomDuration(null);
+    setVehicleBrand("");
+    setVehicleType("");
+    setVehiclePlate("");
+    setComplaintNotes("");
+    setConsultationType("");
   };
 
   /** Submit booking ke Server Action */
@@ -149,7 +227,7 @@ export function useBookingFlow({
     e.preventDefault();
     setServerError(null);
 
-    if (!selectedService) {
+    if (selectedServices.length === 0) {
       setServerError("Pilih layanan yang kamu mau dulu ya.");
       return;
     }
@@ -162,27 +240,60 @@ export function useBookingFlow({
       return;
     }
 
+    // Validasi field sektor — dilakukan di sini sebelum submit
+    const businessSector = tenant.business_sector;
+    const newErrors: FieldErrors = {};
+    if (businessSector === "auto") {
+      if (!vehicleBrand.trim()) newErrors.vehicle_brand = "Merek kendaraan wajib diisi.";
+      if (!vehicleType.trim()) newErrors.vehicle_type = "Tipe/model kendaraan wajib diisi.";
+      if (!vehiclePlate.trim()) newErrors.vehicle_plate = "Plat nomor wajib diisi.";
+      if (!complaintNotes.trim()) newErrors.complaint_notes = "Keluhan/kondisi kendaraan wajib diisi.";
+    }
+    if (businessSector === "health") {
+      if (!consultationType) newErrors.consultation_type = "Jenis konsultasi wajib dipilih.";
+    }
+
     const customerWaClean = customerWa.replace(/\D/g, "");
-    const parsed = bookingFormSchema.safeParse({ customer_name: customerName, customer_wa: customerWaClean });
-    if (!parsed.success) {
-      const errs: FieldErrors = {};
-      for (const issue of parsed.error.issues) {
+    const formParsed = bookingFormSchema.safeParse({ customer_name: customerName, customer_wa: customerWaClean });
+    if (!formParsed.success) {
+      const errs: FieldErrors = { ...newErrors };
+      for (const issue of formParsed.error.issues) {
         errs[issue.path[0] as keyof BookingFormFields] = issue.message;
       }
       setFieldErrors(errs);
       return;
     }
+    if (Object.keys(newErrors).length > 0) {
+      setFieldErrors(newErrors);
+      return;
+    }
 
-    const endTime = calcEndTime(selectedTime, selectedService.duration_minutes);
+    // Hitung end_time berdasarkan total durasi
+    const effectiveDuration = isFlexibleDuration && customDuration !== null
+      ? customDuration
+      : selectedServices.reduce((acc, svc) => acc + svc.duration_minutes, 0);
+    const endTime = calcEndTime(selectedTime, effectiveDuration);
+
+    const serviceIds = selectedServices.map((s) => s.id);
+    const primaryServiceId = serviceIds[0];
+
     const payload = {
-      tenant_id: tenant.id,
-      service_id: selectedService.id,
-      staff_id: selectedStaff?.id === "any" ? null : selectedStaff?.id,
-      customer_name: parsed.data.customer_name,
-      customer_wa: parsed.data.customer_wa,
-      booking_date: selectedDate,
-      start_time: selectedTime,
-      end_time: endTime,
+      tenant_id:          tenant.id,
+      service_id:         primaryServiceId,
+      service_ids:        serviceIds,
+      staff_id:           selectedStaff?.id === "any" ? null : selectedStaff?.id,
+      customer_name:      formParsed.data.customer_name,
+      customer_wa:        formParsed.data.customer_wa,
+      booking_date:       selectedDate,
+      start_time:         selectedTime,
+      end_time:           endTime,
+      // Field sektor
+      business_sector:    businessSector ?? null,
+      vehicle_brand:      vehicleBrand || null,
+      vehicle_type:       vehicleType || null,
+      vehicle_plate:      vehiclePlate || null,
+      complaint_notes:    complaintNotes || null,
+      consultation_type:  (consultationType || null) as "baru" | "lanjutan" | null,
     };
 
     // Offline-first: simpan ke localStorage sebelum network call
@@ -194,7 +305,17 @@ export function useBookingFlow({
       const res = await submitBooking(payload);
       if (res.success && res.data) {
         try { localStorage.removeItem(LS_KEY); } catch { /* noop */ }
-        setBookingResult({ bookingId: res.data.id, service: selectedService, date: selectedDate, startTime: selectedTime, endTime, name: parsed.data.customer_name });
+        setBookingResult({
+          bookingId:     res.data.id,
+          services:      selectedServices,
+          service:       selectedServices[0],
+          date:          selectedDate,
+          startTime:     selectedTime,
+          endTime,
+          name:          formParsed.data.customer_name,
+          totalPrice,
+          totalDuration: effectiveDuration,
+        });
         setSubmitStatus("success");
       } else {
         const isDuplicate = res.error?.toLowerCase().includes("unique") || res.error?.toLowerCase().includes("slot");
@@ -210,14 +331,24 @@ export function useBookingFlow({
 
   return {
     // State
-    selectedService, selectedStaff, selectedDate, selectedTime,
+    selectedService,        // backward compat — layanan pertama
+    selectedServices,       // array semua layanan yang dipilih (multi-service)
+    selectedStaff, selectedDate, selectedTime,
     customerName, customerWa, fieldErrors, serverError, submitStatus,
     bookingResult, activeStep, selectedCategory, filteredStaffList,
+    // Derived values
+    totalDuration, totalPrice, totalDpAmount, isFlexibleDuration,
+    customDuration,
+    // Field sektor
+    vehicleBrand, vehicleType, vehiclePlate, complaintNotes, consultationType,
     // Setters
     setActiveStep, setSelectedCategory,
     setCustomerName, setCustomerWa,
+    setCustomDuration,
+    setVehicleBrand, setVehicleType, setVehiclePlate, setComplaintNotes, setConsultationType,
     // Handlers
-    handleServiceSelect, handleStaffSelect, handleSlotSelection,
+    handleServiceSelect, handleAddService, handleRemoveService,
+    handleStaffSelect, handleSlotSelection,
     handleSubmit, handleReset, validateField, formatWaNumber,
   };
 }

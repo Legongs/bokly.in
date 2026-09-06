@@ -1,6 +1,7 @@
 import React from "react";
 import { Car, MessageCircle, MapPin, AtSign, Info } from "lucide-react";
 import { StoreBadge } from "../store-badge";
+import { BusinessHoursCard } from "@/components/customer/business-hours-card";
 import { BookingFlow } from "@/components/customer/booking-flow";
 import { PortfolioGallery } from "@/components/customer/portfolio-gallery";
 import { Logo } from "@/components/ui/logo";
@@ -8,6 +9,8 @@ import { SafeImage } from "@/components/ui/safe-image";
 import { StorefrontJsonLd } from "./shared/storefront-jsonld";
 import { getWhatsAppUrl } from "./shared/whatsapp-link";
 import { StorefrontFooter } from "./shared/storefront-footer";
+import { TestimonialSection } from "@/components/customer/testimonial-section";
+import { PromoBanner } from "@/components/customer/promo-banner";
 import type { StorefrontTemplateProps } from "./types";
 
 export function AutoTemplate({ tenant, services, staffList, portfolios, dictionary }: StorefrontTemplateProps) {
@@ -26,6 +29,7 @@ export function AutoTemplate({ tenant, services, staffList, portfolios, dictiona
   return (
     <main className={`min-h-screen ${colors.bg} text-stone-800 pb-56 md:pb-24 font-sans tracking-wide`}>
       <StorefrontJsonLd tenant={tenant} schemaType="AutoRepair" />
+      <PromoBanner tenantId={tenant.id} />
       
       {/* ── Premium Auto Header ── */}
       <header className={`border-b-4 ${colors.border} bg-slate-900 p-6 md:p-10 shadow-xl flex flex-col md:flex-row items-center justify-between gap-8 text-slate-50`}>
@@ -129,7 +133,19 @@ export function AutoTemplate({ tenant, services, staffList, portfolios, dictiona
 
       </div>
 
+      <div className="my-8">
+
+
+        <BusinessHoursCard schedule={(tenant as any).weekly_schedule} timezone={tenant.timezone} />
+
+
+      </div>
+
+
+      <TestimonialSection tenantId={tenant.id} themeColor={themeColor} />
       <StorefrontFooter variant="auto" />
     </main>
   );
 }
+
+

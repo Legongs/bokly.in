@@ -16,6 +16,23 @@ const serviceSchema = z.object({
   buffer_minutes: z.coerce.number().min(0, "Waktu jeda nggak boleh minus.").default(0),
   max_capacity: z.coerce.number().min(1, "Kapasitas minimal 1 orang.").default(1),
   category: z.string().max(50, "Maksimal 50 huruf aja.").optional().nullable(),
+  // Durasi fleksibel (TASK 4) — sektor space
+  is_flexible_duration: z.boolean().default(false),
+  min_duration_minutes: z.coerce.number().min(5).max(1440).nullable().optional(),
+  max_duration_minutes: z.coerce.number().min(5).max(1440).nullable().optional(),
+  duration_step_minutes: z.coerce.number().min(5).max(480).nullable().optional(),
+}).superRefine((data, ctx) => {
+  if (data.is_flexible_duration) {
+    if (!data.min_duration_minutes) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["min_duration_minutes"], message: "Durasi minimal wajib diisi untuk layanan fleksibel." });
+    }
+    if (!data.max_duration_minutes) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["max_duration_minutes"], message: "Durasi maksimal wajib diisi untuk layanan fleksibel." });
+    }
+    if (data.min_duration_minutes && data.max_duration_minutes && data.min_duration_minutes >= data.max_duration_minutes) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["max_duration_minutes"], message: "Durasi maksimal harus lebih besar dari durasi minimal." });
+    }
+  }
 });
 
 export type ServicePayload = z.infer<typeof serviceSchema>;
@@ -62,6 +79,10 @@ export async function createService(payload: unknown): Promise<ActionResponse<Se
         buffer_minutes: parsed.data.buffer_minutes,
         max_capacity: parsed.data.max_capacity,
         category: parsed.data.category,
+        is_flexible_duration: parsed.data.is_flexible_duration,
+        min_duration_minutes: parsed.data.is_flexible_duration ? (parsed.data.min_duration_minutes ?? null) : null,
+        max_duration_minutes: parsed.data.is_flexible_duration ? (parsed.data.max_duration_minutes ?? null) : null,
+        duration_step_minutes: parsed.data.is_flexible_duration ? (parsed.data.duration_step_minutes ?? 30) : null,
       })
       .select()
       .single();
@@ -107,6 +128,10 @@ export async function updateService(payload: unknown): Promise<ActionResponse<Se
         buffer_minutes: parsed.data.buffer_minutes,
         max_capacity: parsed.data.max_capacity,
         category: parsed.data.category,
+        is_flexible_duration: parsed.data.is_flexible_duration,
+        min_duration_minutes: parsed.data.is_flexible_duration ? (parsed.data.min_duration_minutes ?? null) : null,
+        max_duration_minutes: parsed.data.is_flexible_duration ? (parsed.data.max_duration_minutes ?? null) : null,
+        duration_step_minutes: parsed.data.is_flexible_duration ? (parsed.data.duration_step_minutes ?? 30) : null,
       })
       .eq("id", parsed.data.id)
       .eq("tenant_id", tenantId) // strict ownership verification

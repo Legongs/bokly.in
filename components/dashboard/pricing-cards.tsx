@@ -8,41 +8,23 @@ import { toast } from "sonner";
 import type { Subscription } from "@/types/database.types";
 
 import type { PlanPricesType } from "@/lib/subscription";
+import type { PlanFeatureMap } from "@/lib/plan-features";
 
 interface PricingCardsProps {
   currentSubscription: Subscription;
   prices: PlanPricesType;
+  /**
+   * Teks fitur per paket, hasil generate dari feature flags di database
+   * (buildAllPlanFeatures()). Sengaja dilempar sebagai prop dari server —
+   * begitu developer ubah matrix di superadmin, isi kartu ikut berubah tanpa
+   * ada teks yang perlu diedit di file ini.
+   */
+  features: PlanFeatureMap;
   midtransClientConfig: {
     clientKey: string;
     isProduction: boolean;
   };
 }
-
-const FEATURES = {
-  free: [
-    "30 booking per bulan",
-    "Maks 3 layanan",
-    "Maks 1 staf",
-    "Notif WA manual ke admin",
-    "Halaman booking unik",
-  ],
-  pro: [
-    "Booking tak terbatas",
-    "Layanan tak terbatas",
-    "Maks 5 staf",
-    "Reminder WA H-1 otomatis",
-    "Analytics & laporan",
-    "Upload logo & foto profil",
-    "Support email 2×24 jam",
-  ],
-  bisnis: [
-    "Semua fitur Pro",
-    "Staf tak terbatas",
-    "Verifikasi pembayaran otomatis",
-    "Hapus branding bukly.id",
-    "Support priority WhatsApp",
-  ],
-};
 
 declare global {
   interface Window {
@@ -50,7 +32,12 @@ declare global {
   }
 }
 
-export function PricingCards({ currentSubscription, prices, midtransClientConfig }: PricingCardsProps) {
+export function PricingCards({
+  currentSubscription,
+  prices,
+  features,
+  midtransClientConfig,
+}: PricingCardsProps) {
   const [isYearly, setIsYearly] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [loadingPlan, setLoadingPlan] = useState<"pro" | "bisnis" | null>(null);
@@ -68,6 +55,8 @@ export function PricingCards({ currentSubscription, prices, midtransClientConfig
         return;
       }
 
+      const data = res.data;
+
       // Load Midtrans Snap JS jika belum ada
       if (!window.snap) {
         await new Promise<void>((resolve) => {
@@ -81,18 +70,18 @@ export function PricingCards({ currentSubscription, prices, midtransClientConfig
         });
       }
 
-      window.snap?.pay(res.data.snapToken, {
+      window.snap?.pay(data.snapToken, {
         onSuccess: () => {
           toast.success("Pembayaran berhasil! Mengalihkan ke halaman status...");
-          window.location.href = `/payment/success?order_id=${res.data.orderId || ""}`;
+          window.location.href = `/payment/success?order_id=${data.orderId || ""}`;
         },
         onPending: () => {
           toast.info("Pembayaran menunggu verifikasi...");
-          window.location.href = `/payment/success?status=pending&order_id=${res.data.orderId || ""}`;
+          window.location.href = `/payment/success?status=pending&order_id=${data.orderId || ""}`;
         },
         onError: () => {
           toast.error("Pembayaran tidak berhasil diselesaikan.");
-          window.location.href = `/payment/failed?order_id=${res.data.orderId || ""}`;
+          window.location.href = `/payment/failed?order_id=${data.orderId || ""}`;
         },
         onClose: () => setLoadingPlan(null),
       });
@@ -160,7 +149,7 @@ export function PricingCards({ currentSubscription, prices, midtransClientConfig
           <p className="text-3xl font-extrabold text-stone-900 mb-1">Rp 0</p>
           <p className="text-xs text-stone-400 mb-6">Selamanya gratis</p>
           <ul className="space-y-2.5 flex-1 mb-6">
-            {FEATURES.free.map((f) => (
+            {features.free.map((f) => (
               <li key={f} className="flex items-start gap-2 text-sm text-stone-600">
                 <Check className="w-4 h-4 text-stone-400 flex-shrink-0 mt-0.5" />
                 {f}
@@ -191,10 +180,10 @@ export function PricingCards({ currentSubscription, prices, midtransClientConfig
             <span className="text-base font-semibold text-stone-400">/bln</span>
           </p>
           <p className="text-xs text-stone-400 mb-6">
-            {isYearly ? `Ditagih ${fmt(470400)}/tahun` : "Ditagih tiap bulan"}
+            {isYearly ? `Ditagih ${fmt(prices.pro.yearly)}/tahun` : "Ditagih tiap bulan"}
           </p>
           <ul className="space-y-2.5 flex-1 mb-6">
-            {FEATURES.pro.map((f) => (
+            {features.pro.map((f) => (
               <li key={f} className="flex items-start gap-2 text-sm text-stone-600">
                 <Check className="w-4 h-4 text-indigo-500 flex-shrink-0 mt-0.5" />
                 {f}
@@ -224,10 +213,10 @@ export function PricingCards({ currentSubscription, prices, midtransClientConfig
             <span className="text-base font-semibold text-stone-400">/bln</span>
           </p>
           <p className="text-xs text-stone-400 mb-6">
-            {isYearly ? `Ditagih ${fmt(1140000)}/tahun` : "Ditagih tiap bulan"}
+            {isYearly ? `Ditagih ${fmt(prices.bisnis.yearly)}/tahun` : "Ditagih tiap bulan"}
           </p>
           <ul className="space-y-2.5 flex-1 mb-6">
-            {FEATURES.bisnis.map((f) => (
+            {features.bisnis.map((f) => (
               <li key={f} className="flex items-start gap-2 text-sm text-stone-300">
                 <Check className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
                 {f}

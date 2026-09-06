@@ -71,32 +71,38 @@ export function BookingFlow({ tenant, services, staffList = [], dictionary }: Bo
 
   // ── Form utama multi-step ────────────────────────────────────────────────
   return (
-    <form id="booking-form" onSubmit={flow.handleSubmit} noValidate className="space-y-5 pb-32">
+    <form id="booking-form" onSubmit={flow.handleSubmit} noValidate className="space-y-5">
 
-      {/* Progress Stepper — thumb-centric, sesuai ui_ux.md §3 */}
-      <BookingStepper steps={steps} activeStep={flow.activeStep} t={t} />
+      {/* ── Sticky Progress & Context ── */}
+      <div className="sticky top-0 z-50 bg-white/95 backdrop-blur-xl border-b border-stone-200 shadow-sm -mx-4 px-4 pt-4 pb-3 mb-6">
+        <BookingStepper steps={steps} activeStep={flow.activeStep} t={t} />
+        
+        <BookingContextBar
+          selectedService={flow.selectedService}
+          selectedDate={flow.selectedDate}
+          selectedTime={flow.selectedTime}
+          t={t}
+          showFromStep={2}
+          activeStep={flow.activeStep}
+        />
+      </div>
 
-      {/* Sticky context bar — muncul saat step >= 2 */}
-      <BookingContextBar
-        selectedService={flow.selectedService}
-        selectedDate={flow.selectedDate}
-        selectedTime={flow.selectedTime}
-        t={t}
-        showFromStep={2}
-        activeStep={flow.activeStep}
-      />
-
-      {/* Step 1: Pilih Layanan */}
+      {/* Step 1: Pilih Layanan — dengan multi-service support & flexible duration */}
       <StepServiceSelect
         services={services}
         selectedService={flow.selectedService}
+        selectedServices={flow.selectedServices}
         selectedCategory={flow.selectedCategory}
         activeStep={flow.activeStep}
         t={t}
         dictionary={dictionary}
+        customDuration={flow.customDuration}
         onSelectService={flow.handleServiceSelect}
+        onAddService={flow.handleAddService}
+        onRemoveService={flow.handleRemoveService}
         onChangeStep={flow.setActiveStep}
         onSelectCategory={flow.setSelectedCategory}
+        onSetCustomDuration={flow.setCustomDuration}
       />
 
       {/* Step 2 (Opsional): Pilih Staff */}
@@ -123,13 +129,15 @@ export function BookingFlow({ tenant, services, staffList = [], dictionary }: Bo
         activeStep={flow.activeStep}
         t={t}
         dictionary={dictionary}
+        totalDuration={flow.totalDuration}
         onSelectSlot={flow.handleSlotSelection}
         onChangeStep={flow.setActiveStep}
       />
 
-      {/* Step 4/3: Data Pemesan + FAB */}
+      {/* Step 4/3: Data Pemesan + Field Sektor + FAB */}
       <StepCustomerForm
         selectedService={flow.selectedService}
+        selectedServices={flow.selectedServices}
         selectedStaff={flow.selectedStaff}
         selectedDate={flow.selectedDate}
         selectedTime={flow.selectedTime}
@@ -142,9 +150,25 @@ export function BookingFlow({ tenant, services, staffList = [], dictionary }: Bo
         activeStep={flow.activeStep}
         t={t}
         dictionary={dictionary}
+        // Derived totals
+        totalPrice={flow.totalPrice}
+        totalDuration={flow.totalDuration}
+        totalDpAmount={flow.totalDpAmount}
+        // Business sector & sector-specific fields
+        businessSector={tenant.business_sector}
+        vehicleBrand={flow.vehicleBrand}
+        vehicleType={flow.vehicleType}
+        vehiclePlate={flow.vehiclePlate}
+        complaintNotes={flow.complaintNotes}
+        consultationType={flow.consultationType}
         onChangeName={flow.setCustomerName}
         onChangeWa={(val) => flow.setCustomerWa(flow.formatWaNumber(val))}
         onBlurField={flow.validateField}
+        onChangeVehicleBrand={flow.setVehicleBrand}
+        onChangeVehicleType={flow.setVehicleType}
+        onChangeVehiclePlate={flow.setVehiclePlate}
+        onChangeComplaintNotes={flow.setComplaintNotes}
+        onChangeConsultationType={flow.setConsultationType}
       />
     </form>
   );

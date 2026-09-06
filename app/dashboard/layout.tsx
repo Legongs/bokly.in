@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getAuthTenantId } from "@/lib/auth";
 import { getBusinessDictionary } from "@/lib/business-dictionary";
 import { DashboardNav } from "@/components/dashboard/dashboard-nav";
+import { PushNotificationPrompt } from "@/components/pwa/push-notification-prompt";
 
 export default async function DashboardLayout({
   children,
@@ -25,6 +26,7 @@ export default async function DashboardLayout({
 
   return (
     <DashboardNav serviceLabel={dict.serviceLabel} staffLabel={dict.staffLabel} tenantSlug={tenant?.slug}>
+      <PushNotificationPrompt subscriptionType="dashboard" />
       {children}
     </DashboardNav>
   );

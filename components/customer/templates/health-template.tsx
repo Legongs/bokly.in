@@ -1,6 +1,7 @@
 import React from "react";
 import { Stethoscope, MessageCircle, MapPin, Info, ShieldCheck } from "lucide-react";
 import { StoreBadge } from "../store-badge";
+import { BusinessHoursCard } from "@/components/customer/business-hours-card";
 import { BookingFlow } from "@/components/customer/booking-flow";
 import { PortfolioGallery } from "@/components/customer/portfolio-gallery";
 import { Logo } from "@/components/ui/logo";
@@ -8,6 +9,8 @@ import { SafeImage } from "@/components/ui/safe-image";
 import { StorefrontJsonLd } from "./shared/storefront-jsonld";
 import { getWhatsAppUrl } from "./shared/whatsapp-link";
 import { StorefrontFooter } from "./shared/storefront-footer";
+import { TestimonialSection } from "@/components/customer/testimonial-section";
+import { PromoBanner } from "@/components/customer/promo-banner";
 import type { StorefrontTemplateProps } from "./types";
 
 export function HealthTemplate({ tenant, services, staffList, portfolios, dictionary }: StorefrontTemplateProps) {
@@ -25,6 +28,7 @@ export function HealthTemplate({ tenant, services, staffList, portfolios, dictio
   return (
     <main className="min-h-screen bg-slate-50 text-slate-800 pb-56 md:pb-24 font-sans">
       <StorefrontJsonLd tenant={tenant} schemaType="MedicalClinic" />
+      <PromoBanner tenantId={tenant.id} />
       
       {/* ── Premium Medical Header ── */}
       <header className="bg-teal-950 text-teal-50 border-b-4 border-teal-900 relative shadow-xl">
@@ -138,8 +142,20 @@ export function HealthTemplate({ tenant, services, staffList, portfolios, dictio
           </div>
         </div>
 
+        <div className="my-8">
+
+
+          <BusinessHoursCard schedule={(tenant as any).weekly_schedule} timezone={tenant.timezone} />
+
+
+        </div>
+
+
+        <TestimonialSection tenantId={tenant.id} themeColor={themeColor} />
         <StorefrontFooter variant="default" />
       </div>
     </main>
   );
 }
+
+

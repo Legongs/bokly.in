@@ -15,6 +15,8 @@ import {
   Crown,
   X,
   LogOut,
+  Megaphone,
+  MessageSquareQuote,
 } from "lucide-react";
 import { logout } from "@/lib/actions/auth.actions";
 import { useRouter } from "next/navigation";
@@ -39,6 +41,8 @@ const BOTTOM_NAV_ITEMS = (serviceLabel: string) => [
 
 // Item yang tersembunyi di mobile, muncul di drawer "Lainnya"
 const MORE_ITEMS = (staffLabel: string) => [
+  { label: "Promo",      href: "/dashboard/promotions",icon: Megaphone },
+  { label: "Testimoni",  href: "/dashboard/testimonials", icon: MessageSquareQuote },
   { label: "Analisis",   href: "/dashboard/analytics", icon: BarChart3 },
   { label: staffLabel,   href: "/dashboard/staff",     icon: Users     },
   { label: "Langganan",  href: "/dashboard/billing",   icon: Crown     },

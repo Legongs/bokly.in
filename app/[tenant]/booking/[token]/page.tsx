@@ -1,5 +1,7 @@
 import { getCustomerPortalData } from "@/lib/actions/customer-portal.actions";
 import { BookingManageClient } from "@/components/customer/booking-manage";
+import { PushNotificationPrompt } from "@/components/pwa/push-notification-prompt";
+import { PromoBanner } from "@/components/customer/promo-banner";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -33,6 +35,10 @@ export default async function BookingManagePage({
 
   return (
     <main className="min-h-screen bg-stone-50">
+      <PromoBanner tenantId={data.tenant.id} />
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
+        <PushNotificationPrompt subscriptionType="storefront" />
+      </div>
       <BookingManageClient initialData={data} />
     </main>
   );

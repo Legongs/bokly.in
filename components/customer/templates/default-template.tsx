@@ -8,6 +8,9 @@ import { SafeImage } from "@/components/ui/safe-image";
 import { StorefrontJsonLd } from "./shared/storefront-jsonld";
 import { getWhatsAppUrl } from "./shared/whatsapp-link";
 import { StorefrontFooter } from "./shared/storefront-footer";
+import { TestimonialSection } from "@/components/customer/testimonial-section";
+import { PromoBanner } from "@/components/customer/promo-banner";
+import { BusinessHoursCard } from "@/components/customer/business-hours-card";
 import type { StorefrontTemplateProps } from "./types";
 
 export function DefaultTemplate({ tenant, services, staffList, portfolios, dictionary }: StorefrontTemplateProps) {
@@ -64,6 +67,7 @@ export function DefaultTemplate({ tenant, services, staffList, portfolios, dicti
   return (
     <main className="min-h-screen bg-stone-50 pb-56 md:pb-24">
       <StorefrontJsonLd tenant={tenant} schemaType="LocalBusiness" services={services} />
+      <PromoBanner tenantId={tenant.id} />
       
       {/* ── Sticky Premium Header ── */}
       <header className="sticky top-0 z-40 bg-indigo-950/95 backdrop-blur-xl border-b border-indigo-900 shadow-md">
@@ -184,9 +188,22 @@ export function DefaultTemplate({ tenant, services, staffList, portfolios, dicti
         {/* ── Booking Flow ── */}
         <BookingFlow tenant={tenant} services={services} staffList={staffList} dictionary={dictionary} />
 
+        {/* ── Testimonial Section ── */}
+        <div className="my-8">
+
+          <BusinessHoursCard schedule={(tenant as any).weekly_schedule} timezone={tenant.timezone} />
+
+        </div>
+
+        <TestimonialSection tenantId={tenant.id} themeColor={themeColor} />
+
         {/* ── Footer Watermark ── */}
         <StorefrontFooter variant="default" />
       </div>
     </main>
   );
 }
+
+
+
+

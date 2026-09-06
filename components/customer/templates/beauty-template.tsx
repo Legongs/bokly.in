@@ -1,6 +1,7 @@
 import React from "react";
 import { Scissors, MessageCircle, MapPin, AtSign, Info } from "lucide-react";
 import { StoreBadge } from "../store-badge";
+import { BusinessHoursCard } from "@/components/customer/business-hours-card";
 import { BookingFlow } from "@/components/customer/booking-flow";
 import { PortfolioGallery } from "@/components/customer/portfolio-gallery";
 import { Logo } from "@/components/ui/logo";
@@ -8,6 +9,8 @@ import { SafeImage } from "@/components/ui/safe-image";
 import { StorefrontJsonLd } from "./shared/storefront-jsonld";
 import { getWhatsAppUrl } from "./shared/whatsapp-link";
 import { StorefrontFooter } from "./shared/storefront-footer";
+import { TestimonialSection } from "@/components/customer/testimonial-section";
+import { PromoBanner } from "@/components/customer/promo-banner";
 import type { StorefrontTemplateProps } from "./types";
 
 export function BeautyTemplate({ tenant, services, staffList, portfolios, dictionary }: StorefrontTemplateProps) {
@@ -26,6 +29,7 @@ export function BeautyTemplate({ tenant, services, staffList, portfolios, dictio
   return (
     <main className={`min-h-screen ${colors.bg} pb-56 md:pb-24 font-sans`}>
       <StorefrontJsonLd tenant={tenant} schemaType="BeautySalon" />
+      <PromoBanner tenantId={tenant.id} />
       
       {/* ── Premium Beauty Header ── */}
       <header className="bg-rose-950 py-10 px-4 flex flex-col items-center justify-center text-center gap-4 rounded-b-[3rem] shadow-md mb-6 relative overflow-hidden">
@@ -104,8 +108,20 @@ export function BeautyTemplate({ tenant, services, staffList, portfolios, dictio
           <BookingFlow tenant={tenant} services={services} staffList={staffList} dictionary={dictionary} />
         </div>
 
-        <StorefrontFooter variant="beauty" />
+        <div className="my-8">
+
+
+          <BusinessHoursCard schedule={(tenant as any).weekly_schedule} timezone={tenant.timezone} />
+
+
+        </div>
+
+
+        <TestimonialSection tenantId={tenant.id} themeColor={themeColor} />
+      <StorefrontFooter variant="beauty" />
       </div>
     </main>
   );
 }
+
+

@@ -1,9 +1,9 @@
 // components/customer/step-customer-form.tsx
-// Step terakhir: Isi data pemesan + Order Summary + FAB submit
+// Step terakhir: Isi data pemesan + field sektor spesifik + Order Summary + FAB submit
 "use client";
 
 import React from "react";
-import { User, Phone, AlertCircle, CheckCircle2, WifiOff, ChevronRight } from "lucide-react";
+import { User, Phone, AlertCircle, CheckCircle2, WifiOff, ChevronRight, Car, Stethoscope } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { formatIDR, calcEndTime } from "@/lib/booking-utils";
@@ -14,6 +14,7 @@ import type { FieldErrors, SubmitStatus } from "@/hooks/use-booking-flow";
 
 interface StepCustomerFormProps {
   selectedService: Service | null;
+  selectedServices?: Service[];  // multi-service support
   selectedStaff: Staff | null;
   selectedDate: string;
   selectedTime: string;
@@ -26,22 +27,39 @@ interface StepCustomerFormProps {
   activeStep: number;
   t: ThemeStyle;
   dictionary?: BusinessDictionary;
+  // Derived totals dari hook (multi-service)
+  totalPrice?: number;
+  totalDuration?: number;
+  totalDpAmount?: number;
+  // Business sector & field spesifik sektor
+  businessSector?: string | null;
+  vehicleBrand?: string;
+  vehicleType?: string;
+  vehiclePlate?: string;
+  complaintNotes?: string;
+  consultationType?: string;
   onChangeName: (val: string) => void;
   onChangeWa: (val: string) => void;
   onBlurField: (field: "customer_name" | "customer_wa", val: string) => void;
+  onChangeVehicleBrand?: (val: string) => void;
+  onChangeVehicleType?: (val: string) => void;
+  onChangeVehiclePlate?: (val: string) => void;
+  onChangeComplaintNotes?: (val: string) => void;
+  onChangeConsultationType?: (val: "baru" | "lanjutan") => void;
 }
 
 /** Wrapper label + error message untuk form field. */
-function FormField({ id, label, error, children }: {
+function FormField({ id, label, error, required, children }: {
   id: string;
   label: string;
   error?: string;
+  required?: boolean;
   children: React.ReactNode;
 }) {
   return (
     <div className="space-y-1.5">
       <label htmlFor={id} className="block text-xs font-semibold text-stone-700">
-        {label}
+        {label}{required && <span className="text-rose-500 ml-0.5">*</span>}
       </label>
       {children}
       {error && (
@@ -55,13 +73,33 @@ function FormField({ id, label, error, children }: {
 }
 
 export function StepCustomerForm({
-  selectedService, selectedStaff, selectedDate, selectedTime,
+  selectedService, selectedServices = [], selectedStaff, selectedDate, selectedTime,
   customerName, customerWa, fieldErrors, serverError, submitStatus,
   staffList, activeStep, t, dictionary,
+  totalPrice, totalDuration, totalDpAmount,
+  businessSector,
+  vehicleBrand = "", vehicleType = "", vehiclePlate = "", complaintNotes = "", consultationType = "",
   onChangeName, onChangeWa, onBlurField,
+  onChangeVehicleBrand, onChangeVehicleType, onChangeVehiclePlate,
+  onChangeComplaintNotes, onChangeConsultationType,
 }: StepCustomerFormProps) {
   const stepNumber = staffList.length > 1 ? 4 : 3;
   const isActive   = activeStep === stepNumber;
+
+  // Gunakan totalPrice dari hook jika ada, fallback ke service tunggal
+  const displayPrice    = totalPrice    !== undefined ? totalPrice    : Number(selectedService?.price || 0);
+  const displayDuration = totalDuration !== undefined ? totalDuration : (selectedService?.duration_minutes || 0);
+  const displayDp       = totalDpAmount !== undefined ? totalDpAmount : Number(selectedService?.dp_amount || 0);
+
+  // Hitung end_time dari total durasi
+  const endTimeDisplay = selectedTime && displayDuration
+    ? calcEndTime(selectedTime, displayDuration)
+    : selectedTime && selectedService
+      ? calcEndTime(selectedTime, selectedService.duration_minutes)
+      : "";
+
+  const isAutoSector   = businessSector === "auto";
+  const isHealthSector = businessSector === "health";
 
   return (
     <>
@@ -124,6 +162,102 @@ export function StepCustomerForm({
               />
             </div>
           </FormField>
+
+          {/* ── FIELD SEKTOR OTOMOTIF (auto) ──────────────────────────────── */}
+          {isAutoSector && (
+            <div className="space-y-3 pt-2 border-t border-stone-100">
+              <div className="flex items-center gap-2 py-1">
+                <Car className={`w-4 h-4 ${t.textPrimary}`} />
+                <p className={`text-xs font-bold ${t.textPrimary} uppercase tracking-wide`}>
+                  Informasi Kendaraan
+                </p>
+              </div>
+
+              <FormField id="vehicle-brand" label="Merek Kendaraan" required error={fieldErrors.vehicle_brand}>
+                <input
+                  id="vehicle-brand"
+                  type="text"
+                  value={vehicleBrand}
+                  onChange={(e) => onChangeVehicleBrand?.(e.target.value)}
+                  placeholder="Contoh: Honda, Toyota, Yamaha"
+                  className={`w-full px-4 py-2.5 rounded-xl border text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 ${t.ringPrimary} transition-all duration-200 ${
+                    fieldErrors.vehicle_brand ? "border-rose-400 focus:ring-rose-400" : "border-stone-300 hover:border-stone-400"
+                  }`}
+                />
+              </FormField>
+
+              <FormField id="vehicle-type" label="Tipe / Model Kendaraan" required error={fieldErrors.vehicle_type}>
+                <input
+                  id="vehicle-type"
+                  type="text"
+                  value={vehicleType}
+                  onChange={(e) => onChangeVehicleType?.(e.target.value)}
+                  placeholder="Contoh: Brio RS, Vario 125, Avanza G"
+                  className={`w-full px-4 py-2.5 rounded-xl border text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 ${t.ringPrimary} transition-all duration-200 ${
+                    fieldErrors.vehicle_type ? "border-rose-400 focus:ring-rose-400" : "border-stone-300 hover:border-stone-400"
+                  }`}
+                />
+              </FormField>
+
+              <FormField id="vehicle-plate" label="Plat Nomor" required error={fieldErrors.vehicle_plate}>
+                <input
+                  id="vehicle-plate"
+                  type="text"
+                  value={vehiclePlate}
+                  onChange={(e) => onChangeVehiclePlate?.(e.target.value.toUpperCase())}
+                  placeholder="Contoh: B 1234 ABC"
+                  className={`w-full px-4 py-2.5 rounded-xl border text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 ${t.ringPrimary} transition-all duration-200 uppercase ${
+                    fieldErrors.vehicle_plate ? "border-rose-400 focus:ring-rose-400" : "border-stone-300 hover:border-stone-400"
+                  }`}
+                />
+              </FormField>
+
+              <FormField id="complaint-notes" label="Keluhan / Kondisi Kendaraan" required error={fieldErrors.complaint_notes}>
+                <textarea
+                  id="complaint-notes"
+                  value={complaintNotes}
+                  onChange={(e) => onChangeComplaintNotes?.(e.target.value)}
+                  placeholder="Ceritakan keluhan kendaraan kamu di sini, misal: mesin bunyi, rem blong, dll."
+                  rows={3}
+                  className={`w-full px-4 py-2.5 rounded-xl border text-sm font-medium bg-white text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 ${t.ringPrimary} transition-all duration-200 resize-none ${
+                    fieldErrors.complaint_notes ? "border-rose-400 focus:ring-rose-400" : "border-stone-300 hover:border-stone-400"
+                  }`}
+                />
+              </FormField>
+            </div>
+          )}
+
+          {/* ── FIELD SEKTOR KESEHATAN (health) ──────────────────────────── */}
+          {isHealthSector && (
+            <div className="space-y-3 pt-2 border-t border-stone-100">
+              <div className="flex items-center gap-2 py-1">
+                <Stethoscope className={`w-4 h-4 ${t.textPrimary}`} />
+                <p className={`text-xs font-bold ${t.textPrimary} uppercase tracking-wide`}>
+                  Jenis Kunjungan
+                </p>
+              </div>
+
+              <FormField id="consultation-type" label="Tipe Konsultasi" required error={fieldErrors.consultation_type}>
+                <div className="flex gap-3">
+                  {(["baru", "lanjutan"] as const).map((type) => (
+                    <button
+                      key={type}
+                      type="button"
+                      id={`consultation-${type}`}
+                      onClick={() => onChangeConsultationType?.(type)}
+                      className={`flex-1 py-2.5 px-4 rounded-xl border-2 text-sm font-semibold transition-all duration-200 ${
+                        consultationType === type
+                          ? `${t.borderPrimary} ${t.bgLight} ${t.textPrimary}`
+                          : "border-stone-200 bg-white text-stone-600 hover:border-stone-300"
+                      }`}
+                    >
+                      {type === "baru" ? "🩺 Pasien Baru" : "🔄 Kontrol / Lanjutan"}
+                    </button>
+                  ))}
+                </div>
+              </FormField>
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -134,10 +268,27 @@ export function StepCustomerForm({
             Ringkasan {dictionary?.bookingLabel || "Reservasi"}
           </p>
           <div className="space-y-1 text-stone-700">
-            <div className="flex justify-between">
-              <span>{dictionary?.serviceLabel || "Layanan"}</span>
-              <span className="font-semibold">{selectedService.name}</span>
-            </div>
+            {/* Daftar layanan — multi-service */}
+            {selectedServices.length > 1 ? (
+              <div className="space-y-1">
+                <div className="flex justify-between">
+                  <span>{dictionary?.serviceLabel || "Layanan"}</span>
+                  <span className="font-semibold">{selectedServices.length} layanan</span>
+                </div>
+                {selectedServices.map((svc, i) => (
+                  <div key={svc.id} className="flex justify-between pl-2 text-stone-500 text-xs">
+                    <span>{i + 1}. {svc.name}</span>
+                    <span>{formatIDR(Number(svc.price))}</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="flex justify-between">
+                <span>{dictionary?.serviceLabel || "Layanan"}</span>
+                <span className="font-semibold">{selectedService.name}</span>
+              </div>
+            )}
+
             <div className="flex justify-between">
               <span>Tanggal</span>
               <span className="font-semibold">
@@ -153,13 +304,21 @@ export function StepCustomerForm({
             <div className="flex justify-between">
               <span>Waktu</span>
               <span className="font-semibold">
-                {selectedTime} – {calcEndTime(selectedTime, selectedService.duration_minutes)} WIB
+                {selectedTime} – {endTimeDisplay} WIB
               </span>
             </div>
-            {Number(selectedService.dp_amount) > 0 && (
-              <div className={`flex justify-between border-t ${t.borderLight} pt-1.5 mt-1.5`}>
+            <div className="flex justify-between">
+              <span>Total Durasi</span>
+              <span className="font-semibold">{displayDuration} menit</span>
+            </div>
+            <div className={`flex justify-between border-t ${t.borderLight} pt-1.5 mt-1.5`}>
+              <span className="font-semibold">Total Harga</span>
+              <span className={`font-bold ${t.textPrimary}`}>{formatIDR(displayPrice)}</span>
+            </div>
+            {displayDp > 0 && (
+              <div className={`flex justify-between`}>
                 <span className={`font-semibold ${t.textPrimary}`}>DP yang harus dibayar</span>
-                <span className={`font-bold ${t.textPrimary}`}>{formatIDR(Number(selectedService.dp_amount))}</span>
+                <span className={`font-bold ${t.textPrimary}`}>{formatIDR(displayDp)}</span>
               </div>
             )}
           </div>
@@ -202,13 +361,13 @@ export function StepCustomerForm({
             <div>
               <p className="text-xs text-stone-500 font-medium">Total Harga</p>
               <p className={`font-bold text-lg ${t.textPrimary}`}>
-                {selectedService ? formatIDR(Number(selectedService.price)) : "Rp 0"}
+                {formatIDR(displayPrice)}
               </p>
             </div>
             <div className="text-right">
               <p className="text-xs text-stone-500 font-medium">Durasi</p>
               <p className="font-bold text-stone-800">
-                {selectedService ? `${selectedService.duration_minutes} mnt` : "-"}
+                {displayDuration > 0 ? `${displayDuration} mnt` : "-"}
               </p>
             </div>
           </div>

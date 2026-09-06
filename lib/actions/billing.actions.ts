@@ -39,7 +39,7 @@ export async function createBillingIntent(
     }
 
     const prices = await getDynamicPricing();
-    let amount = prices[parsed.data.plan][parsed.data.billingCycle === "monthly" ? "monthly" : "yearly"];
+    let amount: number = Number(prices[parsed.data.plan as keyof typeof prices][parsed.data.billingCycle === "monthly" ? "monthly" : "yearly"]);
     let voucherId: string | undefined = undefined;
 
     // Validasi voucher jika ada

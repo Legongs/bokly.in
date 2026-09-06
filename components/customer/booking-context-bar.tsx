@@ -40,10 +40,7 @@ export function BookingContextBar({
   return (
     <div
       className={`
-        sticky top-0 z-30 -mx-4 px-4 py-2.5
-        bg-white/90 backdrop-blur-sm
-        border-b border-stone-100
-        shadow-sm shadow-stone-100/60
+        pt-3 mt-3 border-t border-stone-100
         transition-all duration-200
       `}
       aria-label="Pilihan kamu sejauh ini"

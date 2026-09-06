@@ -38,7 +38,7 @@ function StatusBadge({ booking }: { booking: BookingWithService }) {
   const startMinutes = startH * 60 + startM;
   const endMinutes = endH * 60 + endM;
 
-  const bookingDate = new Date(booking.date);
+  const bookingDate = new Date(booking.booking_date);
   const isToday = bookingDate.toDateString() === now.toDateString();
   const isPastDate = bookingDate < new Date(now.setHours(0, 0, 0, 0));
 

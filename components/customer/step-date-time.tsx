@@ -21,14 +21,18 @@ interface StepDateTimeProps {
   activeStep: number;
   t: ThemeStyle;
   dictionary?: BusinessDictionary;
+  /** Total durasi semua layanan (multi-service). Jika tidak ada, fallback ke selectedService.duration_minutes */
+  totalDuration?: number;
   onSelectSlot: (date: string, time: string) => void;
   onChangeStep: (step: number) => void;
 }
 
 export function StepDateTime({
   tenant, selectedService, selectedStaff, selectedDate, selectedTime,
-  staffList, activeStep, t, dictionary, onSelectSlot, onChangeStep,
+  staffList, activeStep, t, dictionary, totalDuration, onSelectSlot, onChangeStep,
 }: StepDateTimeProps) {
+  // Durasi efektif: totalDuration (multi-service) atau fallback ke layanan tunggal
+  const effectiveDuration = totalDuration ?? selectedService?.duration_minutes ?? 0;
   // Step nomor dinamis: jika ada pilih staff, step ini adalah 3, jika tidak 2
   const stepNumber = staffList.length > 1 ? 3 : 2;
   const isActive   = activeStep === stepNumber;
@@ -45,8 +49,8 @@ export function StepDateTime({
           </CardTitle>
           {selectedService && isActive && (
             <CardDescription className="text-stone-500 mt-1">
-              Durasi {dictionary?.serviceLabel?.toLowerCase() || "layanan"}:{" "}
-              <strong className="text-stone-700">{selectedService.duration_minutes} menit</strong>.
+              Total durasi:{" "}
+              <strong className="text-stone-700">{effectiveDuration} menit</strong>.
               Slot tidak tersedia jika sudah dipesan atau melebihi jam operasional.
             </CardDescription>
           )}
@@ -63,7 +67,7 @@ export function StepDateTime({
         {selectedService && (staffList.length <= 1 || selectedStaff) ? (
           <DateSlotPicker
             tenantId={tenant.id}
-            serviceDurationMinutes={selectedService.duration_minutes}
+            serviceDurationMinutes={effectiveDuration}
             openTime={(tenant as any).open_time || "09:00"}
             closeTime={(tenant as any).close_time || "21:00"}
             staffId={selectedStaff?.id === "any" ? undefined : selectedStaff?.id}
@@ -93,7 +97,7 @@ export function StepDateTime({
                 {new Date(selectedDate).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}
               </p>
               <p className="text-xs text-stone-500">
-                {selectedTime} – {calcEndTime(selectedTime, selectedService?.duration_minutes || 0)} WIB
+                {selectedTime} – {calcEndTime(selectedTime, effectiveDuration)} WIB
               </p>
             </div>
           </div>

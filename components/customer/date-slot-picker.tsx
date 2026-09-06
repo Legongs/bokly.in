@@ -173,7 +173,7 @@ export function DateSlotPicker({
    return false;
  };
 
- const tc = {
+  const themeColors: Record<string, any> = {
   teal: {
     icon: "text-teal-500",
     dateSelected: "border-teal-500 bg-teal-500 text-white shadow-teal-500/30",
@@ -239,7 +239,9 @@ export function DateSlotPicker({
     timeHover: "hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700",
     legendSelected: "border-blue-500 bg-blue-500",
   },
- }[themeColor] || tc.teal;
+ };
+ 
+ const tc = themeColors[themeColor] || themeColors.teal;
 
   return (
     <div className="space-y-8">

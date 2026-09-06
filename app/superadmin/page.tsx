@@ -1,4 +1,10 @@
-import { getPlatformStats, getAllTenants, getAllVouchers } from "@/lib/actions/superadmin.actions";
+import {
+  getPlatformStats,
+  getAllTenants,
+  getAllVouchers,
+  getFeatureFlagsForAdmin,
+  getGlobalFonnteConfigMasked,
+} from "@/lib/actions/superadmin.actions";
 import { getDynamicPricing } from "@/lib/subscription";
 import { getMidtransConfig } from "@/lib/midtrans";
 import { Users, Store, TrendingUp, Activity } from "lucide-react";
@@ -7,11 +13,15 @@ import { SuperadminClient } from "./superadmin-client";
 export default async function SuperAdminDashboard() {
   const stats = await getPlatformStats();
   const tenants = await getAllTenants();
-  
+
   const prices = await getDynamicPricing();
   const vouchersRes = await getAllVouchers();
   const vouchers = vouchersRes.success && vouchersRes.data ? vouchersRes.data : [];
   const midtransConfig = await getMidtransConfig();
+  const [featureFlags, globalWaConfig] = await Promise.all([
+    getFeatureFlagsForAdmin(),
+    getGlobalFonnteConfigMasked(),
+  ]);
 
   return (
     <div className="space-y-6">
@@ -53,11 +63,13 @@ export default async function SuperAdminDashboard() {
       </div>
 
       {/* ── Konten Utama (Client Component: Tabs + Tabel) ── */}
-      <SuperadminClient 
-        tenants={tenants as any} 
-        prices={prices} 
-        vouchers={vouchers} 
+      <SuperadminClient
+        tenants={tenants as any}
+        prices={prices}
+        vouchers={vouchers}
         midtransConfig={midtransConfig}
+        featureFlags={featureFlags}
+        globalWaConfig={globalWaConfig}
       />
     </div>
   );

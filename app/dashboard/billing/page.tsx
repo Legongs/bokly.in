@@ -1,7 +1,8 @@
 import React from "react";
 import { createClient } from "@/lib/supabase/server";
 import { getAuthTenantId } from "@/lib/auth";
-import { getTenantSubscription, getDynamicPricing } from "@/lib/subscription";
+import { getTenantSubscription, getDynamicPricing, getFeatureFlagsConfig } from "@/lib/subscription";
+import { buildAllPlanFeatures } from "@/lib/plan-features";
 import { getMidtransClientConfig } from "@/lib/actions/billing.actions";
 import { PricingCards } from "@/components/dashboard/pricing-cards";
 import { Crown, CheckCircle2, Clock, AlertTriangle } from "lucide-react";
@@ -30,6 +31,9 @@ export default async function BillingPage() {
   const subscription = await getTenantSubscription(tenantId);
   const prices = await getDynamicPricing();
   const midtransClientConfig = await getMidtransClientConfig();
+  // Teks fitur di kartu digenerate dari feature flags — bukan hardcode — biar
+  // sinkron sama batas yang benar-benar dipakai sistem.
+  const planFeatures = buildAllPlanFeatures(await getFeatureFlagsConfig());
 
   const isActive = subscription.status === "active";
   const isPaid = subscription.plan !== "free";
@@ -107,7 +111,12 @@ export default async function BillingPage() {
       {/* Section 2 — Pricing cards */}
       <div>
         <p className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-6">Pilih Paket</p>
-        <PricingCards currentSubscription={subscription} prices={prices} midtransClientConfig={midtransClientConfig} />
+        <PricingCards
+          currentSubscription={subscription}
+          prices={prices}
+          features={planFeatures}
+          midtransClientConfig={midtransClientConfig}
+        />
       </div>
 
       {/* Catatan kecil */}

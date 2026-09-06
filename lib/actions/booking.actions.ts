@@ -8,6 +8,8 @@ import { sendTelegramNotification } from "@/lib/telegram";
 import type { Booking, PaymentStatus } from "@/types/database.types";
 import type { ActionResponse } from "./tenant.actions";
 import { canPerformAction } from "@/lib/subscription";
+import { notifyTenantNewBooking } from "./auto-notification.actions";
+import { sendPushToTenant } from "./push-notification.actions";
 
 // Re-export ActionResponse agar komponen lain bisa import dari satu tempat
 export type { ActionResponse };
@@ -36,7 +38,10 @@ const getBookedSlotsSchema = z.object({
 
 const submitBookingSchema = z.object({
   tenant_id: z.string().uuid("Wah, ID outlet-nya nggak valid nih."),
+  // service_id tetap ada untuk backward compatibility — dipakai sebagai layanan utama/pertama
   service_id: z.string().uuid("Layanan yang dipilih nggak valid nih."),
+  // service_ids: array 1+ layanan — jika hanya 1 item, behavior identik dengan sebelumnya
+  service_ids: z.array(z.string().uuid("ID layanan tidak valid.")).min(1, "Pilih minimal satu layanan.").optional(),
   staff_id: z.string().uuid().nullable().optional(),
   customer_name: z
     .string()
@@ -66,6 +71,35 @@ const submitBookingSchema = z.object({
     .nullable()
     .optional(),
   is_walkin: z.boolean().optional(),
+  // Field khusus sektor (TASK 3) — semua optional di level schema dasar
+  // Validasi wajib/tidak bergantung pada business_sector yang di-pass
+  business_sector: z.string().nullable().optional(),
+  vehicle_brand: z.string().max(100).nullable().optional(),
+  vehicle_type: z.string().max(100).nullable().optional(),
+  vehicle_plate: z.string().max(20).nullable().optional(),
+  complaint_notes: z.string().max(1000).nullable().optional(),
+  consultation_type: z.enum(["baru", "lanjutan"]).nullable().optional(),
+}).superRefine((data, ctx) => {
+  // Validasi kondisional berdasarkan business_sector
+  if (data.business_sector === "auto") {
+    if (!data.vehicle_brand?.trim()) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["vehicle_brand"], message: "Merek kendaraan wajib diisi untuk layanan otomotif." });
+    }
+    if (!data.vehicle_type?.trim()) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["vehicle_type"], message: "Tipe/model kendaraan wajib diisi." });
+    }
+    if (!data.vehicle_plate?.trim()) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["vehicle_plate"], message: "Plat nomor kendaraan wajib diisi." });
+    }
+    if (!data.complaint_notes?.trim()) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["complaint_notes"], message: "Keluhan/kondisi kendaraan wajib diisi." });
+    }
+  }
+  if (data.business_sector === "health") {
+    if (!data.consultation_type) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["consultation_type"], message: "Jenis konsultasi (baru/lanjutan) wajib dipilih." });
+    }
+  }
 });
 
 export type SubmitBookingPayload = z.infer<typeof submitBookingSchema>;
@@ -156,10 +190,17 @@ import { checkRateLimit } from "@/lib/rate-limit";
  * Buat reservasi baru setelah validasi Zod server-side.
  *
  * Penanganan race condition:
- * - PostgreSQL constraint `unique_tenant_slot` (tenant_id, booking_date, start_time)
- *   menjamin atomisitas — jika dua request masuk bersamaan, satu akan menang
- *   dan yang lain mendapat error code 23505.
- * - Error 23505 ditangkap dan dikembalikan sebagai pesan yang ramah pengguna.
+ * - PostgreSQL exclusion constraint `bookings_no_overlap` (slot_owner_id, slot_range &&)
+ *   menjamin atomisitas — database menolak insert apapun yang overlap.
+ * - Error 23P01 (exclusion_violation) ditangkap oleh RPC dan dikembalikan
+ *   sebagai 'UNIQUE_SLOT_VIOLATION' — pesan ramah ke user.
+ *
+ * Multi-layanan:
+ * - Jika service_ids berisi > 1 item, total durasi = jumlah durasi semua layanan + buffer layanan terakhir.
+ * - end_time dihitung dari total durasi tersebut.
+ * - dp_amount = jumlah dp_amount semua layanan.
+ * - bookings.service_id = layanan pertama (backward compatibility).
+ * - Semua layanan dicatat di tabel booking_items.
  */
 export async function submitBooking(
   payload: unknown
@@ -198,14 +239,36 @@ export async function submitBooking(
 
     if (tenantErr || !tenant) return { success: false, error: "Toko tidak ditemukan." };
 
-    const { data: service, error: serviceErr } = await supabase
-      .from("services")
-      .select("id, duration_minutes, buffer_minutes, max_capacity")
-      .eq("id", parsed.data.service_id)
-      .eq("tenant_id", parsed.data.tenant_id)
-      .single();
+    // --- 1.5. Ambil semua layanan yang dipilih (TASK 2: multi-service support) ---
+    // service_ids: dari payload baru; jika tidak ada, fallback ke [service_id] (backward compat)
+    const allServiceIds: string[] = parsed.data.service_ids && parsed.data.service_ids.length > 0
+      ? parsed.data.service_ids
+      : [parsed.data.service_id];
 
-    if (serviceErr || !service) return { success: false, error: "Akses ditolak: Layanan tidak valid." };
+    // Layanan pertama = layanan utama (untuk bookings.service_id)
+    const primaryServiceId = allServiceIds[0];
+
+    const { data: allServicesData, error: servicesErr } = await supabase
+      .from("services")
+      .select("id, duration_minutes, buffer_minutes, max_capacity, price, dp_amount")
+      .in("id", allServiceIds)
+      .eq("tenant_id", parsed.data.tenant_id);
+
+    if (servicesErr || !allServicesData || allServicesData.length === 0) {
+      return { success: false, error: "Akses ditolak: Layanan tidak valid." };
+    }
+
+    // Validasi semua service_ids ditemukan
+    if (allServicesData.length !== allServiceIds.length) {
+      return { success: false, error: "Satu atau lebih layanan yang dipilih tidak valid." };
+    }
+
+    // Gunakan urutan dari allServiceIds untuk menjaga konsistensi
+    const orderedServices = allServiceIds.map(id =>
+      allServicesData.find(s => s.id === id)!
+    );
+
+    const primaryService = orderedServices.find(s => s.id === primaryServiceId) || orderedServices[0];
 
     // --- 2. Validasi Jadwal Mingguan & Jam Operasional ---
     const bookingDateObj = new Date(parsed.data.booking_date);
@@ -287,7 +350,9 @@ export async function submitBooking(
       const bBuffer = b.services?.buffer_minutes || 0;
       const bEnd = parseTime(b.end_time) + bBuffer;
 
-      const requestEnd = endMinutes + (service.buffer_minutes || 0);
+      // Buffer layanan terakhir untuk booking baru
+      const lastService = orderedServices[orderedServices.length - 1];
+      const requestEnd = endMinutes + (lastService.buffer_minutes || 0);
 
       // Cek overlap: A.start < B.end AND A.end > B.start
       if (startMinutes < bEnd && requestEnd > bStart) {
@@ -315,28 +380,46 @@ export async function submitBooking(
           return { success: false, error: "Waduh, semua pegawai sedang sibuk di jam ini. Pilih jam atau hari lain yuk!" };
         }
       } else {
-        // Tidak ada pegawai yang didaftarkan, cek max_capacity dari service
-        const maxCap = service.max_capacity || 1;
+        // Tidak ada pegawai yang didaftarkan, cek max_capacity dari layanan utama
+        const maxCap = primaryService.max_capacity || 1;
         if (overlappingCount >= maxCap) {
           return { success: false, error: "Waduh, slot di jam ini sudah penuh. Pilih jam atau hari lain yuk!" };
         }
       }
     }
 
-    // --- 5. Insert Booking via Secure RPC (Anti Double-Booking) ---
-    // Cast supabase client to any to bypass type checking for newly created RPC
+    // --- 5. Bangun payload service_items untuk RPC ---
+    // Dikirim sebagai JSONB agar RPC bisa insert booking_items secara ATOMIK
+    // dalam satu transaksi PostgreSQL — jika gagal, booking juga tidak jadi dibuat.
+    const serviceItemsPayload = orderedServices.map((svc) => ({
+      service_id:       svc.id,
+      price:            Number(svc.price),
+      duration_minutes: svc.duration_minutes,
+    }));
+
+    // --- 6. Insert Booking via Secure RPC (Anti Double-Booking + Transaksional) ---
     const { data, error } = await (supabase as any).rpc("create_booking_secure", {
-      p_tenant_id: parsed.data.tenant_id,
-      p_service_id: parsed.data.service_id,
-      p_staff_id: finalStaffId,
-      p_customer_name: parsed.data.customer_name,
-      p_customer_wa: parsed.data.customer_wa,
-      p_booking_date: parsed.data.booking_date,
-      p_start_time: parsed.data.start_time,
-      p_end_time: parsed.data.end_time,
-      p_payment_status: parsed.data.is_walkin ? "approved" : "pending",
-      p_proof_url: parsed.data.proof_url ?? null,
+      p_tenant_id:               parsed.data.tenant_id,
+      p_service_id:              primaryServiceId,
+      p_staff_id:                finalStaffId,
+      p_customer_name:           parsed.data.customer_name,
+      p_customer_wa:             parsed.data.customer_wa,
+      p_booking_date:            parsed.data.booking_date,
+      p_start_time:              parsed.data.start_time,
+      p_end_time:                parsed.data.end_time,
+      p_payment_status:          parsed.data.is_walkin ? "approved" : "pending",
+      p_proof_url:               parsed.data.proof_url ?? null,
       p_manage_token_expires_at: new Date(new Date(parsed.data.booking_date).getTime() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+      // Field khusus sektor (TASK 3) — nullable untuk sektor lain
+      p_vehicle_brand:           parsed.data.vehicle_brand ?? null,
+      p_vehicle_type:            parsed.data.vehicle_type ?? null,
+      p_vehicle_plate:           parsed.data.vehicle_plate ?? null,
+      p_complaint_notes:         parsed.data.complaint_notes ?? null,
+      p_consultation_type:       parsed.data.consultation_type ?? null,
+      // TRANSAKSIONAL: booking_items di-insert di dalam RPC PostgreSQL —
+      // bukan di TypeScript. Jika p_service_items gagal di-insert, seluruh
+      // transaksi di-ROLLBACK otomatis oleh PostgreSQL (tidak perlu manual cleanup).
+      p_service_items: JSON.stringify(serviceItemsPayload),
     });
 
     if (error) {
@@ -345,6 +428,11 @@ export async function submitBooking(
       }
       return { success: false, error: "Yah, gagal nyimpen jadwal kamu. Coba klik sekali lagi ya." };
     }
+
+    const bookingId = (data as any)?.id;
+
+    // booking_items TIDAK perlu di-insert di sini — sudah dilakukan di dalam RPC
+    // secara atomik (transaksional). Jika booking ini ada, booking_items dijamin ada.
 
     // Invalidasi cache semua halaman [tenant] dan dashboard setelah INSERT berhasil
     revalidatePath("/[tenant]", "page");
@@ -365,6 +453,17 @@ export async function submitBooking(
     } catch (err) {
       console.warn("Gagal mengeksekusi notifikasi telegram:", err);
     }
+
+    // TASK 2: Kirim notifikasi WA (global) ke tenant, fire-and-forget
+    notifyTenantNewBooking(bookingId).catch(() => {});
+
+    // PWA Push Notification ke tenant, fire-and-forget
+    sendPushToTenant(
+      parsed.data.tenant_id,
+      "Booking Baru!",
+      `${parsed.data.customer_name} telah melakukan booking.`,
+      `/dashboard/customers`
+    ).catch(() => {});
 
     return { success: true, data: data as Booking };
   } catch {
@@ -494,10 +593,11 @@ export async function handleBookingSuccess(
 
 // ── getAvailableSlots ─────────────────────────────────────────────────────────
 const getAvailableSlotsSchema = z.object({
-  tenantId: z.string().uuid("ID Outlet tidak valid."),
-  serviceId: z.string().uuid("ID Layanan tidak valid."),
-  staffId: z.string().uuid("ID Pegawai tidak valid."),
-  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Format tanggal harus YYYY-MM-DD."),
+  tenantId:   z.string().uuid("ID Outlet tidak valid."),
+  serviceId:  z.string().uuid("ID Layanan tidak valid.").optional(),
+  serviceIds: z.array(z.string().uuid()).min(1).optional(),
+  staffId:    z.string().uuid("ID Pegawai tidak valid."),
+  date:       z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Format tanggal harus YYYY-MM-DD."),
 });
 
 function parseTime(timeStr: string): number {
@@ -511,13 +611,33 @@ function formatTime(minutes: number): string {
   return `${h}:${m}`;
 }
 
+/**
+ * Mengembalikan slot waktu yang tersedia untuk booking.
+ *
+ * TASK 2: Mendukung multi-layanan — durasi dihitung dari total semua layanan.
+ * Backward compatible: jika hanya serviceId (string tunggal) yang dikirim,
+ * behavior identik dengan sebelumnya.
+ *
+ * @param serviceIds - Array ID layanan (prioritas). Jika ada, total durasi dihitung dari semua.
+ * @param serviceId  - ID layanan tunggal (backward compat). Dipakai jika serviceIds tidak ada.
+ */
 export async function getAvailableSlots(
   tenantId: string,
   serviceId: string,
   staffId: string,
-  date: string
+  date: string,
+  serviceIds?: string[]
 ): Promise<ActionResponse<string[]>> {
-  const parsed = getAvailableSlotsSchema.safeParse({ tenantId, serviceId, staffId, date });
+  // Tentukan daftar layanan yang akan dicek
+  const effectiveServiceIds = serviceIds && serviceIds.length > 0 ? serviceIds : [serviceId];
+
+  const parsed = getAvailableSlotsSchema.safeParse({
+    tenantId,
+    serviceId,
+    serviceIds: effectiveServiceIds,
+    staffId,
+    date,
+  });
   if (!parsed.success) {
     return { success: false, error: parsed.error.issues[0].message };
   }
@@ -534,15 +654,26 @@ export async function getAvailableSlots(
 
     if (tenantErr || !tenant) return { success: false, error: "Data outlet tidak ditemukan." };
 
-    // 2. Ambil durasi & buffer layanan
-    const { data: service, error: serviceErr } = await supabase
+    // 2. Ambil durasi & buffer semua layanan yang dipilih
+    const { data: servicesData, error: servicesErr } = await supabase
       .from("services")
-      .select("duration_minutes, buffer_minutes")
-      .eq("id", serviceId)
-      .eq("tenant_id", tenantId)
-      .single();
-    
-    if (serviceErr || !service) return { success: false, error: "Layanan tidak ditemukan." };
+      .select("id, duration_minutes, buffer_minutes")
+      .in("id", effectiveServiceIds)
+      .eq("tenant_id", tenantId);
+
+    if (servicesErr || !servicesData || servicesData.length === 0) {
+      return { success: false, error: "Layanan tidak ditemukan." };
+    }
+
+    // Urutkan sesuai effectiveServiceIds untuk konsistensi
+    const orderedServices = effectiveServiceIds.map(id =>
+      servicesData.find(s => s.id === id) || servicesData[0]
+    );
+
+    // Hitung total durasi: jumlah durasi semua layanan + buffer layanan terakhir
+    const totalDuration = orderedServices.reduce((sum, svc) => sum + svc.duration_minutes, 0);
+    const lastServiceBuffer = orderedServices[orderedServices.length - 1]?.buffer_minutes || 0;
+    const totalRequiredMinutes = totalDuration + lastServiceBuffer;
 
     // 3. Ambil jadwal existing (pending/approved) di tanggal yang dipilih
     let staffCount = 1;
@@ -569,18 +700,15 @@ export async function getAvailableSlots(
     if (bookingsErr) return { success: false, error: "Gagal mengambil data jadwal." };
 
     // Parsing time to minutes
-    const openMinutes = parseTime(tenant.open_time);
+    const openMinutes  = parseTime(tenant.open_time);
     const closeMinutes = parseTime(tenant.close_time);
-    const duration = service.duration_minutes;
-    const buffer = service.buffer_minutes || 0;
-    const totalRequiredMinutes = duration + buffer;
 
     // Mapping existing bookings to ranges (start, end + buffer)
     const existingRanges = (existingBookings || []).map((b: any) => {
       const existingBuffer = b.services?.buffer_minutes || 0;
       return {
         start: parseTime(b.start_time),
-        end: parseTime(b.end_time) + existingBuffer,
+        end:   parseTime(b.end_time) + existingBuffer,
       };
     });
 

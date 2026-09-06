@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CheckCircle2, Circle, X, Image as ImageIcon, Users, Scissors, Link as LinkIcon } from "lucide-react";
+import { CheckCircle2, Circle, X, Image as ImageIcon, Users, Scissors, Link as LinkIcon, Clock } from "lucide-react";
 import Link from "next/link";
 
 interface OnboardingChecklistProps {
@@ -10,6 +10,7 @@ interface OnboardingChecklistProps {
   hasStaff: boolean;
   hasHeroImage: boolean;
   hasBookings: boolean;
+  hasSchedule?: boolean;
 }
 
 export function OnboardingChecklist({
@@ -18,6 +19,7 @@ export function OnboardingChecklist({
   hasStaff,
   hasHeroImage,
   hasBookings,
+  hasSchedule = false,
 }: OnboardingChecklistProps) {
   const [isVisible, setIsVisible] = useState(true);
 
@@ -26,6 +28,7 @@ export function OnboardingChecklist({
     { label: "Tambah layanan pertama", done: hasServices, href: "/dashboard/services", icon: Scissors },
     { label: "Upload foto toko", done: hasHeroImage, href: "/dashboard/settings", icon: ImageIcon },
     { label: "Tambah staf", done: hasStaff, href: "/dashboard/staff", icon: Users },
+    { label: "Set jam operasional", done: hasSchedule, href: "/dashboard/settings?tab=calendar", icon: Clock },
     { label: "Bagikan link ke pelanggan pertama", done: hasBookings, href: null, icon: LinkIcon },
   ];
 
