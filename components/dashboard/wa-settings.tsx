@@ -13,7 +13,7 @@ interface WaSettingsProps {
 export function WaSettings({ tenant }: WaSettingsProps) {
   const [isPendingWa, startTransitionWa] = useTransition();
   const [waMessage, setWaMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
-  const [waMethod, setWaMethod] = useState<"manual" | "api">(tenant.wa_method || "manual");
+  const [waMethod, setWaMethod] = useState<"manual" | "api">((tenant.wa_method as "manual" | "api") || "manual");
   const [waApiKey, setWaApiKey] = useState(tenant.wa_api_key || "");
 
   const handleWaSubmit = (e: React.FormEvent) => {

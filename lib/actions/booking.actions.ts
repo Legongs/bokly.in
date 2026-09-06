@@ -295,7 +295,7 @@ export async function submitBooking(
     const endMinutes = parseTime(parsed.data.end_time);
     
     // Validasi apakah pesanan melanggar jam operasional
-    if (startMinutes < parseTime(dayOpenTime) || endMinutes > parseTime(dayCloseTime)) {
+    if (startMinutes < parseTime(dayOpenTime ?? '00:00') || endMinutes > parseTime(dayCloseTime ?? '23:59')) {
       return { success: false, error: "Jam yang dipilih di luar jam operasional toko." };
     }
 
@@ -700,8 +700,8 @@ export async function getAvailableSlots(
     if (bookingsErr) return { success: false, error: "Gagal mengambil data jadwal." };
 
     // Parsing time to minutes
-    const openMinutes  = parseTime(tenant.open_time);
-    const closeMinutes = parseTime(tenant.close_time);
+    const openMinutes  = parseTime(tenant.open_time ?? '00:00');
+    const closeMinutes = parseTime(tenant.close_time ?? '23:59');
 
     // Mapping existing bookings to ranges (start, end + buffer)
     const existingRanges = (existingBookings || []).map((b: any) => {

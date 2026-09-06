@@ -60,7 +60,7 @@ export function BarberTemplate({ tenant, services, staffList, portfolios, dictio
           <div className="flex items-center gap-4 mb-6">
             <div className="h-[1px] w-12 bg-stone-500" />
             <p className={`text-xs md:text-sm font-bold tracking-[0.3em] uppercase text-stone-400`}>
-              Est. {new Date(tenant.created_at).getFullYear()}
+              Est. {new Date(tenant.created_at ?? '').getFullYear()}
             </p>
             <div className="h-[1px] w-12 bg-stone-500" />
           </div>

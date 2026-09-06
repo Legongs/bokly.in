@@ -27,7 +27,7 @@ export default async function StaffPage() {
   const staffRes = await getStaffByTenant(tenant.id);
   const initialStaff = staffRes.success && staffRes.data ? staffRes.data : [];
 
-  const suggestedRolesRes = await getSuggestedRoles(tenant.business_type);
+  const suggestedRolesRes = await getSuggestedRoles(tenant.business_type ?? '');
   const suggestedRoles = suggestedRolesRes.success && suggestedRolesRes.data ? suggestedRolesRes.data : [];
 
   const servicesRes = await getServicesByTenant(tenant.id);
@@ -56,7 +56,7 @@ export default async function StaffPage() {
       <div className="max-w-4xl mx-auto px-4 py-8 sm:px-8">
         <StaffList 
           initialStaff={initialStaff as any} 
-          businessType={tenant.business_type} 
+          businessType={tenant.business_type ?? ''} 
           suggestedRoles={suggestedRoles}
           services={services}
         />

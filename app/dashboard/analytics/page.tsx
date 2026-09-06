@@ -37,7 +37,7 @@ export default async function AnalyticsPage() {
   // Ambil data analitik dan profil tenant
   const analyticsRes = await getTenantAnalytics(tenantId);
   const { data: tenant } = await supabase.from("tenants").select("business_type").eq("id", tenantId).single();
-  const dict = getBusinessDictionary(tenant?.business_type);
+  const dict = getBusinessDictionary(tenant?.business_type || undefined);
 
   if (!analyticsRes.success || !analyticsRes.data) {
     return (

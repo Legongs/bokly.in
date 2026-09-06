@@ -20,7 +20,7 @@ export default async function ServicesPage() {
     .eq("id", tenantId)
    .single();
 
- const dict = getBusinessDictionary(tenant?.business_type);
+ const dict = getBusinessDictionary(tenant?.business_type || undefined);
 
  // Mengambil layanan menggunakan action tenant
  const res = await getServicesByTenant(tenantId);

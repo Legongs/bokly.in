@@ -102,7 +102,7 @@ export function ServiceList({ services, dictionary }: ServiceListProps) {
  <div>
  <span className="text-stone-400 block mb-0.5">Wajib Bayar DP</span>
  <span className="font-bold text-stone-700 ">
- {svc.dp_amount > 0 ? formatCurrency(svc.dp_amount) : "Gratis / Bayar Nanti"}
+ {(svc.dp_amount ?? 0) > 0 ? formatCurrency(svc.dp_amount ?? 0) : "Gratis / Bayar Nanti"}
  </span>
  </div>
  <div className="flex items-center gap-1.5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">

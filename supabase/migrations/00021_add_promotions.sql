@@ -27,7 +27,7 @@ CREATE POLICY "Tenants can manage own promotions"
   ON public.promotions 
   FOR ALL 
   USING (
-    tenant_id = (SELECT id FROM public.tenants WHERE owner_id = auth.uid())
+    tenant_id IN (SELECT id FROM public.tenants WHERE user_id = auth.uid())
   );
 
 -- Policy: Public can read active promotions
