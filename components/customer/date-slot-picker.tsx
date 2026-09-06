@@ -17,7 +17,7 @@ interface DateSlotPickerProps {
  maxCapacity?: number;
  weeklySchedule?: any;
  minimumNoticeHours?: number;
- themeColor?: "teal" | "rose" | "orange" | "violet" | "blue";
+ themeColor?: "indigo" | "rose" | "orange" | "violet" | "blue";
 }
 
 type BookedSlot = { start_time: string; end_time: string; buffer_minutes: number; staff_id: string | null };
@@ -34,7 +34,7 @@ export function DateSlotPicker({
  maxCapacity = 1,
  weeklySchedule,
  minimumNoticeHours = 1,
- themeColor = "teal",
+ themeColor = "indigo",
 }: DateSlotPickerProps) {
  // Generate 14 days from today
  const availableDays = React.useMemo(() => {
@@ -174,18 +174,18 @@ export function DateSlotPicker({
  };
 
   const themeColors: Record<string, any> = {
-  teal: {
-    icon: "text-teal-500",
-    dateSelected: "border-teal-500 bg-teal-500 text-white shadow-teal-500/30",
-    dateHover: "hover:border-teal-200 hover:bg-teal-50/50",
-    todayBadgeSelected: "text-teal-600",
-    dayNameSelected: "text-teal-50",
-    dayNameHover: "group-hover:text-teal-600",
-    monthNameSelected: "text-teal-100",
-    timeLoading: "text-teal-600 bg-teal-50",
-    timeSelected: "border-teal-500 bg-teal-500 text-white shadow-teal-500/25",
-    timeHover: "hover:border-teal-300 hover:bg-teal-50 hover:text-teal-700",
-    legendSelected: "border-teal-500 bg-teal-500",
+  indigo: {
+    icon: "text-indigo-500",
+    dateSelected: "border-indigo-500 bg-indigo-500 text-white shadow-indigo-500/30",
+    dateHover: "hover:border-indigo-200 hover:bg-indigo-50/50",
+    todayBadgeSelected: "text-indigo-600",
+    dayNameSelected: "text-indigo-50",
+    dayNameHover: "group-hover:text-indigo-600",
+    monthNameSelected: "text-indigo-100",
+    timeLoading: "text-indigo-600 bg-indigo-50",
+    timeSelected: "border-indigo-500 bg-indigo-500 text-white shadow-indigo-500/25",
+    timeHover: "hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-700",
+    legendSelected: "border-indigo-500 bg-indigo-500",
   },
   rose: {
     icon: "text-rose-500",
@@ -241,7 +241,7 @@ export function DateSlotPicker({
   },
  };
  
- const tc = themeColors[themeColor] || themeColors.teal;
+ const tc = themeColors[themeColor] || themeColors.indigo;
 
   return (
     <div className="space-y-8">

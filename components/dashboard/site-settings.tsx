@@ -21,7 +21,7 @@ export function SiteSettings({ tenant }: SiteSettingsProps) {
     address: tenant.address || "",
     instagram_handle: tenant.instagram_handle || "",
     cancellation_policy: tenant.cancellation_policy || "",
-    theme_color: tenant.theme_color || "teal",
+    theme_color: tenant.theme_color || "indigo",
   });
 
   const [siteMessage, setSiteMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
@@ -41,7 +41,7 @@ export function SiteSettings({ tenant }: SiteSettingsProps) {
       const res = await updateSiteSettings({ 
         id: tenant.id, 
         ...siteData,
-        theme_color: siteData.theme_color as "teal" | "rose" | "orange" | "violet" | "blue"
+        theme_color: siteData.theme_color as "indigo" | "teal" | "rose" | "orange" | "violet" | "blue"
       });
       if (res.success) {
         setSiteMessage({ type: "success", text: "Sip! Tampilan situs kamu udah diperbarui." });

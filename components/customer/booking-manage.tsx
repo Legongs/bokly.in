@@ -62,9 +62,9 @@ export function BookingManageClient({ initialData }: { initialData: CustomerPort
   }, [booking.id, booking.payment_status, router]);
 
   // ── Theme Mapping ──
-  const themeColor = tenant.theme_color || "teal";
+  const themeColor = tenant.theme_color || "indigo";
   const themeStyles: Record<string, any> = {
-    teal: { textPrimary: "text-teal-700", bgPrimary: "bg-teal-600", bgLight: "bg-teal-50", borderLight: "border-teal-100", gradient: "from-teal-500 to-teal-700", ring: "ring-teal-500" },
+    teal: { textPrimary: "text-indigo-700", bgPrimary: "bg-indigo-600", bgLight: "bg-indigo-50", borderLight: "border-indigo-100", gradient: "from-indigo-500 to-indigo-700", ring: "ring-indigo-500" },
     rose: { textPrimary: "text-rose-700", bgPrimary: "bg-rose-600", bgLight: "bg-rose-50", borderLight: "border-rose-100", gradient: "from-rose-500 to-rose-700", ring: "ring-rose-500" },
     orange: { textPrimary: "text-orange-700", bgPrimary: "bg-orange-500", bgLight: "bg-orange-50", borderLight: "border-orange-100", gradient: "from-orange-400 to-orange-600", ring: "ring-orange-500" },
     violet: { textPrimary: "text-violet-700", bgPrimary: "bg-violet-600", bgLight: "bg-violet-50", borderLight: "border-violet-100", gradient: "from-violet-500 to-violet-700", ring: "ring-violet-500" },
@@ -472,7 +472,7 @@ export function BookingManageClient({ initialData }: { initialData: CustomerPort
                   value={comment}
                   onChange={(e) => setComment(e.target.value)}
                   placeholder="Ceritakan pengalaman Anda (opsional)"
-                  className="w-full rounded-2xl border border-stone-200 p-4 text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none min-h-[100px] resize-none"
+                  className="w-full rounded-2xl border border-stone-200 p-4 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none min-h-[100px] resize-none"
                 />
                 <Button
                   disabled={rating === 0 || isTestimonialSubmitting}

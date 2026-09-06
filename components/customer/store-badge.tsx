@@ -37,7 +37,7 @@ export function StoreBadge({ schedule, timezone, variant = "default" }: StoreBad
     switch (variant) {
       case "beauty":
         return `px-5 py-2.5 rounded-2xl border font-bold text-sm shadow-sm ${getStatusColorClass(
-          "bg-teal-50 border-teal-100 text-teal-700",
+          "bg-indigo-50 border-indigo-100 text-indigo-700",
           "bg-amber-50 border-amber-100 text-amber-700",
           "bg-rose-50 border-rose-100 text-rose-700"
         )}`;

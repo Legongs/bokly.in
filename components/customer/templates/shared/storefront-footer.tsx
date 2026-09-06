@@ -14,7 +14,7 @@ export function StorefrontFooter({ variant = "default" }: { variant?: FooterVari
               <Logo className="text-xl block" />
             </a>
             <div className="mt-8 flex justify-center">
-              <a href="https://bukly.id" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center bg-teal-600 text-white text-xs font-bold px-6 py-3 rounded-full hover:bg-teal-700 transition-all duration-200 shadow-lg shadow-teal-600/20 active:scale-95">
+              <a href="https://bukly.id" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center bg-indigo-600 text-white text-xs font-bold px-6 py-3 rounded-full hover:bg-indigo-700 transition-all duration-200 shadow-lg shadow-indigo-600/20 active:scale-95">
                 Mau Web Reservasi Gratis? Yuk Bikin!
               </a>
             </div>
@@ -28,7 +28,7 @@ export function StorefrontFooter({ variant = "default" }: { variant?: FooterVari
               <Logo className="text-2xl block" />
             </a>
             <div className="mt-8 flex justify-center">
-              <a href="https://bukly.id" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center bg-teal-600 text-white text-xs font-bold px-6 py-3 rounded-full hover:bg-teal-700 transition-all duration-200 shadow-lg shadow-teal-600/20 active:scale-95">
+              <a href="https://bukly.id" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center bg-indigo-600 text-white text-xs font-bold px-6 py-3 rounded-full hover:bg-indigo-700 transition-all duration-200 shadow-lg shadow-indigo-600/20 active:scale-95">
                 Mau Web Reservasi Gratis? Yuk Bikin!
               </a>
             </div>
@@ -42,10 +42,10 @@ export function StorefrontFooter({ variant = "default" }: { variant?: FooterVari
               <Logo className="text-2xl" />
             </a>
             <p className="text-[11px] text-stone-400 mt-4 max-w-xs mx-auto leading-relaxed">
-              Halaman reservasi otomatis ini dibuat menggunakan <a href="https://bukly.id" className="font-semibold text-teal-600 hover:underline">bukly.id</a>
+              Halaman reservasi otomatis ini dibuat menggunakan <a href="https://bukly.id" className="font-semibold text-indigo-600 hover:underline">bukly.id</a>
             </p>
             <div className="mt-8 flex justify-center">
-              <a href="https://bukly.id" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center bg-teal-600 text-white text-xs font-bold px-6 py-3 rounded-full hover:bg-teal-700 transition-all duration-200 shadow-lg shadow-teal-600/20 active:scale-95">
+              <a href="https://bukly.id" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center bg-indigo-600 text-white text-xs font-bold px-6 py-3 rounded-full hover:bg-indigo-700 transition-all duration-200 shadow-lg shadow-indigo-600/20 active:scale-95">
                 Mau Web Reservasi Gratis? Yuk Bikin!
               </a>
             </div>
@@ -66,7 +66,7 @@ export function StorefrontFooter({ variant = "default" }: { variant?: FooterVari
               <Logo className="text-xl block" />
             </a>
             <div className="mt-8 flex justify-center">
-              <a href="https://bukly.id" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center bg-teal-600 text-white text-xs font-bold px-6 py-3 rounded-full hover:bg-teal-700 transition-all duration-200 shadow-lg shadow-teal-600/20 active:scale-95">
+              <a href="https://bukly.id" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center bg-indigo-600 text-white text-xs font-bold px-6 py-3 rounded-full hover:bg-indigo-700 transition-all duration-200 shadow-lg shadow-indigo-600/20 active:scale-95">
                 Mau Web Reservasi Gratis? Yuk Bikin!
               </a>
             </div>
