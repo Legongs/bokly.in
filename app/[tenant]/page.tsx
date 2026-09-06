@@ -6,6 +6,8 @@ import { getStaffByTenant } from "@/lib/actions/staff.actions";
 import { getPortfoliosByTenant } from "@/lib/actions/portfolio.actions";
 import { getSectorDictionary } from "@/lib/dictionaries";
 import { inferTemplateFromType } from "@/lib/template-matcher";
+import { createClient } from "@/lib/supabase/server";
+import type { StorefrontFacility } from "@/components/customer/templates/types";
 
 import { DefaultTemplate } from "@/components/customer/templates/default-template";
 import { BeautyTemplate } from "@/components/customer/templates/beauty-template";
@@ -102,6 +104,23 @@ export default async function TenantPage({ params }: TenantPageProps) {
     portfolios = portRes.data || [];
   }
 
+  // Fasilitas hanya untuk sektor space/auto
+  let facilities: StorefrontFacility[] = [];
+  const sector = tenantData.business_sector || tenantData.business_type;
+  if ((sector === "space" || sector === "auto") && tenantData.id) {
+    try {
+      const supabase = await createClient();
+      const { data: facilityData } = await supabase
+        .from("tenant_facilities")
+        .select("facility_type, is_available")
+        .eq("tenant_id", tenantData.id)
+        .eq("is_available", true);
+      facilities = (facilityData ?? []) as StorefrontFacility[];
+    } catch {
+      // Fasilitas opsional, jangan crash jika tabel belum ada
+    }
+  }
+
   const dictionary = getSectorDictionary(tenantData.business_type);
   const templateType = inferTemplateFromType(tenantData.business_type);
 
@@ -142,7 +161,8 @@ export default async function TenantPage({ params }: TenantPageProps) {
         services={services} 
         staffList={staffList} 
         portfolios={portfolios} 
-        dictionary={dictionary} 
+        dictionary={dictionary}
+        facilities={facilities}
       />
     </>
   );
