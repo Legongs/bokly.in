@@ -4,25 +4,26 @@ import { StoreBadge } from "../store-badge";
 import { BusinessHoursCard } from "@/components/customer/business-hours-card";
 import { BookingFlow } from "@/components/customer/booking-flow";
 import { PortfolioGallery } from "@/components/customer/portfolio-gallery";
-import { Logo } from "@/components/ui/logo";
 import { SafeImage } from "@/components/ui/safe-image";
 import { StorefrontJsonLd } from "./shared/storefront-jsonld";
 import { getWhatsAppUrl } from "./shared/whatsapp-link";
 import { StorefrontFooter } from "./shared/storefront-footer";
 import { TestimonialSection } from "@/components/customer/testimonial-section";
 import { PromoBanner } from "@/components/customer/promo-banner";
+import { LocationMap } from "@/components/customer/location-map";
+import { ShareStorefrontButton } from "@/components/customer/share-storefront-button";
 import type { StorefrontTemplateProps } from "./types";
 
 export function BeautyTemplate({ tenant, services, staffList, portfolios, dictionary }: StorefrontTemplateProps) {
   const themeColor = tenant.theme_color || "rose";
   
-  // Base color maps
   const themeOptions = {
-    rose: { bg: "bg-rose-50", text: "text-rose-900", accent: "bg-rose-500", light: "bg-rose-100", border: "border-rose-100", textDark: "text-rose-700" },
-    teal: { bg: "bg-teal-50", text: "text-teal-900", accent: "bg-teal-500", light: "bg-teal-100", border: "border-teal-100", textDark: "text-teal-700" },
+    rose:   { bg: "bg-rose-50",   text: "text-rose-900",   accent: "bg-rose-500",   light: "bg-rose-100",   border: "border-rose-100",   textDark: "text-rose-700" },
+    indigo: { bg: "bg-indigo-50", text: "text-indigo-900", accent: "bg-indigo-500", light: "bg-indigo-100", border: "border-indigo-100", textDark: "text-indigo-700" },
+    teal:   { bg: "bg-indigo-50", text: "text-indigo-900", accent: "bg-indigo-500", light: "bg-indigo-100", border: "border-indigo-100", textDark: "text-indigo-700" },
     violet: { bg: "bg-violet-50", text: "text-violet-900", accent: "bg-violet-500", light: "bg-violet-100", border: "border-violet-100", textDark: "text-violet-700" },
     orange: { bg: "bg-orange-50", text: "text-orange-900", accent: "bg-orange-500", light: "bg-orange-100", border: "border-orange-100", textDark: "text-orange-700" },
-    blue: { bg: "bg-blue-50", text: "text-blue-900", accent: "bg-blue-500", light: "bg-blue-100", border: "border-blue-100", textDark: "text-blue-700" },
+    blue:   { bg: "bg-blue-50",   text: "text-blue-900",   accent: "bg-blue-500",   light: "bg-blue-100",   border: "border-blue-100",   textDark: "text-blue-700" },
   };
   const colors = themeOptions[themeColor as keyof typeof themeOptions] || themeOptions.rose;
 
@@ -49,6 +50,9 @@ export function BeautyTemplate({ tenant, services, staffList, portfolios, dictio
         <p className="relative z-10 text-sm text-rose-50/90 max-w-sm italic">
           {tenant.welcome_message || "Temukan gaya terbaikmu bersama kami."}
         </p>
+        <div className="relative z-10 flex flex-wrap justify-center gap-2">
+          <ShareStorefrontButton tenantSlug={tenant.slug} businessName={tenant.business_name} />
+        </div>
       </header>
 
       <div className="max-w-lg mx-auto px-4 mt-2">
@@ -65,9 +69,8 @@ export function BeautyTemplate({ tenant, services, staffList, portfolios, dictio
             {tenant.address && (
               <>
                 <MapPin className={`w-5 h-5 mx-auto mb-2 ${colors.text} opacity-70`} />
-                <p className="text-sm text-stone-600 leading-relaxed">
-                  {tenant.address}
-                </p>
+                <p className="text-sm text-stone-600 leading-relaxed">{tenant.address}</p>
+                <LocationMap address={tenant.address} className="mt-4" />
               </>
             )}
             
@@ -109,19 +112,12 @@ export function BeautyTemplate({ tenant, services, staffList, portfolios, dictio
         </div>
 
         <div className="my-8">
-
-
           <BusinessHoursCard schedule={(tenant as any).weekly_schedule} timezone={tenant.timezone} />
-
-
         </div>
 
-
         <TestimonialSection tenantId={tenant.id} themeColor={themeColor} />
-      <StorefrontFooter variant="beauty" />
+        <StorefrontFooter variant="beauty" />
       </div>
     </main>
   );
 }
-
-

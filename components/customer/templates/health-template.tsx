@@ -4,26 +4,28 @@ import { StoreBadge } from "../store-badge";
 import { BusinessHoursCard } from "@/components/customer/business-hours-card";
 import { BookingFlow } from "@/components/customer/booking-flow";
 import { PortfolioGallery } from "@/components/customer/portfolio-gallery";
-import { Logo } from "@/components/ui/logo";
 import { SafeImage } from "@/components/ui/safe-image";
 import { StorefrontJsonLd } from "./shared/storefront-jsonld";
 import { getWhatsAppUrl } from "./shared/whatsapp-link";
 import { StorefrontFooter } from "./shared/storefront-footer";
 import { TestimonialSection } from "@/components/customer/testimonial-section";
 import { PromoBanner } from "@/components/customer/promo-banner";
+import { LocationMap } from "@/components/customer/location-map";
+import { ShareStorefrontButton } from "@/components/customer/share-storefront-button";
 import type { StorefrontTemplateProps } from "./types";
 
 export function HealthTemplate({ tenant, services, staffList, portfolios, dictionary }: StorefrontTemplateProps) {
-  const themeColor = tenant.theme_color || "teal";
+  const themeColor = tenant.theme_color || "indigo";
   
   const themeOptions = {
-    teal: { text: "text-teal-700", bg: "bg-teal-50", border: "border-teal-100", highlight: "bg-teal-600" },
-    blue: { text: "text-blue-700", bg: "bg-blue-50", border: "border-blue-100", highlight: "bg-blue-600" },
-    rose: { text: "text-rose-700", bg: "bg-rose-50", border: "border-rose-100", highlight: "bg-rose-600" },
+    indigo: { text: "text-indigo-700", bg: "bg-indigo-50", border: "border-indigo-100", highlight: "bg-indigo-600" },
+    teal:   { text: "text-indigo-700", bg: "bg-indigo-50", border: "border-indigo-100", highlight: "bg-indigo-600" },
+    blue:   { text: "text-blue-700",   bg: "bg-blue-50",   border: "border-blue-100",   highlight: "bg-blue-600" },
+    rose:   { text: "text-rose-700",   bg: "bg-rose-50",   border: "border-rose-100",   highlight: "bg-rose-600" },
     orange: { text: "text-orange-700", bg: "bg-orange-50", border: "border-orange-100", highlight: "bg-orange-600" },
     violet: { text: "text-violet-700", bg: "bg-violet-50", border: "border-violet-100", highlight: "bg-violet-600" },
   };
-  const colors = themeOptions[themeColor as keyof typeof themeOptions] || themeOptions.teal;
+  const colors = themeOptions[themeColor as keyof typeof themeOptions] || themeOptions.indigo;
 
   return (
     <main className="min-h-screen bg-slate-50 text-slate-800 pb-56 md:pb-24 font-sans">
@@ -31,11 +33,11 @@ export function HealthTemplate({ tenant, services, staffList, portfolios, dictio
       <PromoBanner tenantId={tenant.id} />
       
       {/* ── Premium Medical Header ── */}
-      <header className="bg-teal-950 text-teal-50 border-b-4 border-teal-900 relative shadow-xl">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-teal-900 via-teal-950 to-black opacity-60 mix-blend-overlay" />
+      <header className="bg-indigo-950 text-indigo-50 border-b-4 border-indigo-900 relative shadow-xl">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-900 via-indigo-950 to-black opacity-60 mix-blend-overlay" />
         <div className="relative z-10 max-w-4xl mx-auto px-4 py-8 md:py-12 flex flex-col md:flex-row items-center md:items-start justify-between gap-6">
           <div className="flex flex-col md:flex-row items-center md:items-start gap-5 text-center md:text-left">
-            <div className={`w-20 h-20 rounded-2xl ${colors.bg} ${colors.text} flex flex-shrink-0 items-center justify-center shadow-lg border-2 border-teal-700`}>
+            <div className={`w-20 h-20 rounded-2xl ${colors.bg} ${colors.text} flex flex-shrink-0 items-center justify-center shadow-lg border-2 border-indigo-700`}>
               <SafeImage 
                 src={tenant.logo_url || undefined} 
                 alt={tenant.business_name} 
@@ -44,17 +46,25 @@ export function HealthTemplate({ tenant, services, staffList, portfolios, dictio
               />
             </div>
             <div>
-              <h1 className="text-2xl md:text-3xl font-bold text-teal-50 tracking-tight leading-tight drop-shadow-sm">
+              <h1 className="text-2xl md:text-3xl font-bold text-indigo-50 tracking-tight leading-tight drop-shadow-sm">
                 {tenant.business_name}
               </h1>
-              <p className="text-sm text-teal-200 font-medium mt-1">Layanan Medis & Profesional</p>
+              <p className="text-sm text-indigo-200 font-medium mt-1">Layanan Medis & Profesional</p>
               {tenant.is_verified && (
-                <div className="flex items-center justify-center md:justify-start gap-2 mt-3 bg-teal-900/50 py-1.5 px-3 rounded-full border border-teal-800/50 w-fit mx-auto md:mx-0">
+                <div className="flex items-center justify-center md:justify-start gap-2 mt-3 bg-indigo-900/50 py-1.5 px-3 rounded-full border border-indigo-800/50 w-fit mx-auto md:mx-0">
                   <ShieldCheck className={`w-4 h-4 text-emerald-400`} />
-                  <span className="text-xs font-semibold text-teal-100 uppercase tracking-wider">Terdaftar di bukly.id</span>
+                  <span className="text-xs font-semibold text-indigo-100 uppercase tracking-wider">Terdaftar di bukly.id</span>
                 </div>
               )}
             </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <a href={getWhatsAppUrl(tenant.whatsapp_number)} target="_blank" rel="noopener noreferrer"
+               className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white text-sm font-semibold transition-all duration-200 active:scale-95">
+              <MessageCircle className="w-4 h-4" />
+              <span className="hidden md:inline">WhatsApp</span>
+            </a>
+            <ShareStorefrontButton tenantSlug={tenant.slug} businessName={tenant.business_name} />
           </div>
         </div>
       </header>
@@ -110,6 +120,7 @@ export function HealthTemplate({ tenant, services, staffList, portfolios, dictio
                     </div>
                   </div>
                 )}
+                {tenant.address && <LocationMap address={tenant.address} />}
                 <StoreBadge schedule={(tenant as any).weekly_schedule} timezone={tenant.timezone} variant="health" />
               </div>
             </div>
@@ -143,13 +154,8 @@ export function HealthTemplate({ tenant, services, staffList, portfolios, dictio
         </div>
 
         <div className="my-8">
-
-
           <BusinessHoursCard schedule={(tenant as any).weekly_schedule} timezone={tenant.timezone} />
-
-
         </div>
-
 
         <TestimonialSection tenantId={tenant.id} themeColor={themeColor} />
         <StorefrontFooter variant="default" />
@@ -157,5 +163,3 @@ export function HealthTemplate({ tenant, services, staffList, portfolios, dictio
     </main>
   );
 }
-
-

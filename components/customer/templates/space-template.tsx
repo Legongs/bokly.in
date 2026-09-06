@@ -4,23 +4,25 @@ import { StoreBadge } from "../store-badge";
 import { BusinessHoursCard } from "@/components/customer/business-hours-card";
 import { BookingFlow } from "@/components/customer/booking-flow";
 import { PortfolioGallery } from "@/components/customer/portfolio-gallery";
-import { Logo } from "@/components/ui/logo";
 import { SafeImage } from "@/components/ui/safe-image";
 import { StorefrontJsonLd } from "./shared/storefront-jsonld";
 import { getWhatsAppUrl } from "./shared/whatsapp-link";
 import { StorefrontFooter } from "./shared/storefront-footer";
 import { TestimonialSection } from "@/components/customer/testimonial-section";
 import { PromoBanner } from "@/components/customer/promo-banner";
+import { FacilityBadges } from "@/components/customer/facility-badges";
+import { LocationMap } from "@/components/customer/location-map";
+import { ShareStorefrontButton } from "@/components/customer/share-storefront-button";
 import type { StorefrontTemplateProps } from "./types";
 
-export function SpaceTemplate({ tenant, services, staffList, portfolios, dictionary }: StorefrontTemplateProps) {
+export function SpaceTemplate({ tenant, services, staffList, portfolios, dictionary, facilities = [] }: StorefrontTemplateProps) {
   const themeColor = tenant.theme_color || "blue";
   
-  // Revised earthy, bright, airy palette instead of dark mode
   const themeOptions = {
-    blue: { bg: "bg-blue-50", card: "bg-white", border: "border-blue-100", text: "text-blue-900", highlight: "bg-blue-100", gradientTo: "to-blue-50" },
-    teal: { bg: "bg-teal-50", card: "bg-white", border: "border-teal-100", text: "text-teal-900", highlight: "bg-teal-100", gradientTo: "to-teal-50" },
-    rose: { bg: "bg-rose-50", card: "bg-white", border: "border-rose-100", text: "text-rose-900", highlight: "bg-rose-100", gradientTo: "to-rose-50" },
+    blue:   { bg: "bg-blue-50",   card: "bg-white", border: "border-blue-100",   text: "text-blue-900",   highlight: "bg-blue-100",   gradientTo: "to-blue-50" },
+    indigo: { bg: "bg-indigo-50", card: "bg-white", border: "border-indigo-100", text: "text-indigo-900", highlight: "bg-indigo-100", gradientTo: "to-indigo-50" },
+    teal:   { bg: "bg-indigo-50", card: "bg-white", border: "border-indigo-100", text: "text-indigo-900", highlight: "bg-indigo-100", gradientTo: "to-indigo-50" },
+    rose:   { bg: "bg-rose-50",   card: "bg-white", border: "border-rose-100",   text: "text-rose-900",   highlight: "bg-rose-100",   gradientTo: "to-rose-50" },
     violet: { bg: "bg-violet-50", card: "bg-white", border: "border-violet-100", text: "text-violet-900", highlight: "bg-violet-100", gradientTo: "to-violet-50" },
     orange: { bg: "bg-orange-50", card: "bg-white", border: "border-orange-100", text: "text-orange-900", highlight: "bg-orange-100", gradientTo: "to-orange-50" },
   };
@@ -80,6 +82,7 @@ export function SpaceTemplate({ tenant, services, staffList, portfolios, diction
               </a>
             )}
             <StoreBadge schedule={(tenant as any).weekly_schedule} timezone={tenant.timezone} variant="space" />
+            <ShareStorefrontButton tenantSlug={tenant.slug} businessName={tenant.business_name} />
           </div>
         </header>
 
@@ -94,6 +97,13 @@ export function SpaceTemplate({ tenant, services, staffList, portfolios, diction
                   <MapPin className="w-5 h-5 text-stone-500 flex-shrink-0 mt-0.5" />
                   <p className="text-stone-700 leading-relaxed font-medium">{tenant.address}</p>
                 </div>
+                <LocationMap address={tenant.address} className="mt-4" />
+                {facilities.length > 0 && (
+                  <div className="mt-4 pt-4 border-t border-stone-100">
+                    <p className="text-xs font-bold uppercase tracking-widest text-stone-400 mb-3">Fasilitas</p>
+                    <FacilityBadges facilities={facilities} />
+                  </div>
+                )}
               </div>
             )}
             
@@ -117,7 +127,7 @@ export function SpaceTemplate({ tenant, services, staffList, portfolios, diction
           <div className="lg:col-span-2">
             <div className="bg-white rounded-[2.5rem] p-5 md:p-10 text-stone-900 shadow-lg border border-stone-100 relative overflow-hidden">
               <div className={`absolute top-0 left-0 w-full h-2 ${colors.highlight}`} />
-              <h2 className="text-2xl font-bold mb-8 text-stone-800">Cek Ketersediaan & Sewa</h2>
+              <h2 className="text-2xl font-bold mb-8 text-stone-800">Cek Ketersediaan &amp; Sewa</h2>
               <BookingFlow tenant={tenant} services={services} staffList={staffList} dictionary={dictionary} />
             </div>
             
@@ -130,13 +140,8 @@ export function SpaceTemplate({ tenant, services, staffList, portfolios, diction
         </div>
 
         <div className="my-8">
-
-
           <BusinessHoursCard schedule={(tenant as any).weekly_schedule} timezone={tenant.timezone} />
-
-
         </div>
-
 
         <TestimonialSection tenantId={tenant.id} themeColor={themeColor} />
         <StorefrontFooter variant="default" />
@@ -144,5 +149,3 @@ export function SpaceTemplate({ tenant, services, staffList, portfolios, diction
     </main>
   );
 }
-
-

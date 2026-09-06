@@ -3,7 +3,6 @@ import { Store, Scissors, Building, Car, Stethoscope, MessageCircle, MapPin, AtS
 import { BookingFlow } from "@/components/customer/booking-flow";
 import { PortfolioGallery } from "@/components/customer/portfolio-gallery";
 import { StoreBadge } from "@/components/customer/store-badge";
-import { Logo } from "@/components/ui/logo";
 import { SafeImage } from "@/components/ui/safe-image";
 import { StorefrontJsonLd } from "./shared/storefront-jsonld";
 import { getWhatsAppUrl } from "./shared/whatsapp-link";
@@ -11,17 +10,26 @@ import { StorefrontFooter } from "./shared/storefront-footer";
 import { TestimonialSection } from "@/components/customer/testimonial-section";
 import { PromoBanner } from "@/components/customer/promo-banner";
 import { BusinessHoursCard } from "@/components/customer/business-hours-card";
+import { LocationMap } from "@/components/customer/location-map";
+import { ShareStorefrontButton } from "@/components/customer/share-storefront-button";
 import type { StorefrontTemplateProps } from "./types";
 
 export function DefaultTemplate({ tenant, services, staffList, portfolios, dictionary }: StorefrontTemplateProps) {
   // ── Theme Mapping ───────────────────────────────────────────────────────────
   const themeStyles: Record<string, any> = {
     teal: {
-      bgLogo: "bg-teal-600 shadow-teal-600/30",
-      bgHero: "bg-gradient-to-br from-teal-700 to-teal-500 shadow-teal-700/20",
-      textSub: "text-teal-100",
-      blob: "bg-teal-900/20",
-      dot: "bg-teal-500",
+      bgLogo: "bg-indigo-600 shadow-indigo-600/30",
+      bgHero: "bg-gradient-to-br from-indigo-700 to-indigo-500 shadow-indigo-700/20",
+      textSub: "text-indigo-100",
+      blob: "bg-indigo-900/20",
+      dot: "bg-indigo-500",
+    },
+    indigo: {
+      bgLogo: "bg-indigo-600 shadow-indigo-600/30",
+      bgHero: "bg-gradient-to-br from-indigo-700 to-indigo-500 shadow-indigo-700/20",
+      textSub: "text-indigo-100",
+      blob: "bg-indigo-900/20",
+      dot: "bg-indigo-500",
     },
     rose: {
       bgLogo: "bg-rose-600 shadow-rose-600/30",
@@ -53,8 +61,8 @@ export function DefaultTemplate({ tenant, services, staffList, portfolios, dicti
     },
   };
 
-  const themeColor = tenant.theme_color || dictionary.themeColor || "teal";
-  const currentTheme = themeStyles[themeColor] || themeStyles["teal"];
+  const themeColor = tenant.theme_color || dictionary.themeColor || "indigo";
+  const currentTheme = themeStyles[themeColor] || themeStyles["indigo"];
 
   const IconComponent = {
     Scissors,
@@ -85,6 +93,7 @@ export function DefaultTemplate({ tenant, services, staffList, portfolios, dicti
               {tenant.business_name}
             </span>
           </div>
+          <ShareStorefrontButton tenantSlug={tenant.slug} businessName={tenant.business_name} />
         </div>
       </header>
 
@@ -172,6 +181,9 @@ export function DefaultTemplate({ tenant, services, staffList, portfolios, dicti
           </div>
         </section>
 
+        {/* ── Location Map ── */}
+        {tenant.address && <LocationMap address={tenant.address} className="mb-6" />}
+
         {tenant.cancellation_policy && (
           <div className="bg-orange-50 border border-orange-100 rounded-2xl p-4 mb-6 flex items-start gap-3">
             <Info className="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" />
@@ -188,11 +200,9 @@ export function DefaultTemplate({ tenant, services, staffList, portfolios, dicti
         {/* ── Booking Flow ── */}
         <BookingFlow tenant={tenant} services={services} staffList={staffList} dictionary={dictionary} />
 
-        {/* ── Testimonial Section ── */}
+        {/* ── Business Hours ── */}
         <div className="my-8">
-
           <BusinessHoursCard schedule={(tenant as any).weekly_schedule} timezone={tenant.timezone} />
-
         </div>
 
         <TestimonialSection tenantId={tenant.id} themeColor={themeColor} />
@@ -203,7 +213,3 @@ export function DefaultTemplate({ tenant, services, staffList, portfolios, dicti
     </main>
   );
 }
-
-
-
-

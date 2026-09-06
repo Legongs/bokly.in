@@ -4,13 +4,14 @@ import { StoreBadge } from "../store-badge";
 import { BusinessHoursCard } from "@/components/customer/business-hours-card";
 import { BookingFlow } from "@/components/customer/booking-flow";
 import { PortfolioGallery } from "@/components/customer/portfolio-gallery";
-import { Logo } from "@/components/ui/logo";
 import { SafeImage } from "@/components/ui/safe-image";
 import { StorefrontJsonLd } from "./shared/storefront-jsonld";
 import { getWhatsAppUrl } from "./shared/whatsapp-link";
 import { StorefrontFooter } from "./shared/storefront-footer";
 import { TestimonialSection } from "@/components/customer/testimonial-section";
 import { PromoBanner } from "@/components/customer/promo-banner";
+import { LocationMap } from "@/components/customer/location-map";
+import { ShareStorefrontButton } from "@/components/customer/share-storefront-button";
 import type { StorefrontTemplateProps } from "./types";
 
 export function BarberTemplate({ tenant, services, staffList, portfolios, dictionary }: StorefrontTemplateProps) {
@@ -19,9 +20,10 @@ export function BarberTemplate({ tenant, services, staffList, portfolios, dictio
   // Barber template: Gentleman's Club aesthetic (monochrome, earthy brown, vintage gold/orange)
   const themeOptions = {
     orange: { bg: "bg-stone-50", card: "bg-white", text: "text-stone-900", highlight: "text-amber-700", border: "border-stone-200", btn: "bg-amber-700 hover:bg-amber-800" },
-    teal: { bg: "bg-stone-50", card: "bg-white", text: "text-stone-900", highlight: "text-teal-800", border: "border-stone-200", btn: "bg-teal-800 hover:bg-teal-900" },
-    blue: { bg: "bg-stone-50", card: "bg-white", text: "text-stone-900", highlight: "text-slate-800", border: "border-stone-200", btn: "bg-slate-800 hover:bg-slate-900" },
-    rose: { bg: "bg-stone-50", card: "bg-white", text: "text-stone-900", highlight: "text-rose-800", border: "border-stone-200", btn: "bg-rose-800 hover:bg-rose-900" },
+    indigo: { bg: "bg-stone-50", card: "bg-white", text: "text-stone-900", highlight: "text-indigo-800", border: "border-stone-200", btn: "bg-indigo-800 hover:bg-indigo-900" },
+    teal:   { bg: "bg-stone-50", card: "bg-white", text: "text-stone-900", highlight: "text-indigo-800", border: "border-stone-200", btn: "bg-indigo-800 hover:bg-indigo-900" },
+    blue:   { bg: "bg-stone-50", card: "bg-white", text: "text-stone-900", highlight: "text-slate-800",  border: "border-stone-200", btn: "bg-slate-800 hover:bg-slate-900" },
+    rose:   { bg: "bg-stone-50", card: "bg-white", text: "text-stone-900", highlight: "text-rose-800",   border: "border-stone-200", btn: "bg-rose-800 hover:bg-rose-900" },
     violet: { bg: "bg-stone-50", card: "bg-white", text: "text-stone-900", highlight: "text-violet-800", border: "border-stone-200", btn: "bg-violet-800 hover:bg-violet-900" },
   };
   
@@ -83,6 +85,7 @@ export function BarberTemplate({ tenant, services, staffList, portfolios, dictio
               </a>
             )}
             <StoreBadge schedule={(tenant as any).weekly_schedule} timezone={tenant.timezone} variant="barber" />
+            <ShareStorefrontButton tenantSlug={tenant.slug} businessName={tenant.business_name} />
           </div>
         </div>
       </header>
@@ -100,6 +103,7 @@ export function BarberTemplate({ tenant, services, staffList, portfolios, dictio
               <p className="text-sm font-medium text-stone-800 leading-relaxed border-l-2 border-stone-200 pl-3">
                 {tenant.address}
               </p>
+              <LocationMap address={tenant.address} className="mt-4" />
             </div>
           )}
 
@@ -139,19 +143,12 @@ export function BarberTemplate({ tenant, services, staffList, portfolios, dictio
         </div>
       </div>
 
-      <div className="my-8">
-
-
+      <div className="my-8 max-w-4xl mx-auto px-4">
         <BusinessHoursCard schedule={(tenant as any).weekly_schedule} timezone={tenant.timezone} />
-
-
       </div>
-
 
       <TestimonialSection tenantId={tenant.id} themeColor={themeColor} />
       <StorefrontFooter variant="barber" />
     </main>
   );
 }
-
-

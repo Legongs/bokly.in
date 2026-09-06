@@ -4,25 +4,27 @@ import { StoreBadge } from "../store-badge";
 import { BusinessHoursCard } from "@/components/customer/business-hours-card";
 import { BookingFlow } from "@/components/customer/booking-flow";
 import { PortfolioGallery } from "@/components/customer/portfolio-gallery";
-import { Logo } from "@/components/ui/logo";
 import { SafeImage } from "@/components/ui/safe-image";
 import { StorefrontJsonLd } from "./shared/storefront-jsonld";
 import { getWhatsAppUrl } from "./shared/whatsapp-link";
 import { StorefrontFooter } from "./shared/storefront-footer";
 import { TestimonialSection } from "@/components/customer/testimonial-section";
 import { PromoBanner } from "@/components/customer/promo-banner";
+import { FacilityBadges } from "@/components/customer/facility-badges";
+import { LocationMap } from "@/components/customer/location-map";
+import { ShareStorefrontButton } from "@/components/customer/share-storefront-button";
 import type { StorefrontTemplateProps } from "./types";
 
-export function AutoTemplate({ tenant, services, staffList, portfolios, dictionary }: StorefrontTemplateProps) {
+export function AutoTemplate({ tenant, services, staffList, portfolios, dictionary, facilities = [] }: StorefrontTemplateProps) {
   const themeColor = tenant.theme_color || "orange";
   
-  // Revised earthy, warm palette instead of neon dark mode
   const themeOptions = {
-    orange: { bg: "bg-orange-50", card: "bg-white", text: "text-amber-900", highlight: "text-orange-700", border: "border-orange-200" },
-    teal: { bg: "bg-stone-100", card: "bg-white", text: "text-stone-900", highlight: "text-teal-700", border: "border-teal-200" },
-    blue: { bg: "bg-blue-50", card: "bg-white", text: "text-slate-900", highlight: "text-blue-700", border: "border-blue-200" },
-    rose: { bg: "bg-rose-50", card: "bg-white", text: "text-rose-900", highlight: "text-rose-700", border: "border-rose-200" },
-    violet: { bg: "bg-stone-100", card: "bg-white", text: "text-stone-900", highlight: "text-violet-700", border: "border-violet-200" },
+    orange: { bg: "bg-orange-50",  card: "bg-white", text: "text-amber-900",  highlight: "text-orange-700",  border: "border-orange-200" },
+    indigo: { bg: "bg-stone-100",  card: "bg-white", text: "text-stone-900",  highlight: "text-indigo-700",  border: "border-indigo-200" },
+    teal:   { bg: "bg-stone-100",  card: "bg-white", text: "text-stone-900",  highlight: "text-indigo-700",  border: "border-indigo-200" },
+    blue:   { bg: "bg-blue-50",    card: "bg-white", text: "text-slate-900",  highlight: "text-blue-700",    border: "border-blue-200" },
+    rose:   { bg: "bg-rose-50",    card: "bg-white", text: "text-rose-900",   highlight: "text-rose-700",    border: "border-rose-200" },
+    violet: { bg: "bg-stone-100",  card: "bg-white", text: "text-stone-900",  highlight: "text-violet-700",  border: "border-violet-200" },
   };
   const colors = themeOptions[themeColor as keyof typeof themeOptions] || themeOptions.orange;
 
@@ -65,6 +67,7 @@ export function AutoTemplate({ tenant, services, staffList, portfolios, dictiona
             </a>
           )}
           <StoreBadge schedule={(tenant as any).weekly_schedule} timezone={tenant.timezone} variant="auto" />
+          <ShareStorefrontButton tenantSlug={tenant.slug} businessName={tenant.business_name} />
         </div>
       </header>
 
@@ -91,12 +94,21 @@ export function AutoTemplate({ tenant, services, staffList, portfolios, dictiona
           )}
 
           {tenant.address && (
-            <div className="flex items-start gap-4 p-6 bg-white shadow-sm rounded-2xl border border-stone-200">
-              <MapPin className={`w-6 h-6 ${colors.highlight} flex-shrink-0 mt-0.5`} />
-              <div>
-                <p className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-1">Lokasi Bengkel</p>
-                <p className="text-sm font-medium text-stone-700 leading-relaxed">{tenant.address}</p>
+            <div className="flex flex-col gap-3 p-6 bg-white shadow-sm rounded-2xl border border-stone-200">
+              <div className="flex items-start gap-4">
+                <MapPin className={`w-6 h-6 ${colors.highlight} flex-shrink-0 mt-0.5`} />
+                <div>
+                  <p className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-1">Lokasi Bengkel</p>
+                  <p className="text-sm font-medium text-stone-700 leading-relaxed">{tenant.address}</p>
+                </div>
               </div>
+              <LocationMap address={tenant.address} />
+              {facilities.length > 0 && (
+                <div className="pt-3 border-t border-stone-100">
+                  <p className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-2">Fasilitas</p>
+                  <FacilityBadges facilities={facilities} />
+                </div>
+              )}
             </div>
           )}
 
@@ -125,7 +137,6 @@ export function AutoTemplate({ tenant, services, staffList, portfolios, dictiona
 
           {portfolios.length > 0 && (
             <div className="bg-white p-6 md:p-8 rounded-2xl border border-stone-200 shadow-sm">
-
               <PortfolioGallery portfolios={portfolios} />
             </div>
           )}
@@ -133,19 +144,12 @@ export function AutoTemplate({ tenant, services, staffList, portfolios, dictiona
 
       </div>
 
-      <div className="my-8">
-
-
+      <div className="my-8 max-w-4xl mx-auto px-4">
         <BusinessHoursCard schedule={(tenant as any).weekly_schedule} timezone={tenant.timezone} />
-
-
       </div>
-
 
       <TestimonialSection tenantId={tenant.id} themeColor={themeColor} />
       <StorefrontFooter variant="auto" />
     </main>
   );
 }
-
-
