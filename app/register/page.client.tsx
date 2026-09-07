@@ -25,7 +25,7 @@ const registerSchema = z.object({
     "studio_foto", "lapangan_futsal", "lapangan_padel", "coworking",
     "klinik", "konsultasi",
     "lainnya"
-  ], { required_error: "Pilih sub sektor bisnisnya juga ya." }),
+  ], { message: "Pilih sub sektor bisnisnya juga ya." }),
   business_type: z.string().optional(),
   whatsapp_number: z
     .string()
