@@ -1,25 +1,34 @@
-export type BusinessType = 
+export type BusinessSubsector = 
   | "salon"
+  | "barber"
+  | "eyelash"
+  | "nailart"
+  | "spa_pijat"
+  | "bengkel"
+  | "detailing"
+  | "studio_foto"
+  | "lapangan_futsal"
+  | "lapangan_padel"
+  | "coworking"
   | "klinik"
   | "konsultasi"
-  | "studio_foto"
-  | "cuci_kendaraan"
-  | "olahraga"
-  | "servis"
   | "lainnya";
 
 export interface BusinessDictionary {
-  serviceLabel: string; // e.g. "Perawatan", "Fasilitas", "Layanan"
-  bookingLabel: string; // e.g. "Reservasi", "Booking", "Sewa"
+  serviceLabel: string; 
+  bookingLabel: string; 
   emptyStateTitle: string;
   emptyStateDesc: string;
-  selectServicePrompt: string; // e.g. "Mau Perawatan Apa?"
-  staffLabel: string; // e.g. "Pegawai", "Terapis", "Instruktur"
-  themeColor: "teal" | "rose" | "orange" | "violet" | "blue";
+  selectServicePrompt: string; 
+  staffLabel: string | null;
+  resourceLabel: string | null;
+  themeColor: "teal" | "rose" | "orange" | "violet" | "blue" | "stone";
+  heroTagline: string;
+  extraFields?: string[];
 }
 
-export function getBusinessDictionary(type: string | undefined): BusinessDictionary {
-  switch (type) {
+export function getBusinessDictionary(subsector: string | undefined): BusinessDictionary {
+  switch (subsector) {
     case "salon":
       return {
         serviceLabel: "Perawatan",
@@ -27,68 +36,156 @@ export function getBusinessDictionary(type: string | undefined): BusinessDiction
         emptyStateTitle: "Belum ada perawatan nih",
         emptyStateDesc: "Yuk, tambah perawatan sekarang biar pelanggan bisa mulai reservasi!",
         selectServicePrompt: "Mau Perawatan Apa?",
-        staffLabel: "Kapster / Stylist",
+        staffLabel: "Stylist / Kapster",
+        resourceLabel: null,
         themeColor: "rose",
+        heroTagline: "Tampil menawan setiap saat",
       };
-    case "klinik":
+    case "barber":
+      return {
+        serviceLabel: "Cukur / Grooming",
+        bookingLabel: "Booking",
+        emptyStateTitle: "Belum ada layanan cukur",
+        emptyStateDesc: "Tambah layanan cukur agar pelanggan bisa segera booking.",
+        selectServicePrompt: "Pilih Layanan Cukur",
+        staffLabel: "Barber",
+        resourceLabel: null,
+        themeColor: "stone",
+        heroTagline: "Tampil rapi, percaya diri maksimal",
+      };
+    case "eyelash":
       return {
         serviceLabel: "Treatment",
         bookingLabel: "Reservasi",
-        emptyStateTitle: "Belum ada treatment terdaftar",
-        emptyStateDesc: "Tambahkan daftar treatment klinik Anda agar pasien bisa membuat janji.",
-        selectServicePrompt: "Pilih Treatment Anda",
-        staffLabel: "Terapis / Dokter",
-        themeColor: "teal",
+        emptyStateTitle: "Belum ada treatment",
+        emptyStateDesc: "Tambahkan treatment agar klien bisa memilih layanannya.",
+        selectServicePrompt: "Pilih Treatment",
+        staffLabel: "Eyelash Tech / Terapis",
+        resourceLabel: null,
+        themeColor: "rose",
+        heroTagline: "Mata indah mempesona setiap hari",
       };
-    case "konsultasi":
+    case "nailart":
       return {
-        serviceLabel: "Layanan Konsultasi",
-        bookingLabel: "Buat Janji",
-        emptyStateTitle: "Jadwal praktek belum diatur",
-        emptyStateDesc: "Tambahkan layanan konsultasi untuk mulai menerima janji temu.",
-        selectServicePrompt: "Pilih Jenis Konsultasi",
-        staffLabel: "Konsultan / Pakar",
+        serviceLabel: "Treatment",
+        bookingLabel: "Reservasi",
+        emptyStateTitle: "Belum ada treatment",
+        emptyStateDesc: "Tambahkan treatment kuku agar klien bisa booking.",
+        selectServicePrompt: "Pilih Treatment Kuku",
+        staffLabel: "Nail Artist",
+        resourceLabel: null,
+        themeColor: "rose",
+        heroTagline: "Kuku cantik, mood naik",
+      };
+    case "spa_pijat":
+      return {
+        serviceLabel: "Treatment",
+        bookingLabel: "Reservasi",
+        emptyStateTitle: "Belum ada paket spa/pijat",
+        emptyStateDesc: "Tambah paket agar pelanggan bisa segera rileks.",
+        selectServicePrompt: "Pilih Paket Treatment",
+        staffLabel: "Terapis",
+        resourceLabel: "Ruangan / Kasur",
+        themeColor: "teal",
+        heroTagline: "Relaksasi total untuk tubuh dan pikiran",
+      };
+    case "bengkel":
+      return {
+        serviceLabel: "Jenis Servis",
+        bookingLabel: "Booking Servis",
+        emptyStateTitle: "Belum ada daftar servis",
+        emptyStateDesc: "Tambahkan jasa perbaikan yang Anda tawarkan ke pelanggan.",
+        selectServicePrompt: "Pilih Jenis Servis",
+        staffLabel: "Mekanik",
+        resourceLabel: null,
+        themeColor: "orange",
+        heroTagline: "Kendaraan prima, perjalanan aman",
+        extraFields: ["vehicle_brand", "complaint_notes"],
+      };
+    case "detailing":
+      return {
+        serviceLabel: "Paket Cuci / Detailing",
+        bookingLabel: "Booking",
+        emptyStateTitle: "Belum ada paket",
+        emptyStateDesc: "Yuk tambah paket cuci atau detailing kendaraan Anda.",
+        selectServicePrompt: "Pilih Paket Cuci / Detailing",
+        staffLabel: "Detailer / Tim",
+        resourceLabel: "Bay",
         themeColor: "blue",
+        heroTagline: "Kendaraan mengkilap seperti baru",
+        extraFields: ["vehicle_brand"],
       };
     case "studio_foto":
       return {
-        serviceLabel: "Sesi Foto",
+        serviceLabel: "Paket Foto",
         bookingLabel: "Booking",
         emptyStateTitle: "Belum ada paket sesi foto",
-        emptyStateDesc: "Tambahkan durasi sewa studio atau sesi foto Anda di sini.",
+        emptyStateDesc: "Tambahkan paket foto atau sewa studio di sini.",
         selectServicePrompt: "Pilih Paket Sesi Foto",
         staffLabel: "Fotografer",
+        resourceLabel: "Studio / Latar",
         themeColor: "violet",
+        heroTagline: "Abadikan momen berharga dengan sempurna",
       };
-    case "cuci_kendaraan":
+    case "lapangan_futsal":
       return {
-        serviceLabel: "Paket Cuci",
-        bookingLabel: "Booking",
-        emptyStateTitle: "Belum ada paket cuci",
-        emptyStateDesc: "Yuk tambah paket cuci atau detailing kendaraan Anda.",
-        selectServicePrompt: "Pilih Paket Cuci / Detailing",
-        staffLabel: "Tim Cuci / Detailer",
-        themeColor: "orange",
+        serviceLabel: "Slot Sewa",
+        bookingLabel: "Booking Lapangan",
+        emptyStateTitle: "Belum ada slot sewa",
+        emptyStateDesc: "Tambahkan lapangan agar bisa disewa pelanggan.",
+        selectServicePrompt: "Pilih Durasi / Paket",
+        staffLabel: null,
+        resourceLabel: "Lapangan",
+        themeColor: "teal",
+        heroTagline: "Fasilitas terbaik untuk main bareng teman",
       };
-    case "olahraga":
+    case "lapangan_padel":
       return {
-        serviceLabel: "Fasilitas",
-        bookingLabel: "Sewa",
-        emptyStateTitle: "Belum ada fasilitas untuk disewa",
-        emptyStateDesc: "Tambahkan lapangan atau studio yang bisa disewa oleh pengunjung.",
-        selectServicePrompt: "Pilih Lapangan / Fasilitas",
-        staffLabel: "Instruktur / Penjaga",
-        themeColor: "orange",
+        serviceLabel: "Slot Sewa",
+        bookingLabel: "Booking Padel",
+        emptyStateTitle: "Belum ada slot sewa",
+        emptyStateDesc: "Tambahkan court agar bisa disewa.",
+        selectServicePrompt: "Pilih Durasi / Paket",
+        staffLabel: null,
+        resourceLabel: "Padel Court",
+        themeColor: "teal",
+        heroTagline: "Bermain padel dengan fasilitas premium",
       };
-    case "servis":
+    case "coworking":
       return {
-        serviceLabel: "Jenis Servis",
-        bookingLabel: "Booking",
-        emptyStateTitle: "Belum ada daftar servis",
-        emptyStateDesc: "Tambahkan jasa perbaikan yang Anda tawarkan ke pelanggan.",
-        selectServicePrompt: "Pilih Jenis Perbaikan",
-        staffLabel: "Teknisi / Mekanik",
-        themeColor: "orange",
+        serviceLabel: "Paket Sewa",
+        bookingLabel: "Booking Ruang",
+        emptyStateTitle: "Belum ada paket sewa ruang",
+        emptyStateDesc: "Tambahkan ruang meeting atau meja agar bisa dibooking.",
+        selectServicePrompt: "Pilih Ruangan / Durasi",
+        staffLabel: null,
+        resourceLabel: "Ruang Meeting / Meja",
+        themeColor: "blue",
+        heroTagline: "Ruang kerja nyaman, produktivitas maksimal",
+      };
+    case "klinik":
+      return {
+        serviceLabel: "Treatment / Konsultasi",
+        bookingLabel: "Buat Janji",
+        emptyStateTitle: "Belum ada daftar layanan",
+        emptyStateDesc: "Tambahkan daftar treatment agar pasien bisa membuat janji.",
+        selectServicePrompt: "Pilih Layanan",
+        staffLabel: "Dokter / Perawat",
+        resourceLabel: "Ruang Periksa",
+        themeColor: "teal",
+        heroTagline: "Kesehatan Anda, prioritas utama kami",
+      };
+    case "konsultasi":
+      return {
+        serviceLabel: "Sesi Konsultasi",
+        bookingLabel: "Buat Janji",
+        emptyStateTitle: "Jadwal belum diatur",
+        emptyStateDesc: "Tambahkan layanan konsultasi untuk mulai menerima janji temu.",
+        selectServicePrompt: "Pilih Jenis Konsultasi",
+        staffLabel: "Konsultan / Terapis",
+        resourceLabel: null,
+        themeColor: "blue",
+        heroTagline: "Solusi tepat dari ahlinya",
       };
     case "lainnya":
     default:
@@ -98,8 +195,10 @@ export function getBusinessDictionary(type: string | undefined): BusinessDiction
         emptyStateTitle: "Daftar Layanan Kosong",
         emptyStateDesc: "Belum ada layanan yang kamu buat nih. Yuk, tambah sekarang!",
         selectServicePrompt: "Pilih Layanan",
-        staffLabel: "Pegawai",
-        themeColor: "teal",
+        staffLabel: "Staf",
+        resourceLabel: null,
+        themeColor: "stone",
+        heroTagline: "Sistem booking terpercaya",
       };
   }
 }

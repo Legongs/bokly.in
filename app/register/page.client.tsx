@@ -7,6 +7,7 @@ import { z } from "zod";
 import { Loader2, Store, Mail, Lock, AlertCircle, Type, Phone, Link as LinkIcon, CheckCircle2, Sparkles, Building2, Car, Stethoscope, ChevronRight, ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { register, checkSlugAvailability } from "@/lib/actions/auth.actions";
+import { SubsectorPicker } from "@/components/register/subsector-picker";
 
 import { Logo } from "@/components/ui/logo";
 const registerSchema = z.object({
@@ -18,8 +19,14 @@ const registerSchema = z.object({
     .max(100, "Kepanjangan nih, maksimal 100 huruf aja ya.")
     .trim(),
   business_sector: z.enum(["beauty", "space", "auto", "health"]),
-  business_type: z.string().min(1, "Pilih sub sektor bisnisnya juga ya."),
-  custom_business_type: z.string().optional(),
+  business_subsector: z.enum([
+    "salon", "barber", "eyelash", "nailart", "spa_pijat",
+    "bengkel", "detailing",
+    "studio_foto", "lapangan_futsal", "lapangan_padel", "coworking",
+    "klinik", "konsultasi",
+    "lainnya"
+  ], { required_error: "Pilih sub sektor bisnisnya juga ya." }),
+  business_type: z.string().optional(),
   whatsapp_number: z
     .string()
     .min(10, "Nomor WA kependekan, minimal 10 angka ya.")
@@ -50,28 +57,21 @@ export default function RegisterPageClient() {
     password: "",
     business_name: "",
     business_sector: "beauty",
+    business_subsector: undefined as any, // will be validated
     business_type: "",
-    custom_business_type: "",
     whatsapp_number: "",
     slug: "",
   });
 
-  const SUB_SECTORS: Record<string, string[]> = {
-    beauty: ["Salon", "Barbershop", "Spa", "Klinik Kecantikan", "Lainnya"],
-    space: ["Studio Foto", "Futsal / Lapangan", "Coworking Space", "Vila / Penginapan", "Lainnya"],
-    auto: ["Cuci Mobil", "Detailing", "Bengkel", "Lainnya"],
-    health: ["Dokter Umum", "Dokter Gigi", "Fisioterapi", "Bidan", "Lainnya"],
-  };
-
   useEffect(() => {
-    setForm((prev) => ({ ...prev, business_type: "", custom_business_type: "" }));
+    setForm((prev) => ({ ...prev, business_subsector: undefined as any, business_type: "" }));
   }, [form.business_sector]);
   
   useEffect(() => {
-    if (form.business_type !== "Lainnya") {
-      setForm((prev) => ({ ...prev, custom_business_type: "" }));
+    if (form.business_subsector !== "lainnya") {
+      setForm((prev) => ({ ...prev, business_type: "" }));
     }
-  }, [form.business_type]);
+  }, [form.business_subsector]);
   
   const [fieldErrors, setFieldErrors] = useState<Partial<Record<keyof RegisterFields, string>>>({});
   const [serverError, setServerError] = useState<string | null>(null);
@@ -117,7 +117,7 @@ export default function RegisterPageClient() {
   const handleNext = () => {
     if (activeStep === 1) {
       const isNameValid = validateField("business_name", form.business_name);
-      if (!isNameValid || !form.business_type || (form.business_type === "Lainnya" && !form.custom_business_type?.trim())) return;
+      if (!isNameValid || !form.business_subsector || (form.business_subsector === "lainnya" && !form.business_type?.trim())) return;
     }
     if (activeStep === 2) {
       const isSlugValid = validateField("slug", form.slug);
@@ -137,7 +137,7 @@ export default function RegisterPageClient() {
 
     const payload = {
         ...form,
-        business_type: form.business_type === "Lainnya" ? form.custom_business_type || "Lainnya" : form.business_type,
+        business_type: form.business_subsector === "lainnya" ? form.business_type || "Lainnya" : form.business_subsector,
     };
       
     const parsed = registerSchema.safeParse(payload);
@@ -217,57 +217,14 @@ export default function RegisterPageClient() {
                 {fieldErrors.business_name && <p className="text-xs text-rose-500 font-medium">{fieldErrors.business_name}</p>}
               </div>
 
-              <div className="space-y-1.5">
-                <label className="text-sm font-semibold text-stone-700">Sektor Bisnis</label>
-                <div className="grid grid-cols-2 gap-3">
-                  {[
-                    { id: "beauty", label: "Kecantikan", icon: <Sparkles className="w-5 h-5" />, desc: "Salon, Barbershop" },
-                    { id: "space", label: "Tempat", icon: <Building2 className="w-5 h-5" />, desc: "Studio, Futsal" },
-                    { id: "auto", label: "Otomotif", icon: <Car className="w-5 h-5" />, desc: "Cuci Mobil, Bengkel" },
-                    { id: "health", label: "Kesehatan", icon: <Stethoscope className="w-5 h-5" />, desc: "Dokter, Terapis" },
-                  ].map((sector) => (
-                    <div
-                      key={sector.id}
-                      onClick={() => updateForm("business_sector", sector.id)}
-                      className={`cursor-pointer border rounded-xl p-3 flex flex-col items-start gap-1.5 transition-all ${form.business_sector === sector.id ? "border-indigo-600 bg-indigo-50 ring-1 ring-indigo-600 shadow-sm" : "border-stone-200 bg-white hover:border-stone-300"}`}
-                    >
-                      <div className={`p-2 rounded-lg ${form.business_sector === sector.id ? "bg-indigo-100 text-indigo-700" : "bg-stone-100 text-stone-600"}`}>
-                        {sector.icon}
-                      </div>
-                      <span className="text-sm font-bold text-stone-900 mt-1">{sector.label}</span>
-                      <span className="text-[10px] text-stone-500 leading-tight">{sector.desc}</span>
-                    </div>
-                  ))}
-                </div>
-                
-                {form.business_sector && (
-                  <div className="mt-4 space-y-2 animate-in fade-in slide-in-from-top-2 duration-300">
-                    <label className="text-[13px] font-semibold text-stone-700">Sub Sektor</label>
-                    <div className="flex flex-wrap gap-2">
-                      {SUB_SECTORS[form.business_sector]?.map((sub) => (
-                        <div
-                          key={sub}
-                          onClick={() => updateForm("business_type", sub)}
-                          className={`cursor-pointer px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all ${form.business_type === sub ? "border-indigo-600 bg-indigo-600 text-white shadow-sm" : "border-stone-200 bg-white text-stone-600 hover:border-stone-300 hover:bg-stone-50"}`}
-                        >
-                          {sub}
-                        </div>
-                      ))}
-                    </div>
-                    {form.business_type === "Lainnya" && (
-                      <div className="mt-3 animate-in fade-in slide-in-from-top-1 duration-300">
-                        <input
-                          type="text"
-                          value={form.custom_business_type || ""}
-                          onChange={(e) => updateForm("custom_business_type", e.target.value)}
-                          placeholder="Ketik spesifik bisnis kamu..."
-                          className="w-full h-11 px-3 bg-white border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-sm text-stone-700"
-                        />
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
+              <SubsectorPicker
+                selectedSector={form.business_sector}
+                selectedSubsector={form.business_subsector}
+                onSelectSector={(s) => updateForm("business_sector", s)}
+                onSelectSubsector={(ss) => updateForm("business_subsector", ss)}
+                onSelectOther={(txt) => updateForm("business_type", txt)}
+                customOtherText={form.business_type}
+              />
             </div>
 
             {/* STEP 2: CONTACT & URL */}
@@ -370,7 +327,7 @@ export default function RegisterPageClient() {
                   onClick={handleNext} 
                   className="flex-1 h-12 bg-stone-900 hover:bg-stone-800 text-white rounded-xl font-bold shadow-md"
                   disabled={
-                    (activeStep === 1 && (!form.business_name || !form.business_type || (form.business_type === "Lainnya" && !form.custom_business_type?.trim()))) ||
+                    (activeStep === 1 && (!form.business_name || !form.business_subsector || (form.business_subsector === "lainnya" && !form.business_type?.trim()))) ||
                     (activeStep === 2 && (!form.slug || !form.whatsapp_number || slugStatus !== "available"))
                   }
                 >

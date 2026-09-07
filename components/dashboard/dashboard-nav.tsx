@@ -99,7 +99,7 @@ export function DashboardNav({ children, serviceLabel, staffLabel }: DashboardNa
               <Logo />
             </h2>
           </div>
-          <nav className="flex-1 space-y-1">
+          <nav className="flex-1 space-y-1 overflow-y-auto">
             {sidebarItems.map((item) => {
               const isActive = pathname === item.href;
               const Icon = item.icon;
